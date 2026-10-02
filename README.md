@@ -81,4 +81,9 @@ Keep real project files out of the public repository. `.gitignore` excludes `.re
 
 ## Next
 
-See `BUILD_STATUS.md` and `IMPLEMENTATION_REVIEW.md` for completed repairs and remaining work. Future Confluence/Drive connections will be adapters around the same versioned project model; live sync and AI will require separate security and conflict handling.
+The selected prototype plan has **10 single-session waves**, progressing from document import and reviewed AI knowledge to team actions, verification, and safer shared files. Shared accounts, connectors, and production hardening are separately scheduled extensions. These future capabilities are not implemented by the roadmap.
+
+- [Product direction and architecture](BUILD_PLAN.md)
+- [Single-session build waves](BUILD_WAVES.md)
+- [Differentiating demo story and pilot](DEMO_STORY.md)
+- [Current build status](BUILD_STATUS.md) and [implementation review](IMPLEMENTATION_REVIEW.md)

@@ -1,6 +1,6 @@
 # Build status and continuation plan
 
-Updated 2 October 2026. User authorizes building the complete Product Relay project in tested stages. Continue from these files; do not recreate the original prototype.
+Updated 3 October 2026. User authorizes building the complete Product Relay project in tested stages. Continue from these files; do not recreate the original prototype.
 
 ## Current direction — user decision
 
@@ -16,14 +16,15 @@ Local preview: `npm run dev`, http://127.0.0.1:4173. Browser check runner: /_che
 
 GitHub repository: https://github.com/aravin4d/product-relay. Live site: https://aravin4d.github.io/product-relay/. Pages is configured for GitHub Actions with enforced HTTPS. The local `main` branch tracks `origin/main`; pushes deploy automatically after checks. Successful initial deployment: https://github.com/aravin4d/product-relay/actions/runs/37044992919 (attempt 2; application commit `15ef849`). The first attempt preceded Pages enablement; its build/check job passed, and the deployment succeeded after Pages was enabled and the failed job was retried. Live index/CSS/JavaScript matched local source, and the sample project and Alex's QA handbook view were verified on the published site. Real project files and local credentials are ignored by Git.
 
-## Remaining stages
+## Next work — single-session prototype waves
 
-1. Guided onboarding: reusable handbook topics, source-to-topic mapping, walkthrough agenda, dependency graph, detailed completeness explanations; preserve unknowns.
-2. AI orchestration: provider abstraction, grounded extraction/drafting/Q&A, structured evidence validation, resumable jobs, budgets, comparative evaluations. Live tests require credentials and a secure optional companion; keep GitHub Pages as the frontend.
-3. Intelligent changes: semantic impact suggestions, unaffected manual edits, qualifiers, review dependencies, and explicit copied-file merge UI. No invented automatic consensus.
-4. Common-space integration: documented Confluence/Drive/ClickUp/Azure adapters and fixtures first; actual tenant tests before claiming live sync. Keep portable file import/export as a supported workflow.
-5. Production options when needed: authenticated organizations, person-level permissions, database/blob storage, jobs, verified audit identity, backups, and self-host packaging. These should not complicate the current file-based version.
-6. Release hardening: broader accessibility/cross-browser and large-file tests; polish. GitHub publication is complete. The deployment workflow checks pull requests and deploys successful pushes to `main`; Git ignores real project files and local credentials.
+The current selected product path is [BUILD_PLAN.md](BUILD_PLAN.md), with [BUILD_WAVES.md](BUILD_WAVES.md) as the authoritative session schedule. The user requested single-session waves, not a production-release program. This replaces the exploratory 8-wave/40-step schedule and the original product-handoff-build-plan.md where they differ.
+
+Plan: **10 core coding sessions**, each leaving a working checked checkpoint. Session 1: fixture and qualified behavior/decision records. Session 2: ordinary PDF/DOCX import. Session 3: protected live AI connection. Session 4: reviewed AI handbook drafts. Session 5: walkthrough reconciliation. Session 6: current/historical answers. Session 7: scoped changes and proposed team work. Session 8: owners, acknowledgment, verification evidence, and stale work. Session 9: explicit file comparison/merge. Session 10: complete demonstration and practical usability repairs.
+
+Shared projects, connectors, durable jobs, difficult document formats, and broad production hardening are separately scheduled extensions. Do not bundle them into a single session or make them prerequisites for trying the portable product. Session count is a scope estimate, not a promise based on account limits.
+
+Planning complete; **0 of 10 core sessions implemented**. Next: **Wave 1**, executable fictional story fixtures plus qualified behavior/decision records and a simple consistent team view. No backend or paid account has been provisioned. Preserve the deployed 0.2.0 and existing encrypted files throughout. Session 3 requires live backend/API access before it can be marked fully complete.
 
 ## Known constraints
 
