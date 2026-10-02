@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Product Relay browser checks</title><style>body{font:15px/1.8 system-ui;max-width:900px;margin:50px auto;padding:20px;color:#202124}button{background:#1a73e8;color:white;border:0;border-radius:20px;padding:12px 24px;cursor:pointer}pre{white-space:pre-wrap;background:#f8fafd;padding:25px;border-radius:16px}</style><h1>Product Relay browser storage checks</h1><p>Uses fictional projects and separate client instances. Existing recovery copies are preserved. Only the exact test project IDs created by this run are removed afterward.</p><button id="run">Run browser checks</button><pre id="results" role="status">Ready.</pre><script type="module">
+import * as D from '/src/domain.js';
+import {openVault} from '/src/vault.js';
+const A=await import('/src/storage.js?testClient=A');
+const B=await import('/src/storage.js?testClient=B');
+const pass='fictional-browser-check-passphrase';
+const results=document.querySelector('#results'),button=document.querySelector('#run');
+function assert(value,message){if(!value)throw new Error(message);}
+async function rejects(operation,pattern){try{await operation();}catch(e){assert(pattern.test(e.message),'Unexpected error: '+e.message);return;}throw new Error('Expected the operation to fail.');}
+button.onclick=async()=>{
+ button.disabled=true;results.textContent='';const ids=[];let count=0;
+ const check=async(name,fn)=>{await fn();results.textContent+='PASS · '+name+'\n';count++;};
+ try{
+  const p=D.demoProject();ids.push(p.id);
+  await check('Encrypted recovery creation',async()=>{await A.createProtectedProject(p,pass);assert(A.storageState(p.id).dirty,'New file needs saving');});
+  await check('Recovery contents stay encrypted',async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('product-relay-files-v1');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});const entry=await new Promise((resolve,reject)=>{const r=db.transaction('files').objectStore('files').get(p.id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});db.close();const stored=JSON.stringify(entry);assert(!stored.includes('Orbit')&&!stored.includes('Cancellation'),'Plain product content leaked to persistent cache');});
+  await check('Wrong recovery passphrase is rejected',()=>rejects(()=>B.unlockCached(p.id,'incorrect-passphrase'),/Incorrect passphrase/));
+  await check('Independent client reopens the complete project',async()=>{assert(JSON.stringify(await B.unlockCached(p.id,pass))===JSON.stringify(D.importProject(D.exportProject(p))),'Round trip mismatch');});
+  const edit=D.clone(p);D.updateProject(edit,'Fictional browser check','Updated context');
+  await check('Edits persist as encrypted recovery',async()=>{await A.putProject(edit);const {data}=await openVault(JSON.parse(A.encryptedProjectFile(p.id)),pass);assert(data.project.name===edit.name,'Updated context missing');});
+  await check('A stale client cannot overwrite newer recovery',()=>rejects(()=>B.putProject(p),/Another tab saved/));
+  await check('A stale client cannot export a newer file',()=>rejects(()=>B.saveProjectFile(p.id),/Another tab saved/));
+  await check('Incoming shared file cannot replace unsaved recovery',()=>rejects(()=>B.openProjectFile(A.encryptedProjectFile(p.id),pass),/unsaved local changes/));
+  let exported;
+  await check('Portable file export contains complete context',async()=>{exported=await A.saveProjectFile(p.id);const {data}=await openVault(JSON.parse(exported),pass);assert(D.importProject(JSON.stringify(data)).versions.length===1,'History missing');assert(!A.storageState(p.id).dirty,'Export state not updated');});
+  await check('A recipient can open the exported project',async()=>{const received=await B.openProjectFile(exported,pass,{getFile:async()=>{throw new Error('Export-only operation must not access the linked file');}});assert(received.id===p.id&&received.name===edit.name,'Opened project mismatch');});
+  await check('Download export does not write the linked original',async()=>{const text=await B.saveProjectFile(p.id,null,true);assert(JSON.parse(text).format==='product-relay-vault','Missing encrypted export');});
+  await check('A separate review copy preserves the original',async()=>{const copy=await B.openProjectFile(exported,pass,null,true);ids.push(copy.id);assert(copy.id!==p.id,'Copy reused original ID');assert(copy.versions.length===edit.versions.length,'Copy lost history');});
+  await check('Locking removes decryption access until unlocked',async()=>{B.lockProjects();await rejects(()=>Promise.resolve(B.encryptedProjectFile(p.id)),/Unlock/);assert((await B.unlockCached(p.id,pass)).name===edit.name,'Reopen after lock failed');});
+  results.textContent+='\n'+count+' browser checks passed.';
+ }catch(error){results.textContent+='FAIL · '+error.message;}
+ finally{
+  A.lockProjects();B.lockProjects();
+  const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('product-relay-files-v1');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+  await new Promise((resolve,reject)=>{const tx=db.transaction('files','readwrite');for(const id of ids)tx.objectStore('files').delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();button.disabled=false;
+ }
+};
+</script></html>

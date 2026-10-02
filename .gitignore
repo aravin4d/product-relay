@@ -1,0 +1,12 @@
+# Project files belong to their owners, not the public application repository.
+*.relay
+!examples/orbit-demo.relay
+
+# Local credentials, build output, and operating-system files.
+.env
+.env.*
+node_modules/
+site/
+dist/
+.DS_Store
+*.log
