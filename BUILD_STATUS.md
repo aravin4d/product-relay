@@ -14,6 +14,8 @@ Validation: 36 Node tests and all source/script syntax checks passed. 13 actual 
 
 Local preview: `npm run dev`, http://127.0.0.1:4173. Browser check runner: /_checks. Example encrypted file: examples/orbit-demo.relay; fictional demo passphrase: orbit-demo-context. The earlier migrated local fictional demo uses fictional-relay-demo-passphrase. These are demonstration-only passphrases, never for real projects.
 
+GitHub repository: https://github.com/aravin4d/product-relay. Live site: https://aravin4d.github.io/product-relay/. Pages is configured for GitHub Actions with enforced HTTPS. The local `main` branch tracks `origin/main`; pushes deploy automatically after checks. Successful initial deployment: https://github.com/aravin4d/product-relay/actions/runs/37044992919 (attempt 2; application commit `15ef849`). The first attempt preceded Pages enablement; its build/check job passed, and the deployment succeeded after Pages was enabled and the failed job was retried. Live index/CSS/JavaScript matched local source, and the sample project and Alex's QA handbook view were verified on the published site. Real project files and local credentials are ignored by Git.
+
 ## Remaining stages
 
 1. Guided onboarding: reusable handbook topics, source-to-topic mapping, walkthrough agenda, dependency graph, detailed completeness explanations; preserve unknowns.
@@ -21,7 +23,7 @@ Local preview: `npm run dev`, http://127.0.0.1:4173. Browser check runner: /_che
 3. Intelligent changes: semantic impact suggestions, unaffected manual edits, qualifiers, review dependencies, and explicit copied-file merge UI. No invented automatic consensus.
 4. Common-space integration: documented Confluence/Drive/ClickUp/Azure adapters and fixtures first; actual tenant tests before claiming live sync. Keep portable file import/export as a supported workflow.
 5. Production options when needed: authenticated organizations, person-level permissions, database/blob storage, jobs, verified audit identity, backups, and self-host packaging. These should not complicate the current file-based version.
-6. Release: broader accessibility/cross-browser and large-file tests; polish; actual GitHub deployment once authenticated account access is available. The deployment workflow checks pull requests and deploys successful pushes to `main`; Git ignores real project files and local credentials. Remote publication remains pending sign-in.
+6. Release hardening: broader accessibility/cross-browser and large-file tests; polish. GitHub publication is complete. The deployment workflow checks pull requests and deploys successful pushes to `main`; Git ignores real project files and local credentials.
 
 ## Known constraints
 

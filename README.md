@@ -2,6 +2,10 @@
 
 A portable product handbook for the entire delivery team. The PM keeps one `.relay` project file containing the original context, walkthrough questions, reviewed behavior, change proposals, team perspectives, and historical baselines.
 
+**[Open Product Relay](https://aravin4d.github.io/product-relay/)** · **[Source repository](https://github.com/aravin4d/product-relay)**
+
+Choose **Explore the sample product** to try it immediately. This version provides the file-based handbook and change-review foundation; AI and cloud integrations are planned and are not yet implemented.
+
 ## Run
 
 Node.js 22+ is needed only for local development and tests. The published app is static, with no backend or package installation.
@@ -66,6 +70,8 @@ No AI synthesis, model credentials, automatic platform sync, authenticated sign-
 The in-app browser was used to verify migration of the fictional earlier demo, locked recovery, named perspectives, section flows, and responsive layout. Direct native file writing varies by browser; the file adapter's conflict and failure cases are tested, while the browser storage checks validate exported-file reopening.
 
 ## GitHub Pages
+
+Published at **https://aravin4d.github.io/product-relay/**. GitHub Pages uses the included workflow, and HTTPS is enforced. The deployment and live sample were verified on 2 October 2026; every published app file matched the saved source.
 
 Upload this directory's contents to a dedicated repository with `main` as its default branch, including `.github`, `.gitignore`, and `.gitattributes`. In Settings → Pages, choose GitHub Actions. Run **Deploy Product Relay** in Actions for the first deployment if needed. Later pushes to `main` run the checks and automatically update the site. Pull requests run the checks without publishing. Deployment must finish successfully before a new version is live.
 
