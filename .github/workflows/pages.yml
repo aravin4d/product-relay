@@ -19,13 +19,9 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
+      - run: npm ci --ignore-scripts
       - run: npm run check
-      - name: Prepare static site
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        run: |
-          mkdir -p site
-          cp index.html site/
-          cp -R src site/
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v4
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:

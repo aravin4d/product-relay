@@ -1,6 +1,6 @@
 # Product Relay — product direction and selected build path
 
-Updated 3 October 2026. Future features described here are planned, not implemented. Current app: 0.2.0. Execution schedule: [10 single-session waves](BUILD_WAVES.md). Demonstration: [DEMO_STORY.md](DEMO_STORY.md).
+Updated 3 October 2026. Future features described here are planned, not implemented. Current checked prototype: 0.3.0. Waves 1–2 are implemented; see [BUILD_STATUS.md](BUILD_STATUS.md) for tested progress and the pending live AI setup. Execution schedule: [10 single-session waves](BUILD_WAVES.md). Demonstration: [DEMO_STORY.md](DEMO_STORY.md).
 
 ## The product we are building
 

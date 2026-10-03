@@ -1,5 +1,7 @@
 # Implementation review — 2 October 2026
 
+> This is the historical 0.2.0 review. Later qualified rules, document import, and optional AI work are recorded in [CHECKPOINT_0.3.0.md](CHECKPOINT_0.3.0.md). Treat its earlier feature limitations as historical.
+
 The requested scope is a simple GitHub-hosted application with one portable encrypted file per project. PMs distribute the file; recipients select a teammate/role and read the product context. Common-space integrations come later. The earlier shared-server proposal was dropped before completion and is not part of this build.
 
 | Section | Gaps repaired | Remaining limits |

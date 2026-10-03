@@ -1,6 +1,6 @@
 # Product Relay — build in single-session waves
 
-Updated 3 October 2026. Current shipped app: 0.2.0. Status: planning complete; implementation of these waves has not started. Next: **Wave 1**. Product direction: [BUILD_PLAN.md](BUILD_PLAN.md). Proof story: [DEMO_STORY.md](DEMO_STORY.md).
+Updated 3 October 2026. Current checked prototype: 0.3.0. Status: **Waves 1–2 complete; Wave 3 scaffold and Wave 4 candidate review implemented with live AI validation pending**. Next: configure and validate the optional AI gateway when backend/API access is available. Product direction: [BUILD_PLAN.md](BUILD_PLAN.md). Proof story: [DEMO_STORY.md](DEMO_STORY.md).
 
 ## How to read this schedule
 
@@ -27,9 +27,9 @@ This is a useful prototype plan. Production release certification, every connect
 
 ## Session 1 / Wave 1 — describe the agreed behavior
 
-- [ ] Must finish: create one executable fictional PRD/SOP/walkthrough/change fixture with expected outcomes.
-- [ ] Must finish: add a small backward-compatible behavior/decision contract: stable ID, actor, condition, outcome, applicability, source evidence, and review state. Add a safe migration if the bundle format changes.
-- [ ] Must finish: expose those records in a simple editor/detail view and render applicable records consistently across team perspectives.
+- [x] Must finish: create one executable fictional PRD/SOP/walkthrough/change fixture with expected outcomes.
+- [x] Must finish: add a small backward-compatible behavior/decision contract: stable ID, actor, condition, outcome, applicability, source evidence, and review state. Add a safe migration if the bundle format changes.
+- [x] Must finish: expose those records in a simple editor/detail view and render applicable records consistently across team perspectives.
 
 Check: a fraud-only rule and an ordinary cancellation rule coexist; an approved edit goes through review; the project exports and reopens without losing existing context. Keep the existing tests passing and add only tests needed for the new state transitions.
 
@@ -41,9 +41,9 @@ Saved result: the app represents a team's actual agreement, while all existing h
 
 ## Session 2 / Wave 2 — import everyday documents
 
-- [ ] Must finish: introduce bundling only as needed for dependencies, with a lockfile and an updated Pages build. Preserve the existing UI and domain modules.
-- [ ] Must finish: support ordinary text PDFs with PDF.js and DOCX with Mammoth; normalize paragraphs/headings and preserve original-file metadata plus evidence locations.
-- [ ] Must finish: provide an extraction preview, text correction, duplicate indication, and useful errors for unsupported or unreadable files.
+- [x] Must finish: introduce bundling only as needed for dependencies, with a lockfile and an updated Pages build. Preserve the existing UI and domain modules.
+- [x] Must finish: support ordinary text PDFs with PDF.js and DOCX with Mammoth; normalize paragraphs/headings and preserve original-file metadata plus evidence locations.
+- [x] Must finish: provide an extraction preview, text correction, duplicate indication, and useful errors for unsupported or unreadable files.
 
 Check: one supplied fictional PDF and DOCX import into the source library; citations survive export/reopen; derived document HTML cannot execute; malformed or oversized files preserve the current project. Validate actual browser behavior on the main supported browser.
 
@@ -184,4 +184,4 @@ These are the selected long-term direction, not requirements for completing the 
 
 Record the session number, actual user-visible result, changed files/commit, relevant checks, real limitations, pending access, and the next session's first action. Keep the working app and export compatibility intact. Usage limits change how far a session gets; they cannot reliably predict a number of completed features. If interrupted, finish or safely checkpoint the current unit before adding scope.
 
-Current state: **0 of 10 core sessions implemented**. Existing release 0.2.0 is the foundation, not Session 1 completion. Planning documents do not imply working future features.
+Current state: **2 of 10 core waves complete**. Wave 3 connection/gateway code and Wave 4 candidate review are implemented, with 33 credential-free AI protocol/workflow checks; no live backend, provider inference, SQL execution, or function deployment is verified yet. These two waves are not marked complete. Waves 5–10 remain planned. The 0.3.0 prototype preserves the existing encrypted envelope and imports schema-1 project data safely; upgraded saves use schema 2.

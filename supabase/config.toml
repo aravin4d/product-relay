@@ -1,0 +1,11 @@
+project_id = "product-relay"
+
+[auth]
+site_url = "http://127.0.0.1:4173"
+enable_signup = false
+
+[functions.relay-ai]
+# Authentication is enforced by getUser inside the function so asymmetric user
+# JWTs/public-key versions and CORS preflight share one explicit verified path.
+# This does not make processing public: authenticated + allowlisted users only.
+verify_jwt = false

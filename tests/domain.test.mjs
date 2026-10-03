@@ -31,7 +31,7 @@ test('malformed imports and missing source references are rejected',()=>{
  const {p}=fixture();const b=JSON.parse(D.exportProject(p));b.project.sections[0].evidence[0].sourceId='missing';assert.throws(()=>D.importProject(JSON.stringify(b)),/evidence/);
 });
 test('future schemas do not silently migrate',()=>{
- const b=JSON.parse(D.exportProject(D.demoProject()));b.schemaVersion=2;assert.throws(()=>D.importProject(JSON.stringify(b)),/Unsupported/);
+ const b=JSON.parse(D.exportProject(D.demoProject()));b.schemaVersion=3;assert.throws(()=>D.importProject(JSON.stringify(b)),/Unsupported/);
 });
 test('historical search uses the selected approved snapshot, excluding proposals',()=>{
  const {p,s,section}=fixture();const v=D.saveVersion(p,'Initial');D.reviseSource(p,s.id,'Access ends immediately.');const c=D.proposeChange(p,section.id,'Access ends immediately.','Change',s.id,'Access ends immediately.');assert.equal(D.searchEvidence(p,'immediately').length,0);D.acceptChange(p,c.id);assert.equal(D.searchEvidence(p,'immediately').length,1);assert.equal(D.searchEvidence(p,'immediately',v.id).length,0);assert.equal(D.searchEvidence(p,'renewal',v.id).length,1);

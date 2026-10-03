@@ -10,3 +10,6 @@ site/
 dist/
 .DS_Store
 *.log
+
+# Generated, locally hosted document parser assets (recreated from the lockfile).
+src/vendor/
