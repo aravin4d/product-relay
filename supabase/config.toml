@@ -16,3 +16,9 @@ verify_jwt = false
 [functions.relay-jobs]
 # Requires a separate worker secret; this endpoint never accepts a browser session.
 verify_jwt = false
+
+[functions.relay-operations]
+verify_jwt = false
+
+[functions.relay-connectors]
+verify_jwt = false

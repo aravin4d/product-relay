@@ -1,17 +1,28 @@
-# Retrieval and provider evaluation
+# Retrieval, delivery-task and provider evaluation
 
-These runners were built but deliberately **not executed** in the implementation session. Fixtures are fictional. The candidate dataset has separate development/holdout labels and a file hash; it is not an independently validated benchmark. Never tune against holdout failures and then report those same cases as unseen quality evidence.
+These runners and fixtures were built but **not executed**. Inputs/labels are authored fictional scenarios, with separate development and holdout splits and file hashes. Independent label review is required. Do not tune against holdout failures and then report those same cases as unseen evidence.
 
-`npm run evaluate:retrieval` checks applicable retrieval, forbidden scope, baseline isolation, unavailable/stale originals, absent deployment and refusal to use raw source exploration as approved AI context. It writes the full numerator/denominator and failed cases to ignored `work/evaluation/`. It does not score semantic answers or prove authorization security.
+`npm run evaluate:retrieval` measures applicable retrieval, forbidden scope, baseline isolation, stale/unavailable originals, absent deployment and refusal to use raw exploration as approved context. It writes numerators/denominators and failures under ignored `work/evaluation/`. It does not score semantic answers or prove authorization security.
 
-Provider comparison uses the same source-backed payload for each explicitly selected provider, with a common context hash. It measures returned model ID, latency, usage, citation/shape rejection and failed requests. Each eligible case consumes a runtime request per selected provider. Failed calls may consume allowance/billing. Configure an ignored operator environment file with `RELAY_EVAL_URL`, `RELAY_EVAL_PUBLIC_KEY` and a short-lived `RELAY_EVAL_ACCESS_TOKEN` for an enabled test account. No provider key belongs in the browser/CLI arguments.
+Provider comparison submits identical source-backed context to explicitly selected adapters. It records model IDs, latency, usage, shape/citation rejection and failed requests. Every eligible case consumes a request per provider; failed calls may consume allowance and billing. Configure ignored operator values `RELAY_EVAL_URL`, `RELAY_EVAL_PUBLIC_KEY` and a short-lived `RELAY_EVAL_ACCESS_TOKEN` for an enabled test account. Provider keys stay on the backend.
 
 ```sh
 node --env-file=deploy/evaluation.local.env scripts/evaluate-providers.mjs --providers=openai,anthropic --split=development --allow-provider-calls
+node --env-file=deploy/evaluation.local.env scripts/evaluate-delivery.mjs --providers=openai,anthropic --split=development --allow-provider-calls
 ```
 
-For a frozen holdout run, use `--split=holdout`. Review its output without changing the fixture to excuse failures. Outputs stay local and contain fictional plaintext; never run real customer material through this harness without a separate reviewed dataset/process.
+The existing `cases.json` covers answers. `delivery-cases.json` adds **32 cases across eight non-answer tasks**: product extraction, test drafts, handoffs, scope/impact review, Support briefing, operational runbooks, incident triage and contradiction candidates. Each task has one development and three holdout cases, with source-backed qualifiers, prohibited assertions, unknowns and abstention expectations. `--task=TASK_ID` selects one delivery task; `--split=holdout` selects the frozen holdout.
 
-The provider runner checks answers only. Test-case, handoff, scope-change, Support, Operations and incident tasks also need separate labeled development/holdout inputs and human ratings before P2-047 can be closed. Record qualifier preservation, authority, contradictions, correct abstention, unsupported assertions and correction seconds. A valid quotation is not proof of a correct interpretation. Do not rank models using citation validity or latency alone.
+Review every output using the same rubric: qualifiers preserved, unsupported assertion count, appropriate abstention, accepted/rejected drafts and correction seconds. Failed requests remain in the denominator. A quotation or valid schema does not establish correct interpretation. Populate `humanReview` in the saved result, then:
 
-Real-team savings and competitor comparisons remain separate participant exercises described in [the next-session handoff](../PHASE_2_NEXT_SESSION.md). This dataset cannot establish product-market usefulness or universal superiority.
+```sh
+node scripts/score-evaluation.mjs work/evaluation/delivery-REPLACE_TIMESTAMP.json
+```
+
+The scorer reports reviewed counts, incomplete reviews, failures and correction effort. It refuses development data as a holdout score. Model rankings, quality targets and any superiority claim require actual reviewed results; no such result exists from this build.
+
+`tests/phase2-performance.html` is a click-started browser fixture for fictional dataset tiers, query/export/encrypted save/reopen timings and budgets. Serve the repository locally and open that path in the intended browser; it runs only when started. Its results need browser/device/commit identification and interpretation against real supported sizes. No timing was recorded here.
+
+In-app **Workflow observations**, **Export study report** and **Verification handoff** retain actual role-specific same-task evidence, total participant plus PM/preparation/correction time, failures and gate references. Simulated/self-reported observations are labeled and excluded from actual-observation totals. A completed form is still evidence requiring independent review, not a certification.
+
+Actual PM/BA/Development/QA/Support/Operations participants and licensed comparable tools remain necessary for the usefulness/competitor exercise in [the handoff](../PHASE_2_NEXT_SESSION.md). These fixtures cannot establish product-market usefulness, company-wide savings or universal superiority.

@@ -1,4 +1,5 @@
 export const DELIVERY_AI_TASKS=Object.freeze({
+ detect_requirement_conflicts:{label:'Find contradictions and missing conditions',kinds:['requirements']},
  propose_test_cases:{label:'Propose cases / charters / NFR checks',kinds:['cases']},
  propose_handoffs:{label:'Propose concrete team obligations',kinds:['work']},
  review_scope_change:{label:'Review qualifiers and change impact',kinds:['requirements']},

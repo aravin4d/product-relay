@@ -1,0 +1,5 @@
+// Creates local operator configuration; no deployment or remote calls.
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {randomBytes} from 'node:crypto';
+import {resolve} from 'node:path';
+const folder=resolve('deploy/operator-state');await mkdir(folder,{recursive:true,mode:0o700});const source=await readFile(new URL('../deploy/relay-secrets.example.env',import.meta.url),'utf8'),values={RELAY_WORKER_SECRET:randomBytes(32).toString('hex'),RELAY_CREDENTIAL_KEY:randomBytes(32).toString('base64'),RELAY_BACKUP_KEY:randomBytes(32).toString('base64')};let text=source;for(const [name,value]of Object.entries(values))text=text.replace(new RegExp('^'+name+'=.*$','m'),name+'='+value);const path=resolve(folder,'relay-secrets.local.env');await writeFile(path,text,{flag:'wx',mode:0o600});for(const name of ['oauth','delivery','connectors'])await writeFile(resolve(folder,name+'.private.json'),await readFile('deploy/'+name+'.example.json'),{flag:'wx',mode:0o600});console.log('Created ignored operator configuration in deploy/operator-state. No credentials printed, accounts provisioned or services started. Retain the backup key separately.');

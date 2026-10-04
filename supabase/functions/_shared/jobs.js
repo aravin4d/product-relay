@@ -1,9 +1,10 @@
+import {createOAuthService} from './oauth.js';
 import {createConnectorService} from './connectors.js';
 import {createMediaProvider} from './media-provider.js';
 import {digest,equal} from '../../../src/value.js';
 const secretsEqual=(a,b)=>{if(typeof a!=='string'||typeof b!=='string'||a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;};
 async function data(query){const r=await query;if(r.error)throw Object.assign(new Error('Job repository unavailable.'),{code:'repository_unavailable'});return r.data;}
-export function createJobsHandler({admin,workerSecret,configuration,secrets,fetchImpl=fetch}){
+export function createJobsHandler({admin,workerSecret,configuration,secrets,fetchImpl=fetch,oauthConfiguration={providers:{}},XMLParser=globalThis.DOMParser}){
  if(!workerSecret||workerSecret.length<32||/replace_with|example_secret|your_secret/i.test(workerSecret))throw new Error('A separate random worker secret of at least 32 characters is required; example placeholders cannot be used.');
  return async request=>{
   const headers={'Content-Type':'application/json','Cache-Control':'no-store'};
@@ -16,7 +17,7 @@ export function createJobsHandler({admin,workerSecret,configuration,secrets,fetc
    if(!member?.active||!project?.active||!['owner','reviewer','editor'].includes(member.capability))throw Object.assign(new Error('Access changed.'),{code:'access_denied'});
    if(project.revision!==job.expected_revision)throw Object.assign(new Error('Input revision changed.'),{code:'stale_input'});
    if(await digest(job.input)!==job.input_hash)throw Object.assign(new Error('Job input was redefined.'),{code:'input_redefined'});
-   const config=configuration.projects?.[job.project_id]??{providers:{}},connector=createConnectorService({config,secrets,fetchImpl});let output;
+   const config=structuredClone(configuration.projects?.[job.project_id]??{providers:{}}),provider=job.input.locator?.provider??(['connector-write','test-dispatch'].includes(job.kind)?'github':null);let token=null;if(provider&&oauthConfiguration.providers?.[provider]){token=await createOAuthService({admin,config:oauthConfiguration,secrets,fetchImpl}).accessToken(job.project_id,job.actor_user_id,provider);if(token){if(!config.providers[provider])throw Object.assign(new Error('Provider scope unavailable.'),{code:'external_scope_denied'});if(provider==='confluence'&&(config.providers[provider].cloudId!==oauthConfiguration.providers[provider].cloudId||config.providers[provider].origin!==oauthConfiguration.providers[provider].siteOrigin))throw Object.assign(new Error('Site scope differs.'),{code:'external_scope_denied'});config.providers[provider].credentialEnv='RELAY_CURRENT_ACCOUNT_TOKEN';config.providers[provider].oauth=true;}}const connector=createConnectorService({config,secrets:name=>name==='RELAY_CURRENT_ACCOUNT_TOKEN'?token:secrets(name),fetchImpl,XMLParser});let output;
    const touch=async phase=>{const ok=await data(admin.rpc('relay_touch_job',{p_job:job.id,p_lease:job.lease_token,p_checkpoint:{...job.checkpoint,phase},p_lease_seconds:120}));if(!ok)throw Object.assign(new Error('Lease was cancelled or expired.'),{code:'lease_lost'});job.checkpoint={...job.checkpoint,phase};};
    if(job.kind==='connector-read'){await touch('reading-selected-reference');output=await connector.read(job.input.locator);}
    else if(['connector-write','test-dispatch'].includes(job.kind)){
@@ -35,7 +36,7 @@ export function createJobsHandler({admin,workerSecret,configuration,secrets,fetc
      await data(admin.from('relay_outbox').update({status:'sent',receipt:output}).eq('project_id',job.project_id).eq('idempotency_key',job.idempotency_key));
     }
    }else if(['ocr','transcribe'].includes(job.kind)){
-    if(!secrets('OPENAI_API_KEY')||!secrets(job.kind==='ocr'?'OPENAI_OCR_MODEL':'OPENAI_TRANSCRIBE_MODEL'))throw Object.assign(new Error('Media model unavailable.'),{code:'not_configured'});
+    if(!secrets('OPENAI_API_KEY')||!secrets(job.kind==='ocr'?'OPENAI_OCR_MODEL':job.input.diarize?'OPENAI_DIARIZE_MODEL':'OPENAI_TRANSCRIBE_MODEL'))throw Object.assign(new Error('Media model unavailable.'),{code:'not_configured'});
     const allowance=await data(admin.rpc('reserve_relay_project_ai_request',{p_user_id:job.actor_user_id,p_project_id:job.project_id}));if(!allowance?.[0]?.allowed)throw Object.assign(new Error('Provider allowance unavailable.'),{code:'usage_limit'});
     await touch('provider-send-started');output=await createMediaProvider({secrets,fetchImpl})(job.kind,job.input);
    }else throw Object.assign(new Error('Unsupported job.'),{code:'invalid_job_kind'});

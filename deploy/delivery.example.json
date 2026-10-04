@@ -1,0 +1,8 @@
+{
+  "destinations": {
+    "account-email": {"label":"Verified account email","channel":"email","from":"Product Relay <updates@YOUR_VERIFIED_DOMAIN>","apiKeyEnv":"RESEND_API_KEY"},
+    "team-slack": {"label":"Approved team Slack channel","channel":"slack","urlEnv":"RELAY_SLACK_WEBHOOK_URL"},
+    "team-teams": {"label":"Approved Teams workflow","channel":"teams","urlEnv":"RELAY_TEAMS_WEBHOOK_URL"},
+    "internal-alerts": {"label":"Approved operational receiver","channel":"webhook","urlEnv":"RELAY_ALERT_WEBHOOK_URL"}
+  }
+}

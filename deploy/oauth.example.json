@@ -1,0 +1,10 @@
+{
+  "returnUrls": ["https://YOUR_GITHUB_NAME.github.io/product-relay/"],
+  "providers": {
+    "github": {"clientIdEnv":"GITHUB_OAUTH_CLIENT_ID","clientSecretEnv":"GITHUB_OAUTH_CLIENT_SECRET","redirectUri":"https://YOUR_PROJECT.supabase.co/functions/v1/relay-connectors","scopes":"repo offline_access"},
+    "drive": {"clientIdEnv":"GOOGLE_OAUTH_CLIENT_ID","clientSecretEnv":"GOOGLE_OAUTH_CLIENT_SECRET","redirectUri":"https://YOUR_PROJECT.supabase.co/functions/v1/relay-connectors","scopes":"https://www.googleapis.com/auth/drive.readonly"},
+    "confluence": {"clientIdEnv":"ATLASSIAN_OAUTH_CLIENT_ID","clientSecretEnv":"ATLASSIAN_OAUTH_CLIENT_SECRET","redirectUri":"https://YOUR_PROJECT.supabase.co/functions/v1/relay-connectors","scopes":"read:page:confluence offline_access","cloudId":"APPROVED_CLOUD_UUID","siteOrigin":"https://YOUR_SITE.atlassian.net"},
+    "azure": {"clientIdEnv":"AZURE_OAUTH_CLIENT_ID","clientSecretEnv":"AZURE_OAUTH_CLIENT_SECRET","redirectUri":"https://YOUR_PROJECT.supabase.co/functions/v1/relay-connectors","tenantId":"YOUR_SPECIFIC_TENANT_UUID","scopes":"499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"},
+    "clickup": {"clientIdEnv":"CLICKUP_OAUTH_CLIENT_ID","clientSecretEnv":"CLICKUP_OAUTH_CLIENT_SECRET","redirectUri":"https://YOUR_PROJECT.supabase.co/functions/v1/relay-connectors","scopes":""}
+  }
+}

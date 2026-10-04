@@ -9,12 +9,14 @@ export function emptyLifecycle(){return {version:1,masterOwnerId:'',alternateOwn
 export const state=p=>p.delivery??emptyLifecycle();
 export function ensure(p){return p.delivery??=emptyLifecycle();}
 export function list(p,kind){if(!FAMILIES.includes(kind))throw new Error('Unknown delivery record type.');return state(p)[kind]??[];}
-export function get(p,kind,id){return list(p,kind).find(r=>r.id===id);}
+const indexes=new WeakMap();
+function byId(rows,id){let entry=indexes.get(rows);if(!entry||entry.length!==rows.length){entry={length:rows.length,map:new Map(rows.map(r=>[r.id,r]))};indexes.set(rows,entry);}return entry.map.get(id);}
+export function get(p,kind,id){return byId(list(p,kind),id);}
 export function roleNames(p,{historical=true}={}){return [...new Set([...BASE_ROLES,...list(p,'roles').filter(r=>!r.archived||historical).flatMap(r=>[r.title,...(historical?r.data.aliases??[]:[])])])];}
 export function roleId(p,label){const r=list(p,'roles').find(r=>r.id===label||r.title===label||r.data.aliases?.includes(label));return r?.id??label;}
 export const roleMatches=(p,a,b)=>a==='Everyone'||b==='Everyone'||roleId(p,a)===roleId(p,b);
 export function snapshot(record){const result=copy(record);delete result.history;return result;}
-export function ref(p,kind,id,revision){if(kind==='behaviors'){const b=p.behaviors?.find(b=>b.id===id);if(!b)return null;if(revision===undefined||b.revision===revision)return b;for(const d of p.decisions??[])for(const r of [d.before,d.after])if(r?.id===id&&r.revision===revision)return r;return null;}if(kind==='sources')return p.sources.find(s=>s.id===id);if(kind==='members')return p.members.find(m=>m.id===id);if(kind==='sections')return p.sections.find(s=>s.id===id);if(!FAMILIES.includes(kind))return null;const r=get(p,kind,id);if(!r)return null;if(revision===undefined||r.revision===revision)return r;return r.history?.find(h=>h.revision===revision)?.snapshot??null;}
+export function ref(p,kind,id,revision){if(kind==='behaviors'){const b=byId(p.behaviors??[],id);if(!b)return null;if(revision===undefined||b.revision===revision)return b;for(const d of p.decisions??[])for(const r of [d.before,d.after])if(r?.id===id&&r.revision===revision)return r;return null;}if(kind==='sources')return byId(p.sources,id);if(kind==='members')return byId(p.members,id);if(kind==='sections')return byId(p.sections,id);if(!FAMILIES.includes(kind))return null;const r=get(p,kind,id);if(!r)return null;if(revision===undefined||r.revision===revision)return r;return r.history?.find(h=>h.revision===revision)?.snapshot??null;}
 export function reference(p,kind,id){const r=ref(p,kind,id);if(!r)throw new Error('Linked record is unavailable.');return {kind,id,...(r.revision?{revision:r.revision}:{})};}
 export function scope(input={}){const unique=arr=>[...new Set(arr??[])];return {state:input.state??'unknown',releaseIds:unique(input.releaseIds),environmentIds:unique(input.environmentIds),audiences:unique(input.audiences),flags:unique(input.flags),exclusions:String(input.exclusions??'')};}
 export function hasDeclaredScope(input){const s=scope(input),qualified=[s.releaseIds,s.environmentIds,s.audiences,s.flags].some(a=>a.length);return s.state==='general'&&!qualified||s.state==='specific'&&qualified;}
@@ -121,5 +123,6 @@ export function validateLifecycle(p,{identifier,timestamp,validateEvidence}) {
   if(!member(s.masterOwnerId)||!member(s.alternateOwnerId)||s.masterOwnerId&&s.masterOwnerId===s.alternateOwnerId)throw new Error('Choose distinct valid project custodians.');
   if(s.crossProjectLinks){if(!Array.isArray(s.crossProjectLinks)||s.crossProjectLinks.length>200)throw new Error('Too many cross-project dependencies.');for(const l of s.crossProjectLinks)if(!identifier(l.id)||!identifier(l.targetProjectId)||!identifier(l.recordId)||!FAMILIES.includes(l.kind)||!Number.isSafeInteger(l.revision)||!member(l.reviewedBy)||!identifier(l.reviewedBy)||!text(l.reason)||!l.reason.trim()||!timestamp(l.at))throw new Error('Invalid cross-project dependency.');else if(l.from)linkCheck(l.from);}
   if(s.lastViews){if(typeof s.lastViews!=='object'||Array.isArray(s.lastViews))throw new Error('Invalid reader cursors.');for(const [reader,cursor]of Object.entries(s.lastViews)){if(!member(reader)&&!names.includes(reader)||!cursor||Object.values(cursor).some(n=>!Number.isSafeInteger(n)||n<1))throw new Error('Invalid reader cursor.');}}
+  for(const key of ['historyArchives','conflictReviews','workflowStudies','verificationGates'])if(s[key]!==undefined&&(!Array.isArray(s[key])||s[key].length>1000||JSON.stringify(s[key]).length>1000000))throw new Error('Bounded continuity / study records exceeded.');
   canonical(s);return copy(s);
 }

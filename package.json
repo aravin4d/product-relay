@@ -1,6 +1,6 @@
 {
   "name": "product-relay",
-  "version": "0.5.0-phase2.0",
+  "version": "0.5.0-phase2.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,13 +13,19 @@
     "predev": "npm run prepare:parsers",
     "build": "node scripts/build.mjs",
     "evaluate:retrieval": "node scripts/evaluate-retrieval.mjs",
-    "evaluate:providers": "node scripts/evaluate-providers.mjs"
+    "evaluate:providers": "node scripts/evaluate-providers.mjs",
+    "evaluate:delivery": "node scripts/evaluate-delivery.mjs",
+    "evaluate:score": "node scripts/score-evaluation.mjs",
+    "backup:service": "node scripts/backup-service.mjs",
+    "restore:service": "node scripts/restore-service.mjs",
+    "setup:service": "node scripts/configure-service.mjs"
   },
   "dependencies": {
     "mammoth": "1.13.0",
     "pdfjs-dist": "6.3.289"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.5.8"
+    "@electric-sql/pglite": "0.5.8",
+    "@xmldom/xmldom": "0.8.15"
   }
 }

@@ -1,0 +1,23 @@
+import {createCipheriv,createDecipheriv,randomBytes,createHash} from 'node:crypto';
+import {createReadStream,createWriteStream} from 'node:fs';
+import {stat,open,mkdir,rm} from 'node:fs/promises';
+import {createGzip,createGunzip} from 'node:zlib';
+import {pipeline} from 'node:stream/promises';
+import {Readable} from 'node:stream';
+import {resolve,dirname} from 'node:path';
+const magic=Buffer.from('RELAYBK1\n');
+async function writeAll(handle,bytes){let offset=0;while(offset<bytes.length){const {bytesWritten}=await handle.write(bytes,offset,bytes.length-offset);if(!bytesWritten)throw new Error('Backup file write made no progress.');offset+=bytesWritten;}}
+async function readAll(handle,bytes,position){let offset=0;while(offset<bytes.length){const {bytesRead}=await handle.read(bytes,offset,bytes.length-offset,position+offset);if(!bytesRead)throw new Error('Backup is truncated.');offset+=bytesRead;}}
+export function backupKey(){const key=Buffer.from(process.env.RELAY_BACKUP_KEY??'','base64');if(key.length!==32)throw new Error('RELAY_BACKUP_KEY must be a separately retained random 32-byte base64 key.');return key;}
+export async function fileHash(path){const hash=createHash('sha256');for await(const chunk of createReadStream(path))hash.update(chunk);return hash.digest('hex');}
+export async function packBackup(files,destination){const key=backupKey(),iv=randomBytes(12),cipher=createCipheriv('aes-256-gcm',key,iv);cipher.setAAD(magic);const handle=await open(destination,'wx',0o600);try{await writeAll(handle,Buffer.concat([magic,iv]));}finally{await handle.close();}
+ async function* records(){for(const file of files){const size=(await stat(file.path)).size,hash=await fileHash(file.path);yield Buffer.from(JSON.stringify({path:file.name,bytes:size,hash})+'\n');for await(const chunk of createReadStream(file.path))yield chunk;}}
+ try{await pipeline(Readable.from(records()),createGzip(),cipher,createWriteStream(destination,{flags:'a',mode:0o600}));const end=await open(destination,'a');try{await writeAll(end,cipher.getAuthTag());}finally{await end.close();}return fileHash(destination);}catch(error){await rm(destination,{force:true});throw error;}}
+export async function unpackBackup(source,destination){const total=(await stat(source)).size;if(total<magic.length+28)throw new Error('Backup is truncated.');const handle=await open(source,'r'),header=Buffer.alloc(magic.length+12),tag=Buffer.alloc(16);try{await readAll(handle,header,0);await readAll(handle,tag,total-16);}finally{await handle.close();}if(!header.subarray(0,magic.length).equals(magic))throw new Error('Unsupported backup format.');const decipher=createDecipheriv('aes-256-gcm',backupKey(),header.subarray(magic.length));decipher.setAAD(magic);decipher.setAuthTag(tag);await mkdir(destination,{recursive:true,mode:0o700});
+ let buffer=Buffer.alloc(0),current=null,output=null,hash=null,expanded=0;const files=[],maximum=Number(process.env.RELAY_RESTORE_MAX_BYTES??20000000000);
+ const stream=createReadStream(source,{start:header.length,end:total-17});const decoded=stream.pipe(decipher).pipe(createGunzip());const propagate=error=>decoded.destroy(error);stream.on('error',propagate);decipher.on('error',propagate);
+ try{for await(const chunk of decoded){buffer=Buffer.concat([buffer,chunk]);while(buffer.length){if(!current){const newline=buffer.indexOf(10);if(newline<0){if(buffer.length>4096)throw new Error('Invalid backup frame.');break;}current=JSON.parse(buffer.subarray(0,newline).toString());buffer=buffer.subarray(newline+1);if(!/^(database\.dump|manifest\.json|operator-config\.json|objects\/[a-f0-9]{64})$/.test(current.path)||files.some(f=>f.path===current.path)||!Number.isSafeInteger(current.bytes)||current.bytes<0||!/^[a-f0-9]{64}$/.test(current.hash))throw new Error('Unsafe backup entry.');expanded+=current.bytes;if(expanded>maximum)throw new Error('Backup exceeds configured restore budget.');const target=resolve(destination,current.path);await mkdir(dirname(target),{recursive:true,mode:0o700});output=await open(target,'wx',0o600);hash=createHash('sha256');current.remaining=current.bytes;}
+ const count=Math.min(buffer.length,current.remaining),data=buffer.subarray(0,count);await writeAll(output,data);hash.update(data);current.remaining-=count;buffer=buffer.subarray(count);if(current.remaining===0){await output.close();output=null;if(hash.digest('hex')!==current.hash)throw new Error('Backup entry checksum differs.');files.push(current);current=null;}else break;}}
+ if(current||buffer.length)throw new Error('Incomplete backup frame.');return files;
+ }catch(error){if(output)await output.close();await rm(destination,{recursive:true,force:true});throw error;}
+}

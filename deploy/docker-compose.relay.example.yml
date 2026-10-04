@@ -4,3 +4,19 @@ services:
   functions:
     env_file:
       - ./relay-secrets.local.env
+
+  relay-worker:
+    build:
+      context: ./relay-package
+      dockerfile: operator/Dockerfile.operator
+    env_file: [./relay-operator.local.env]
+    restart: unless-stopped
+    command: [node, scripts/run-worker.mjs]
+  relay-backups:
+    build:
+      context: ./relay-package
+      dockerfile: operator/Dockerfile.operator
+    env_file: [./relay-operator.local.env]
+    restart: unless-stopped
+    volumes: [./relay-backups:/backups]
+    command: [node, scripts/run-backups.mjs]

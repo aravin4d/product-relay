@@ -1,5 +1,5 @@
 import {exportProject,importProject,clone,uid} from './domain.js';
-import {createVault,openVault,sealVault} from './vault.js';
+import {createVault,openVault,sealVault,createRecoverableVault,rotateVault} from './vault.js';
 import {writeLinkedFile,fingerprint} from './files.js';
 const DB='product-relay-files-v1';
 const sessions=new Map();
@@ -61,7 +61,7 @@ export async function putProject(project) {
  return withLock(project.id,async()=>{
   project=importProject(exportProject(project));
   const session=sessions.get(project.id);if(!session)throw new Error('Unlock this project before saving.');
-  const envelope=await sealVault(JSON.parse(exportProject(project)),session.key,session.entry.envelope.salt);
+  const envelope=await sealVault(JSON.parse(exportProject(project)),session.key,session.entry.envelope.version===2?session.entry.envelope:session.entry.envelope.salt);
   const entry={...session.entry,envelope,dirty:true,updatedAt:new Date().toISOString()};
   entry.sequence=await writeCache(entry,session.entry.sequence);session.entry=entry;
  });
@@ -76,19 +76,23 @@ export async function rotateProjectPassphrase(id,knownPassphrase,newPassphrase) 
   const session=sessions.get(id);if(!session)throw new Error('Unlock this project first.');
   const {data}=await openVault(session.entry.envelope,knownPassphrase);
   const project=importProject(JSON.stringify(data));if(project.id!==id)throw new Error('Project identity mismatch.');
-  const backup=JSON.stringify(session.entry.envelope),{envelope,key}=await createVault(JSON.parse(exportProject(project)),newPassphrase);
+  const backup=JSON.stringify(session.entry.envelope),{envelope,key}=await rotateVault(session.entry.envelope,knownPassphrase,newPassphrase);
   importProject(JSON.stringify((await openVault(envelope,key)).data));
   const entry={...session.entry,envelope,dirty:true,updatedAt:new Date().toISOString()};
   entry.sequence=await writeCache(entry,session.entry.sequence);session.entry=entry;session.key=key;
   return {backup,project};
  });
 }
-export async function createRecoveryBackup(id) {
+export async function createRecoveryBackup(id,knownPassphrase) {
+ return withLock(id,async()=>{
  const session=sessions.get(id);if(!session)throw new Error('Unlock this project first.');
- const {data}=await openVault(session.entry.envelope,session.key);importProject(JSON.stringify(data));
- const secret=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
- const {envelope}=await createVault(data,secret);
+ const {data}=await openVault(session.entry.envelope,knownPassphrase);importProject(JSON.stringify(data));
+ const {envelope,key,secret}=await createRecoverableVault(data,knownPassphrase);
+ importProject(JSON.stringify((await openVault(envelope,secret)).data));
+ const entry={...session.entry,envelope,dirty:true,updatedAt:new Date().toISOString()};
+ entry.sequence=await writeCache(entry,session.entry.sequence);session.entry=entry;session.key=key;
  return {secret,file:JSON.stringify(envelope),createdAt:new Date().toISOString()};
+ });
 }
 export async function saveProjectFile(id,handle=null,exportOnly=false) {
  return withLock(id,async()=>{

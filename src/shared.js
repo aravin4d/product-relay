@@ -10,10 +10,10 @@ export function configureShared(getCredentials,onAccessLost){credentials=getCred
 export function connection(id){return sharedState.connections.get(id);}
 export function clearShared(){sharedState.connections.clear();sharedState.projects=[];sharedState.notifications=[];sharedState.jobs=[];sharedState.readingPack=null;sharedState.health=null;sharedState.portfolio=[];}
 function invalidateConnections(ids){for(const id of ids){sharedState.connections.delete(id);accessLost(id);}}
-export async function sharedCall(operation,parameters={}){
+export async function sharedCall(operation,parameters={}, {endpoint="relay-projects"}={}){
  const {config,session}=credentials();if(!config||!session||session.expiresAt<=Date.now()){invalidateConnections([...sharedState.connections.keys()]);clearShared();throw Object.assign(new Error('Sign in to the configured shared service first.'),{code:'auth_required',status:401});}
  const safe=validateAIConfig(config);let response;
- try{response=await fetch(safe.supabaseUrl+'/functions/v1/relay-projects',{method:'POST',headers:{apikey:safe.publishableKey,Authorization:'Bearer '+session.accessToken,'Content-Type':'application/json'},body:JSON.stringify({operation,...parameters}),credentials:'omit',redirect:'error',signal:AbortSignal.timeout(20000)});}catch{throw Object.assign(new Error('Shared service could not be reached. An attempted command may have completed; retain its ID for reconciliation.'),{code:'network_unavailable',status:0});}
+ try{response=await fetch(safe.supabaseUrl+'/functions/v1/'+endpoint,{method:'POST',headers:{apikey:safe.publishableKey,Authorization:'Bearer '+session.accessToken,'Content-Type':'application/json'},body:JSON.stringify({operation,...parameters}),credentials:'omit',redirect:'error',signal:AbortSignal.timeout(20000)});}catch{throw Object.assign(new Error('Shared service could not be reached. An attempted command may have completed; retain its ID for reconciliation.'),{code:'network_unavailable',status:0});}
  if(response.status===401){invalidateConnections([...sharedState.connections.keys()]);clearShared();}
  const result=await readBoundedJSON(response,18000000);if(!response.ok){if(response.status===403&&result.error?.code==='access_denied')invalidateConnections([parameters.projectId]);throw Object.assign(new Error(result.error?.message??'Shared operation failed.'),{code:result.error?.code,status:response.status});}return result;
 }
