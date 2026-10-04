@@ -1,0 +1,40 @@
+import * as D from './domain.js';
+const now=()=>new Date().toISOString();
+export function canonical(value){if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';if(value&&typeof value==='object')return '{'+Object.keys(value).sort().filter(k=>value[k]!==undefined).map(k=>JSON.stringify(k)+':'+canonical(value[k])).join(',')+'}';return JSON.stringify(value);}
+const same=(a,b)=>canonical(a)===canonical(b);
+const plain=p=>{const copy=D.clone(p);delete copy.sharing;delete copy.mergeArchives;return copy;};
+export async function projectHash(p){const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonical(plain(p))));return [...new Uint8Array(bytes)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+export async function startSharingRound(project){const p=D.importProject(D.exportProject(project)),base=plain(p);p.sharing={id:D.uid(),at:now(),hash:await projectHash(base),base};p.events.push({id:D.uid(),text:'Started a shared-file review round; the embedded common base is preserved.',at:now()});return D.importProject(D.exportProject(p));}
+const primary=['sources','members','sections','behaviors','questions','actions','reconciliations'];
+const children={sections:{changes:'sectionId'},behaviors:{behaviorChanges:'behaviorId',decisions:'behaviorId'},actions:{actionChanges:'actionId',actionDecisions:'actionId',acknowledgments:'actionId'}};
+const extras=['versions','aiRuns','impactReviews','verifications'];
+function units(p){const map=new Map();for(const key of primary)for(const r of p[key]??[]){const collections={[key]:[r]};for(const [child,field]of Object.entries(children[key]??{}))collections[child]=(p[child]??[]).filter(c=>c[field]===r.id);map.set(key+':'+r.id,{key,id:r.id,label:r.title??r.name??'Record',collections});}
+ for(const key of extras)for(const r of p[key]??[])map.set(key+':'+r.id,{key,id:r.id,label:r.label??r.task??r.behaviorSnapshot?.title??key,collections:{[key]:[r]}});
+ for(const r of (p.acknowledgments??[]).filter(r=>r.targetType==='behavior-change'))map.set('acknowledgments:'+r.id,{key:'acknowledgments',id:r.id,label:'Change acknowledgment',collections:{acknowledgments:[r]}});
+ map.set('details',{key:'details',id:'details',label:'Project details',details:{name:p.name,description:p.description}});return map;}
+export async function compareProjectCopies(current,incoming){const c=D.importProject(D.exportProject(current)),i=D.importProject(D.exportProject(incoming));if(c.id!==i.id||c.createdAt!==i.createdAt)throw new Error('These files are different projects. Open the incoming file as a separate review copy.');
+ const a=c.sharing,b=i.sharing;if(!a||!b||a.id!==b.id||a.hash!==b.hash||!same(a.base,b.base)||await projectHash(a.base)!==a.hash)throw new Error('No matching shared-file ancestry. Start a sharing round in the master and send that file before collecting edits.');
+ const base=units(a.base),local=units(c),remote=units(i),ids=new Set([...base.keys(),...local.keys(),...remote.keys()]);const differences=[];
+ for(const id of ids){const before=base.get(id)??null,left=local.get(id)??null,right=remote.get(id)??null;if(same(left,right)||same(right,before))continue;differences.push({id,key:(left??right??before).key,label:(left??right??before).label,base:before,current:left,incoming:right,conflict:!same(left,before)});}
+ return {projectId:c.id,anchorId:a.id,currentHash:await projectHash(c),incomingHash:await projectHash(i),current:c,incoming:i,differences};}
+function mergedSource(current,incoming,chosen){if(!current||!incoming)return chosen;const revisions=new Map();for(const r of [...current.revisions,...incoming.revisions]){if(revisions.has(r.id)&&!same(revisions.get(r.id),r))throw new Error('A source revision was redefined. Keep this file separate.');revisions.set(r.id,r);}let prefix=0;while(current.revisions[prefix]&&incoming.revisions[prefix]&&same(current.revisions[prefix],incoming.revisions[prefix]))prefix++;const shared=current.revisions.slice(0,prefix),selected=new Set([...shared,...chosen.revisions].map(r=>r.id));return {...D.clone(chosen),revisions:[...D.clone(shared),...[...revisions.values()].filter(r=>!selected.has(r.id)),...D.clone(chosen.revisions.slice(prefix))]};}
+export async function mergeProjectCopies(current,comparison,choices,{includeApproved=false,reviewerId,note}={}){
+ if(current.id!==comparison.projectId||current.sharing?.id!==comparison.anchorId||await projectHash(current)!==comparison.currentHash)throw new Error('The master changed after comparison. Compare again before merging.');
+ if(!current.members.some(m=>m.id===reviewerId)||!note?.trim())throw new Error('Choose a named merge reviewer and record the reason.');
+ const map=units(current);const selected=[];
+ for(const diff of comparison.differences){const choice=choices[diff.id];if(!['current','incoming'].includes(choice))throw new Error('Review every incoming difference and choose a branch.');if(choice==='current')continue;
+   const records=diff.incoming?.collections??{};if(!includeApproved&&(records.behaviors?.some(r=>r.status==='approved')||records.sections?.some(r=>r.status==='approved')||records.actionDecisions?.length||records.decisions?.length||records.versions?.length))throw new Error('Explicitly confirm importing incoming approval/decision history.');
+   let unit=D.clone(diff.incoming);if(unit?.key==='sources'&&diff.current){unit.collections.sources=[mergedSource(diff.current.collections.sources[0],unit.collections.sources[0],unit.collections.sources[0])];}
+   if(unit)map.set(diff.id,unit);else map.delete(diff.id);selected.push({id:diff.id,label:diff.label,conflict:diff.conflict});
+ }
+ if(!selected.length)throw new Error('No incoming changes were selected.');
+ const p=plain(current);for(const key of [...primary,...extras,'changes','behaviorChanges','decisions','actionChanges','actionDecisions','acknowledgments'])p[key]=[];
+ for(const unit of map.values()){if(unit.key==='details')Object.assign(p,unit.details);else for(const[key,list]of Object.entries(unit.collections))p[key].push(...D.clone(list));}
+ // Baseline IDs and snapshots stay stable; concurrent append-only baselines get sequential display numbers.
+ p.versions.forEach((v,index)=>v.number=index+1);
+ const events=new Map();for(const e of [...current.events,...comparison.incoming.events]){if(events.has(e.id)&&!same(events.get(e.id),e))throw new Error('An activity record was redefined between copies. Retain separate review files.');events.set(e.id,e);}p.events=[...events.values()].sort((a,b)=>a.at.localeCompare(b.at));p.events.push({id:D.uid(),text:`Merged ${selected.length} reviewed record group(s). Reviewer: ${current.members.find(m=>m.id===reviewerId).name}. ${note.trim()}`,at:now()});
+ p.sharing=D.clone(current.sharing);p.mergeArchives=[...(current.mergeArchives??[]),{id:D.uid(),at:now(),anchorId:comparison.anchorId,reviewerId,note:note.trim(),current:plain(current),incoming:plain(comparison.incoming)}];
+ if(p.mergeArchives.length>10)throw new Error('This project has 10 preserved merge archives. Start a new project or retain this returned file separately.');
+ try{return D.importProject(D.exportProject(p));}catch(error){throw new Error('Selected branches contain incompatible linked history. Choose a consistent set of rule/task/source records or retain separate review files. '+error.message);}
+}
+export function comparisonMarkdown(comparison){return '# Shared project comparison\n\n'+comparison.differences.map(d=>`## ${d.label} (${d.key})\n\n${d.conflict?'Both copies changed: owner choice required.':'Incoming change.'}\n\nBase: \n\n\`\`\`json\n${JSON.stringify(d.base,null,2)}\n\`\`\`\n\nCurrent: \n\n\`\`\`json\n${JSON.stringify(d.current,null,2)}\n\`\`\`\n\nIncoming: \n\n\`\`\`json\n${JSON.stringify(d.incoming,null,2)}\n\`\`\`\n`).join('\n');}

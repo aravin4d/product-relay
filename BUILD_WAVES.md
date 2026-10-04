@@ -1,12 +1,12 @@
 # Product Relay — build in single-session waves
 
-Updated 3 October 2026. Current checked prototype: 0.3.0. Status: **Waves 1–2 complete; Wave 3 scaffold and Wave 4 candidate review implemented with live AI validation pending**. Next: configure and validate the optional AI gateway when backend/API access is available. Product direction: [BUILD_PLAN.md](BUILD_PLAN.md). Proof story: [DEMO_STORY.md](DEMO_STORY.md).
+Updated 4 October 2026. Current implementation: **0.4.0**. The user requested finishing the portable core together and testing afterward. All core workflow code is implemented and the manual story has been exercised; live Supabase/provider setup and AI quality validation remain pending. See [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md). This schedule is now a feature map, not a requirement to delay work across ten chats.
 
 ## How to read this schedule
 
 One wave means one focused coding block in this chat, ending with a working, verified checkpoint. A block can include clarification and debugging; it is not a promise to consume exactly one chat turn, a whole five-hour usage window, or a fixed amount of time. The initial plan is **10 core sessions**, followed by separately chosen extensions.
 
-Each session has a small must-finish scope, an optional stretch goal, a concrete check, and explicit deferrals. Stop adding features when the must-finish scope works. If a difficult change does not fit, save the safe checkpoint and name the remaining work for a follow-up session. Do not skip data-safety or authorization checks to preserve the session count.
+Each session has a small must-finish scope, an optional stretch goal, a concrete check, and explicit deferrals. The latest user instruction overrides the earlier single-wave stopping rule: build the remaining core together, then test it. If a difficult change does not fit, save the safe checkpoint and name the remaining work for a follow-up session. Do not skip data-safety or authorization checks to preserve the session count.
 
 This is a useful prototype plan. Production release certification, every connector, and broad performance guarantees are outside the core sessions. Existing encryption, source history, review, and file sharing remain functional throughout.
 
@@ -55,9 +55,9 @@ Saved result: a PM can start with the documents they already have, with visible 
 
 ## Session 3 / Wave 3 — connect one AI provider securely
 
-- [ ] Must finish: build an optional Supabase function endpoint with authenticated user access and backend-only provider credentials. Manual portable use remains account-free.
-- [ ] Must finish: add a small provider interface and the first OpenAI Responses adapter, with runtime output validation, timeout/error handling, and recorded model/input revision metadata.
-- [ ] Must finish: add source-selection confirmation, request size/token limits, a basic server-enforced usage allowance, and a clear connection/configuration screen.
+- [x] Implemented: build an optional Supabase function endpoint with authenticated user access and backend-only provider credentials. Manual portable use remains account-free.
+- [x] Implemented: add a small provider interface and the first OpenAI Responses adapter, with runtime output validation, timeout/error handling, and recorded model/input revision metadata.
+- [x] Implemented: add source-selection confirmation, request size/token limits, a basic server-enforced usage allowance, and a clear connection/configuration screen.
 
 External inputs before live completion: approved API key and access to one backend project. Configure them through secrets, not chat text or committed files. Verify the actual available model ID and provider data policy at connection time.
 
@@ -71,9 +71,9 @@ Saved result: the app can use AI with a protected key. If access is unavailable,
 
 ## Session 4 / Wave 4 — make the first handbook draft
 
-- [ ] Must finish: extract behavior/section/question candidates from selected source passages, with conditions and exact evidence references.
-- [ ] Must finish: show candidate drafts next to evidence; allow accept/edit/reject through the existing review mechanism.
-- [ ] Must finish: keep approved content separate from unreviewed output, preserve manual changes, and retain input revision hashes.
+- [x] Implemented: extract behavior/section/question candidates from selected source passages, with conditions and exact evidence references.
+- [x] Implemented: show candidate drafts next to evidence; allow accept/edit/reject through the existing review mechanism.
+- [x] Implemented: keep approved content separate from unreviewed output, preserve manual changes, and retain input revision hashes.
 
 Check: the fictional PRD produces useful drafts; an unsupported claim becomes a question; invalid citations are rejected; changing a source before accepting output exposes a stale-result warning. Include a small labeled set covering missing evidence and lost qualifiers.
 
@@ -85,9 +85,9 @@ Saved result: a PM can move from original material to a reviewable handbook in o
 
 ## Session 5 / Wave 5 — preserve walkthrough decisions
 
-- [ ] Must finish: treat pasted/uploaded transcript text as a distinct source revision and extract relevant proposed clarifications.
-- [ ] Must finish: display PRD/SOP/transcript disagreements with both passages and applicability; do not decide authority from recency alone.
-- [ ] Must finish: let the owner record the resolution and generate an explicit handbook/behavior proposal, preserving the older baseline.
+- [x] Implemented: treat pasted/uploaded transcript text as a distinct source revision and extract relevant proposed clarifications.
+- [x] Implemented: display PRD/SOP/transcript disagreements with both passages and applicability; do not decide authority from recency alone.
+- [x] Implemented: let the owner record the resolution and generate an explicit handbook/behavior proposal, preserving the older baseline.
 
 Check: an ambiguous “cancel immediately” does not override ordinary cancellation; the owner can approve the fraud-only exception for release 2; the unresolved interpretation stays visible until decided.
 
@@ -99,9 +99,9 @@ Saved result: walkthrough answers become traceable decisions within the same pro
 
 ## Session 6 / Wave 6 — ask grounded product questions
 
-- [ ] Must finish: add bounded retrieval over approved behaviors, handbook sections, and evidence using exact terms and existing relationships first.
-- [ ] Must finish: generate answers with source links, selected baseline/release context, and explicit missing information.
-- [ ] Must finish: reject stale or cross-project context, and separate pending proposals from approved answers.
+- [x] Implemented: add bounded retrieval over approved behaviors, handbook sections, and evidence using exact terms and existing relationships first.
+- [x] Implemented: generate answers with source links, selected baseline/release context, and explicit missing information.
+- [x] Implemented: reject stale or cross-project context, and separate pending proposals from approved answers.
 
 Check: the same cancellation question gets the appropriate current and historical answers; unsupported rollback questions say what is missing; quotations open the correct original revision.
 
@@ -113,9 +113,9 @@ Saved result: teammates can understand the product without asking the PM to repe
 
 ## Session 7 / Wave 7 — turn a change into proposed team work
 
-- [ ] Must finish: compare a revised source and identify changed conditions/outcomes versus simple wording edits.
-- [ ] Must finish: propose a behavior/handbook update with before/after evidence; preserve unrelated manual content.
-- [ ] Must finish: suggest specific Product/Development/QA/Operations/Support actions with applicability, rationale, and completion criteria.
+- [x] Implemented: compare a revised source and identify changed conditions/outcomes versus simple wording edits.
+- [x] Implemented: propose a behavior/handbook update with before/after evidence; preserve unrelated manual content.
+- [x] Implemented: suggest specific Product/Development/QA/Operations/Support actions with applicability, rationale, and completion criteria.
 
 Check: the fraud-only change stays fraud-only; ordinary cancellation is not silently rewritten; QA scenarios are labeled suggestions rather than executed tests. A reviewer confirms impact before proposed work becomes required.
 
@@ -127,9 +127,9 @@ Saved result: the team sees what an approved change would mean for each person's
 
 ## Session 8 / Wave 8 — show what people actually checked
 
-- [ ] Must finish: assign named owners and track accepted/in-progress/blocked/completed/not-applicable actions.
-- [ ] Must finish: record change acknowledgment separately from completion and verification evidence, with behavior revision and environment/release qualifiers.
-- [ ] Must finish: invalidate relevant old evidence after a confirmed rule change and add a simple delivery review showing missing work and reasons.
+- [x] Implemented: assign named owners and track accepted/in-progress/blocked/completed/not-applicable actions.
+- [x] Implemented: record change acknowledgment separately from completion and verification evidence, with behavior revision and environment/release qualifiers.
+- [x] Implemented: invalidate relevant old evidence after a confirmed rule change and add a simple delivery review showing missing work and reasons.
 
 Check: acknowledging a change does not mark a test passed; changed fraud behavior makes its old evidence stale while unaffected ordinary-cancellation evidence stays applicable; portable export/reopen preserves actions and evidence.
 
@@ -141,9 +141,9 @@ Saved result: the PM/QA manager can explain what is agreed, who is acting, what 
 
 ## Session 9 / Wave 9 — compare and merge portable copies
 
-- [ ] Must finish: detect common project ancestry and present base/current/incoming differences for behavior, section, question, and action records.
-- [ ] Must finish: merge supported independent edits and require owner choices for conflicts; preserve histories and create a new revision.
-- [ ] Must finish: explain unsupported merges, absent ancestry, incoming approved changes, and newer file formats without overwriting the master.
+- [x] Implemented: detect common project ancestry and present base/current/incoming differences for behavior, section, question, and action records.
+- [x] Implemented: merge supported independent edits and require owner choices for conflicts; preserve histories and create a new revision.
+- [x] Implemented: explain unsupported merges, absent ancestry, incoming approved changes, and newer file formats without overwriting the master.
 
 Check: two fictional copies with independent updates merge and reopen; two conflicting decisions require review; deletion/archive conflicts are visible; a failed merge leaves the original intact.
 
@@ -155,9 +155,9 @@ Saved result: PM file sharing is more useful when teammates return edits.
 
 ## Session 10 / Wave 10 — make the full story usable
 
-- [ ] Must finish: run the complete PRD → walkthrough → agreed baseline → revised source → role actions → verification → shared file story.
-- [ ] Must finish: repair the biggest onboarding, progress, empty-state, import, review, and error-flow problems found in that story.
-- [ ] Must finish: update truthful feature documentation, retain a fictional demo, and publish the verified prototype with a saved continuation checkpoint.
+- [x] Implemented: run the complete PRD → walkthrough → agreed baseline → revised source → role actions → verification → shared file story.
+- [x] Implemented: repair the biggest onboarding, progress, empty-state, import, review, and error-flow problems found in that story.
+- [x] Implemented: update truthful feature documentation, retain a fictional demo, and publish the verified prototype with a saved continuation checkpoint.
 
 Check: use the deployed application for the complete story; verify file preservation, source links, role consistency, and main keyboard journeys. Record what was tested and what still needs browser/security/performance hardening. Collect representative feedback if available; otherwise label usefulness targets unmeasured.
 
@@ -184,4 +184,6 @@ These are the selected long-term direction, not requirements for completing the 
 
 Record the session number, actual user-visible result, changed files/commit, relevant checks, real limitations, pending access, and the next session's first action. Keep the working app and export compatibility intact. Usage limits change how far a session gets; they cannot reliably predict a number of completed features. If interrupted, finish or safely checkpoint the current unit before adding scope.
 
-Current state: **2 of 10 core waves complete**. Wave 3 connection/gateway code and Wave 4 candidate review are implemented, with 33 credential-free AI protocol/workflow checks; no live backend, provider inference, SQL execution, or function deployment is verified yet. These two waves are not marked complete. Waves 5–10 remain planned. The 0.3.0 prototype preserves the existing encrypted envelope and imports schema-1 project data safely; upgraded saves use schema 2.
+Current state: **Core workflow implementation complete in 0.4.0; live AI validation pending**. Manual walkthrough resolution, approved current/historical retrieval, reviewer-confirmed role work, acknowledgment/verification/stale context, shared-file comparison/merge, and a complete fictional demonstration work. Protected gateway, AI rule/section/question extraction, candidate-to-proposal review, and grounded explanation are implemented and fixture/runtime checked. They are not declared live-validated until a real backend/provider is configured.
+
+Implementation limits: meaning is reviewed by a human; exact scope fields determine staleness. This is not automatic semantic equivalence or code-impact discovery. File merges use explicit ancestry and record groups; incompatible dependencies reject without overwriting the master, and parent histories are archived. See the current checkpoint for actual checks and external work. New project saves use schema 4 while preserving import compatibility with schemas 1–3.

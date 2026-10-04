@@ -47,7 +47,7 @@ export async function unlockCached(id,passphrase) {
 export async function openProjectFile(text,passphrase,handle=null,asCopy=false) {
   if(text.length>45000000)throw new Error('Project file exceeds the supported size.');
   const envelope=JSON.parse(text);const {data,key}=await openVault(envelope,passphrase);const project=importProject(JSON.stringify(data));
-  if(asCopy){project.id=uid();project.name+=' · review copy';await createProtectedProject(project,passphrase);return project;}
+  if(asCopy){delete project.sharing;project.reviewOf=project.reviewOf??project.id;project.id=uid();project.name+=' · review copy';await createProtectedProject(project,passphrase);return project;}
  return withLock(project.id,async()=>{
   const existing=(await readAll()).find(e=>e.id===project.id);
   if(existing?.dirty)throw new Error('This project has unsaved local changes. Open and save its recovery copy first, then open the shared file.');

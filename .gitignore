@@ -13,3 +13,6 @@ dist/
 
 # Generated, locally hosted document parser assets (recreated from the lockfile).
 src/vendor/
+
+# Temporary local verification caches.
+work/

@@ -1,12 +1,15 @@
+import {validateReconciliations} from './reconciliation.js';
 import {validateBehaviorCollections, cleanBehaviorCollections, addBehavior, approveBehavior} from './behaviors.js';
+import {validateActionCollections, cleanActionCollections} from './actions.js';
 export {addBehavior, editBehavior, approveBehavior, proposeBehaviorChange, behaviorProposalBlocker, acceptBehaviorChange, rejectBehaviorChange, archiveBehavior, restoreBehavior, listBehaviors} from './behaviors.js';
+export {ACTION_ROLES, ACTION_STATUSES, getBehaviorRevision, getActionSuggestions, confirmBehaviorImpact, addAction, proposeRoleActions, editAction, acceptAction, updateActionStatus, proposeActionChange, acceptActionChange, rejectActionChange, acknowledgeAction, acknowledgeBehaviorChange, recordVerification, actionReviewState, verificationState, listActions, reviewSummary} from './actions.js';
 export const ROLES = ['Everyone', 'Product', 'QA', 'Development', 'Operations', 'Support'];
 export const uid = () => globalThis.crypto.randomUUID();
 const now = () => new Date().toISOString();
 export const clone = value => structuredClone(value);
 export function createProject(name, description = '') {
   if (!name.trim()) throw new Error('Give the product a name.');
-  return {id: uid(), name: name.trim(), description: description.trim(), sources: [], sections: [], changes: [], versions: [], events: [], members:[], questions:[], behaviors:[], behaviorChanges:[], decisions:[], aiRuns:[], createdAt: now()};
+  return {id: uid(), name: name.trim(), description: description.trim(), sources: [], sections: [], changes: [], versions: [], events: [], members:[], questions:[], behaviors:[], behaviorChanges:[], decisions:[], aiRuns:[], impactReviews:[], actions:[], actionChanges:[], actionDecisions:[], acknowledgments:[], verifications:[], reconciliations:[], mergeArchives:[], createdAt: now()};
 }
 function event(project, text) { project.events.push({id: uid(), text, at: now()}); }
 export function updateProject(project,name,description){if(!name.trim())throw new Error('Give the product a name.');project.name=name.trim();project.description=description.trim();event(project,'Updated product details');}
@@ -95,12 +98,14 @@ export function reviseSource(project, sourceId, content, metadata) {
 function normalizeAIRun(project, input) {
   const identifier=value=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
   const small=value=>typeof value==='string'&&!!value.trim()&&value.length<=300;
+  if(input?.proposalIds!==undefined&&(!Array.isArray(input.proposalIds)||input.proposalIds.length>1000||new Set(input.proposalIds).size!==input.proposalIds.length||input.proposalIds.some(id=>!project.behaviorChanges.some(c=>c.id===id))))throw new Error('Invalid AI rule proposal references.');
+  if(input?.sectionDraftIds!==undefined&&(!Array.isArray(input.sectionDraftIds)||input.sectionDraftIds.length>1000||new Set(input.sectionDraftIds).size!==input.sectionDraftIds.length||input.sectionDraftIds.some(id=>!project.sections.some(s=>s.id===id))))throw new Error('Invalid AI section draft references.');
   if (!input||!identifier(input.id)||!['task','provider','model','promptVersion'].every(key=>small(input[key]))||!((Number.isSafeInteger(input.schemaVersion)&&input.schemaVersion>0)||(small(input.schemaVersion)&&input.schemaVersion.length<=100))||typeof input.inputHash!=='string'||!/^[a-f0-9]{64}$/i.test(input.inputHash)||typeof input.at!=='string'||!Number.isFinite(Date.parse(input.at))||!Array.isArray(input.sourceRefs)||!input.sourceRefs.length||input.sourceRefs.length>100||!Array.isArray(input.draftIds)||input.draftIds.length>1000||new Set(input.draftIds).size!==input.draftIds.length||input.draftIds.some(id=>!identifier(id)||!project.behaviors?.some(behavior=>behavior.id===id))) throw new Error('Invalid AI run metadata.');
   const used=new Set(),sourceRefs=input.sourceRefs.map(reference=>{
     const source=project.sources.find(source=>source.id===reference?.sourceId),revision=source?.revisions.find(revision=>revision.id===reference.revisionId),key=reference?.sourceId+':'+reference?.revisionId;
     if(!revision||used.has(key))throw new Error('Invalid AI source revision reference.');used.add(key);return {sourceId:source.id,revisionId:revision.id};
   });
-  return {id:input.id,task:input.task,provider:input.provider,model:input.model,promptVersion:input.promptVersion,schemaVersion:input.schemaVersion,inputHash:input.inputHash,at:input.at,sourceRefs,draftIds:clone(input.draftIds)};
+  return {id:input.id,task:input.task,provider:input.provider,model:input.model,promptVersion:input.promptVersion,schemaVersion:input.schemaVersion,inputHash:input.inputHash,at:input.at,sourceRefs,draftIds:clone(input.draftIds),sectionDraftIds:clone(input.sectionDraftIds??[]),proposalIds:clone(input.proposalIds??[])};
 }
 export function recordAIRun(project,input) {
   const record=normalizeAIRun(project,{id:uid(),draftIds:[],...input});
@@ -114,6 +119,8 @@ export function linkRunDraft(project,runId,behaviorId) {
   if(behavior.originRunId&&behavior.originRunId!==runId)throw new Error('This draft already belongs to another AI run.');
   if(!run.draftIds.includes(behaviorId))run.draftIds.push(behaviorId);behavior.originRunId=runId;
 }
+export function linkRunProposal(project,runId,proposalId){const run=project.aiRuns?.find(r=>r.id===runId),proposal=project.behaviorChanges.find(c=>c.id===proposalId);if(!run||!proposal||proposal.status!=='pending')throw new Error('Choose an AI run and a pending rule proposal.');run.proposalIds??=[];if(!run.proposalIds.includes(proposalId))run.proposalIds.push(proposalId);}
+export function linkRunSection(project,runId,sectionId){const run=project.aiRuns?.find(r=>r.id===runId),section=project.sections.find(s=>s.id===sectionId);if(!run||!section||section.status!=='draft'||section.archived)throw new Error('Choose an AI run and an active handbook draft.');run.sectionDraftIds??=[];if(!run.sectionDraftIds.includes(sectionId))run.sectionDraftIds.push(sectionId);}
 export function addSection(project, {title, body, role = 'Everyone', sourceId, quote}) {
   if (!title.trim() || !body.trim()) throw new Error('A handbook section needs a title and content.');
   if (!ROLES.includes(role)) throw new Error('Unknown audience.');
@@ -165,12 +172,13 @@ export function rejectChange(project, proposalId) {
   if (!p || p.status !== 'pending') throw new Error('Proposal is no longer pending.');
   p.status = 'rejected'; event(project, 'Rejected a proposed update');
 }
-export function saveVersion(project, label) {
+export function saveVersion(project, label, {includeActions=false} = {}) {
   const sections = project.sections.filter(s => s.status === 'approved' && !s.archived);
   const behaviors=(project.behaviors??[]).filter(b=>b.status==='approved'&&!b.archived);
   if (!sections.length&&!behaviors.length) throw new Error('Approve at least one section or product rule before saving a version.');
   if ([...sections,...behaviors].some(s => isStale(project, s))) throw new Error('Some approved sections have changed evidence. Review those sections first.');
   const version = {id: uid(), number: project.versions.length + 1, label: label.trim() || 'Approved handbook', at: now(), sections: clone(sections), questions:clone(project.questions??[]),behaviors:clone(behaviors)};
+  if(includeActions)version.actions=clone((project.actions??[]).filter(action=>behaviors.some(behavior=>behavior.id===action.behaviorId&&['actor','condition','outcome','applicability'].every(key=>behavior[key]===action.behaviorSnapshot[key]))));
   project.versions.push(version); event(project, `Saved handbook v${version.number}`); return version;
 }
 export function searchEvidence(project, query, versionId = '', audience='Everyone') {
@@ -179,13 +187,15 @@ export function searchEvidence(project, query, versionId = '', audience='Everyon
   const sections = versionId ? project.versions.find(v => v.id === versionId)?.sections ?? [] : project.sections.filter(s => s.status === 'approved' && !s.archived);
   return sections.filter(s=>audience==='Everyone'||s.role==='Everyone'||s.role===audience).map(section => ({section, score: words.reduce((score, w) => score + (section.title + ' ' + section.body).toLowerCase().split(w).length - 1, 0)})).filter(x => x.score > 0).sort((a,b) => b.score - a.score).slice(0,8);
 }
-export function exportProject(project) { return JSON.stringify({format: 'product-relay', schemaVersion: 2, exportedAt: now(), project}, null, 2); }
+export function exportProject(project) { return JSON.stringify({format: 'product-relay', schemaVersion: 4, exportedAt: now(), project}, null, 2); }
 export function importProject(text) {
   if (text.length > 10000000) throw new Error('Project bundle exceeds the 10 MB import limit.');
   const bundle = JSON.parse(text);
-  if (bundle.format !== 'product-relay' || ![1,2].includes(bundle.schemaVersion)) throw new Error('Unsupported project bundle.');
+  if (bundle.format !== 'product-relay' || ![1,2,3,4].includes(bundle.schemaVersion)) throw new Error('Unsupported project bundle.');
   const p = bundle.project;
+  if(bundle.schemaVersion<4&&(p?.sharing||p?.reconciliations?.length||p?.mergeArchives?.length))throw new Error('Schema 4 is required for sharing rounds and walkthrough reviews.');
   if(bundle.schemaVersion===1&&p&&['behaviors','behaviorChanges','decisions','aiRuns'].some(key=>p[key]?.length))throw new Error('Schema 1 cannot contain newer product rule records. Export this project with schema 2.');
+  if(bundle.schemaVersion<3&&(p&&['impactReviews','actions','actionChanges','actionDecisions','acknowledgments','verifications'].some(key=>p[key]?.length)||p?.versions?.some(version=>version.actions?.length)))throw new Error('Schema 1 or 2 cannot contain newer team work records. Export this project with schema 3.');
   const string = v => typeof v === 'string';
   const identifier=v=>string(v)&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
   const timestamp=v=>string(v)&&Number.isFinite(Date.parse(v));
@@ -252,21 +262,36 @@ export function importProject(text) {
   if(!Array.isArray(members)||members.length>200||!Array.isArray(questions)||questions.length>1000)throw new Error('Invalid team or question list.');
   unique(members,'member');unique(questions,'question');
   for(const m of members)if(!string(m.name)||!m.name.trim()||!ROLES.includes(m.role))throw new Error('Invalid team member.');
+  validateActionCollections(p,{identifier,timestamp,unique,validateEvidence});
   function validateQuestions(items){
     if(!Array.isArray(items)||items.length>1000)throw new Error('Invalid questions.');unique(items,'question');
     for(const q of items)if(!string(q.title)||!q.title.trim()||!ROLES.includes(q.role)||!string(q.owner)||!['open','resolved'].includes(q.status)||!string(q.resolution)||!timestamp(q.at)||(q.status==='resolved'&&!q.resolution.trim()))throw new Error('Invalid walkthrough question.');
   }
   validateQuestions(questions);p.versions.forEach(v=>validateQuestions(v.questions??[]));
+  const reconciliations=validateReconciliations({...p,questions},{identifier,timestamp,unique,validateEvidence});
+  if(p.reviewOf!==undefined&&!identifier(p.reviewOf))throw new Error('Invalid review-copy origin.');
+  let sharing;
+  if(p.sharing!==undefined){
+    const a=p.sharing;if(!a||!identifier(a.id)||!timestamp(a.at)||typeof a.hash!=='string'||!/^[a-f0-9]{64}$/.test(a.hash)||!a.base||a.base.sharing!==undefined||a.base.id!==p.id||a.base.createdAt!==p.createdAt)throw new Error('Invalid shared-file ancestry.');
+    const base=importProject(JSON.stringify({format:'product-relay',schemaVersion:4,project:a.base}));sharing={id:a.id,at:a.at,hash:a.hash,base};
+  }
+  const mergeArchives=p.mergeArchives??[];
+  if(!Array.isArray(mergeArchives)||mergeArchives.length>10)throw new Error('Invalid merge archives.');unique(mergeArchives,'merge archive');
+  const cleanMergeArchives=mergeArchives.map(a=>{
+    if(!identifier(a.anchorId)||!timestamp(a.at)||!members.some(m=>m.id===a.reviewerId)||typeof a.note!=='string'||!a.note.trim()||a.note.length>20000||!a.current||!a.incoming||[a.current,a.incoming].some(parent=>(parent.id!==p.id&&parent.id!==p.reviewOf)||parent.createdAt!==p.createdAt||parent.sharing!==undefined||parent.mergeArchives!==undefined))throw new Error('Invalid preserved merge parents.');
+    const clean=parent=>{const result=importProject(JSON.stringify({format:'product-relay',schemaVersion:4,project:parent}));delete result.mergeArchives;delete result.sharing;return result;};return {id:a.id,anchorId:a.anchorId,at:a.at,reviewerId:a.reviewerId,note:a.note,current:clean(a.current),incoming:clean(a.incoming)};
+  });
   const pick=(object,keys)=>Object.fromEntries(keys.filter(k=>object[k]!==undefined).map(k=>[k,object[k]]));
   const cleanEvidence=list=>list.map(e=>({...pick(e,['sourceId','revisionId','quote']),...(e.locations?{locations:e.locations.map(location=>pick(location,['blockId','label','page','paragraph']))}:{})}));
   const behaviorCollections=cleanBehaviorCollections(p,cleanEvidence,pick);
+  const actionCollections=cleanActionCollections(p,behaviorCollections.cleanBehavior,pick);
   const cleanSection=s=>({...pick(s,['id','title','body','role','status','ownerNote','updatedAt','archived']),evidence:cleanEvidence(s.evidence)});
   const cleanQuestion=q=>pick(q,['id','title','role','owner','status','resolution','at']);
-  return clone({id:p.id,name:p.name,description:p.description,createdAt:p.createdAt,
+  return clone({id:p.id,name:p.name,description:p.description,createdAt:p.createdAt,...(p.reviewOf?{reviewOf:p.reviewOf}:{}),reconciliations,mergeArchives:cleanMergeArchives,...(sharing?{sharing}:{}),
     sources:p.sources.map(s=>({...pick(s,['id','title','kind','archived']),revisions:s.revisions.map(r=>({...pick(r,['id','content','at']),...(r.document?{document:normalizeDocumentMetadata(r.content,r.document)}:{})}))})),
     sections:p.sections.map(cleanSection),changes:p.changes.map(c=>({...pick(c,['id','sectionId','title','role','body','reason','status','at']),base:cleanSection(c.base),evidence:cleanEvidence(c.evidence)})),
-    versions:p.versions.map(v=>({...pick(v,['id','number','label','at']),sections:v.sections.map(cleanSection),...(v.questions?{questions:v.questions.map(cleanQuestion)}:{}),behaviors:(v.behaviors??[]).map(behaviorCollections.cleanBehavior)})),
-    events:p.events.map(e=>pick(e,['id','text','at'])),members:members.map(m=>pick(m,['id','name','role'])),questions:questions.map(cleanQuestion),behaviors:behaviorCollections.behaviors,behaviorChanges:behaviorCollections.behaviorChanges,decisions:behaviorCollections.decisions,aiRuns:cleanAIRuns});
+    versions:p.versions.map(v=>({...pick(v,['id','number','label','at']),sections:v.sections.map(cleanSection),...(v.questions?{questions:v.questions.map(cleanQuestion)}:{}),behaviors:(v.behaviors??[]).map(behaviorCollections.cleanBehavior),...(v.actions?{actions:v.actions.map(actionCollections.cleanAction)}:{})})),
+    events:p.events.map(e=>pick(e,['id','text','at'])),members:members.map(m=>pick(m,['id','name','role'])),questions:questions.map(cleanQuestion),behaviors:behaviorCollections.behaviors,behaviorChanges:behaviorCollections.behaviorChanges,decisions:behaviorCollections.decisions,aiRuns:cleanAIRuns,...Object.fromEntries(Object.entries(actionCollections).filter(([key])=>key!=='cleanAction'))});
 }
 export function toMarkdown(project, versionId = '') {
   const version = project.versions.find(v => v.id === versionId);

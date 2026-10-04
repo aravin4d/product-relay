@@ -1,3 +1,5 @@
+Current implementation is 0.4.0: see [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md). This document retains the earlier section review as historical context.
+
 # Implementation review — 2 October 2026
 
 > This is the historical 0.2.0 review. Later qualified rules, document import, and optional AI work are recorded in [CHECKPOINT_0.3.0.md](CHECKPOINT_0.3.0.md). Treat its earlier feature limitations as historical.

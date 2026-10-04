@@ -50,8 +50,8 @@ test('active rules and pending rule proposals protect original sources from arch
 });
 test('schema1 upgrades safely while newer schemas and mislabelled schema1 rule data are refused',()=>{
  const p=D.createProject('Legacy');D.addSource(p,'PRD','An original source.');const bundle=JSON.parse(D.exportProject(p));bundle.schemaVersion=1;for(const key of ['behaviors','behaviorChanges','decisions'])delete bundle.project[key];
- const upgraded=D.importProject(JSON.stringify(bundle));assert.equal(upgraded.sources[0].revisions[0].content,'An original source.');assert.deepEqual(upgraded.behaviors,[]);assert.equal(JSON.parse(D.exportProject(upgraded)).schemaVersion,2);
- bundle.schemaVersion=3;assert.throws(()=>D.importProject(JSON.stringify(bundle)),/Unsupported/);
+ const upgraded=D.importProject(JSON.stringify(bundle));assert.equal(upgraded.sources[0].revisions[0].content,'An original source.');assert.deepEqual(upgraded.behaviors,[]);assert.equal(JSON.parse(D.exportProject(upgraded)).schemaVersion,4);
+ bundle.schemaVersion=5;assert.throws(()=>D.importProject(JSON.stringify(bundle)),/Unsupported/);
  const f=ruleFixture(),wrong=JSON.parse(D.exportProject(f.p));wrong.schemaVersion=1;assert.throws(()=>D.importProject(JSON.stringify(wrong)),/Schema 1/);
 });
 test('imports reject duplicate rule IDs, invalid scope, missing decisions, and tampered history',()=>{

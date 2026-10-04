@@ -1,6 +1,6 @@
 // Shared browser/gateway protocol. This module never reads or stores a provider key.
 export const AI_PROTOCOL_VERSION = 1;
-export const AI_PROMPT_VERSION = 'relay-evidence-1';
+export const AI_PROMPT_VERSION = 'relay-evidence-2';
 export const AI_LIMITS = Object.freeze({sources:8, sourceCharacters:24000, contextCharacters:48000, requestBytes:220000, responseBytes:256000, outputTokens:4000, candidates:12});
 export const AI_ROLES = Object.freeze(['Everyone','Product','Development','QA','Operations','Support']);
 const CONFIG_KEY = 'product-relay-ai-config-v1';
@@ -11,8 +11,8 @@ const fail = (message,code='invalid_request') => { throw new AIError(message,cod
 export class AIError extends Error {
   constructor(message,code='ai_error',status=0) { super(message); this.name='AIError'; this.code=code; this.status=status; }
 }
-function exactKeys(value,keys,label) {
-  if(!object(value)||Object.keys(value).some(key=>!keys.includes(key))||keys.some(key=>!(key in value))) fail(`Invalid ${label} fields.`);
+function exactKeys(value,keys,label,optional=[]) {
+  if(!object(value)||Object.keys(value).some(key=>!keys.includes(key))||keys.some(key=>!optional.includes(key)&&!(key in value))) fail(`Invalid ${label} fields.`);
 }
 function text(value,label,max=3000,optional=false) {
   if(typeof value!=='string'||value.length>max||(!optional&&!value.trim())) fail(`Invalid ${label}.`);
@@ -21,7 +21,7 @@ function text(value,label,max=3000,optional=false) {
 function list(value,label,max) { if(!Array.isArray(value)||value.length>max)fail(`Invalid ${label}.`); return value; }
 
 export function validateAIRequest(value) {
-  exactKeys(value,['version','task','projectTitle','baselineLabel','question','sources','consent'],'AI request');
+  exactKeys(value,['version','task','projectTitle','baselineLabel','question','sources','consent','answerContext'],'AI request',['answerContext']);
   if(value.version!==AI_PROTOCOL_VERSION||!['extract_handbook','answer_question'].includes(value.task))fail('Unsupported AI request.');
   if(value.consent!==true)fail('Confirm which plaintext sources will be sent before using AI.','consent_required');
   const sources=list(value.sources,'selected sources',AI_LIMITS.sources);
@@ -38,11 +38,20 @@ export function validateAIRequest(value) {
   text(value.projectTitle,'project title',200); text(value.baselineLabel,'baseline label',200);
   text(value.question,'question',2000,value.task==='extract_handbook');
   if(value.task==='extract_handbook'&&value.question!=='')fail('Handbook extraction does not accept a question.');
+  let answerContext;
+  if(value.answerContext!==undefined){
+    if(value.task!=='answer_question')fail('Only product answers accept agreed context.');
+    const context=value.answerContext;exactKeys(context,['role','agreements','unknowns'],'agreed context');
+    if(!AI_ROLES.includes(context.role))fail('Invalid answer perspective.');list(context.agreements,'selected agreements',6);list(context.unknowns,'known unknowns',12);
+    const ids=new Set();for(const agreement of context.agreements){exactKeys(agreement,['id','type','title','description','evidence'],'agreement');if(!UUID.test(agreement.id)||ids.has(agreement.id)||!['rule','section'].includes(agreement.type))fail('Invalid selected agreement.');ids.add(agreement.id);text(agreement.title,'agreement title',1000);text(agreement.description,'agreement detail',12000);validateEvidence(agreement.evidence,value,true);}
+    context.unknowns.forEach(value=>text(value,'known unknown',2000));if(JSON.stringify(context).length>24000)fail('Selected agreement details are too large.','context_limit');answerContext=structuredClone(context);
+  }
   // Clone only the declared fields: vaults, credentials, and unrelated project data never travel.
-  return {version:AI_PROTOCOL_VERSION,task:value.task,projectTitle:value.projectTitle,baselineLabel:value.baselineLabel,question:value.question,sources:sources.map(source=>({...source})),consent:true};
+  return {version:AI_PROTOCOL_VERSION,task:value.task,projectTitle:value.projectTitle,baselineLabel:value.baselineLabel,question:value.question,sources:sources.map(source=>({...source})),consent:true,...(answerContext?{answerContext}:{})};
 }
-export function createAIRequest({task='extract_handbook',projectTitle,title,baselineLabel='Selected current source revisions',question='',sources,consent=false}) {
-  return validateAIRequest({version:AI_PROTOCOL_VERSION,task,projectTitle:projectTitle??title,baselineLabel,question,sources,consent});
+/** @param {{task?:string, projectTitle?:string, title?:string, baselineLabel?:string, question?:string, sources:unknown[], consent?:boolean, answerContext?:unknown}} options */
+export function createAIRequest({task='extract_handbook',projectTitle,title,baselineLabel='Selected current source revisions',question='',sources,consent=false,answerContext}) {
+  return validateAIRequest({version:AI_PROTOCOL_VERSION,task,projectTitle:projectTitle??title,baselineLabel,question,sources,consent,...(answerContext?{answerContext}:{})});
 }
 export async function aiInputHash(request) {
   const clean=validateAIRequest(request);
@@ -68,7 +77,7 @@ export function validateAIResult(value,request) {
   request=validateAIRequest(request);
   try {
     if(request.task==='extract_handbook') {
-      exactKeys(value,['behaviors','questions','warnings'],'handbook output');
+      exactKeys(value,['behaviors','questions','warnings','sections'],'handbook output',['sections']);
       list(value.behaviors,'behavior candidates',AI_LIMITS.candidates);
       list(value.questions,'questions',12); list(value.warnings,'warnings',12);
       for(const behavior of value.behaviors) {
@@ -86,6 +95,7 @@ export function validateAIResult(value,request) {
         if(!AI_ROLES.includes(question.role))fail('Invalid question audience.');
         validateEvidence(question.evidence,request);
       }
+      if(value.sections!==undefined){list(value.sections,'handbook sections',12);for(const section of value.sections){exactKeys(section,['title','body','role','evidence'],'section candidate');text(section.title,'section title',200);text(section.body,'section body',4000);if(!AI_ROLES.includes(section.role))fail('Invalid section audience.');validateEvidence(section.evidence,request,true);}}
       value.warnings.forEach(warning=>text(warning,'warning',1000));
     } else {
       exactKeys(value,['status','answer','evidence','unknowns'],'answer output');
@@ -105,9 +115,10 @@ const roleSchema={type:'string',enum:AI_ROLES};
 export function aiOutputSchema(task) {
   if(task==='extract_handbook')return {type:'object',properties:{
     behaviors:{type:'array',items:{type:'object',properties:{title:stringSchema,actor:stringSchema,condition:stringSchema,outcome:stringSchema,scope:stringSchema,exclusions:stringSchema,roles:{type:'array',items:roleSchema},evidence:evidenceSchema},required:['title','actor','condition','outcome','scope','exclusions','roles','evidence'],additionalProperties:false}},
+    sections:{type:'array',items:{type:'object',properties:{title:stringSchema,body:stringSchema,role:roleSchema,evidence:evidenceSchema},required:['title','body','role','evidence'],additionalProperties:false}},
     questions:{type:'array',items:{type:'object',properties:{title:stringSchema,role:roleSchema,reason:stringSchema,evidence:evidenceSchema},required:['title','role','reason','evidence'],additionalProperties:false}},
     warnings:{type:'array',items:stringSchema}
-  },required:['behaviors','questions','warnings'],additionalProperties:false};
+  },required:['behaviors','questions','warnings','sections'],additionalProperties:false};
   if(task==='answer_question')return {type:'object',properties:{status:{type:'string',enum:['answered','unknown']},answer:stringSchema,evidence:evidenceSchema,unknowns:{type:'array',items:stringSchema}},required:['status','answer','evidence','unknowns'],additionalProperties:false};
   fail('Unsupported AI task.');
 }

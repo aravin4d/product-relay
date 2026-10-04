@@ -6,3 +6,7 @@
 *.md text eol=lf
 *.yml text eol=lf
 *.relay -text
+
+# Binary document fixtures retain their exact bytes (PDF offsets are significant).
+*.pdf binary
+*.docx binary

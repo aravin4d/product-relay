@@ -68,7 +68,17 @@ node --test tests/ai.test.mjs
 
 For a local Supabase stack, review and apply the migration with `supabase db reset`, then run `supabase/tests/ai_allowance.sql` through a local database SQL client. That script checks grants, denied access, per-user limits, and the global allowance in a transaction that rolls back. **Run it only on a disposable local test database.** It deliberately clears current-day counters inside its rolled-back transaction to isolate the fixture.
 
-No Supabase CLI, Deno, or PostgreSQL executable was available during the scaffold build. The JavaScript protocol/provider/handler tests passed; SQL execution, function bundling, and live API/backend behavior remain unverified until these prerequisites are supplied. The backend imports the shared protocol from `src/ai.js`; retain that file when deploying from the repository root.
+Local validation completed on 4 October 2026: Deno 2.9.6 checks the actual function module and imports using the committed lockfile and pinned Supabase SDK 2.117.2. A Deno runtime test loads the real entry point and exercises CORS, Auth, privileged RPC, and the Responses envelope through intercepted fictional HTTP. Run:
+
+```sh
+deno check --node-modules-dir=none --lock=supabase/functions/deno.lock supabase/functions/relay-ai/index.ts
+deno test --allow-env --node-modules-dir=none --lock=supabase/functions/deno.lock supabase/tests/relay_ai_runtime_test.ts
+node --test tests/ai-allowance.test.mjs
+```
+
+The allowance migration and operator fixture executed against ephemeral PGlite 0.5.8 (PostgreSQL 18.3). Nine tests prove role/table/function restrictions, actual reservation constraints/counters/rollback/UTC, and fail-closed handler integration. PGlite serializes a queued burst; actual multi-connection advisory-lock contention requires an ordinary PostgreSQL deployment. No Supabase project, real Auth account, paid inference, or deployed function is verified. Retain `src/ai.js` when deploying from the repository root: the function uses that shared protocol.
+
+AI explanations receive the selected approved agreement descriptions, their qualifiers, exact supporting fragments, chosen baseline, and known unknowns. Current stale evidence is excluded. Historical evidence stays tied to its preserved baseline revision. Local term matching can miss relevant material, and valid quotations do not prove that the model preserved their meaning. Review output before treating it as useful product context.
 
 ## Data and prototype limits
 

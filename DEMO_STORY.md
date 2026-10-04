@@ -1,3 +1,15 @@
+# Try the complete 0.4.0 sample
+
+Choose **Explore the sample product**. All people, decisions, checks, and environments are fictional.
+
+1. **Delivery review:** ordinary cancellation has applicable evidence; R2 fraud work and evidence need review after the R3 change. Receipt, completed work, and verification remain separate.
+2. **Ask the product:** search “fraud” in the current agreement, then the R2 baseline. Compare the qualified outcomes and open their original source revisions. Local lookup works without AI.
+3. **Walkthrough review:** inspect the recorded release decision, or capture a quoted statement against an agreed rule and record an owner interpretation. A resulting proposal needs separate approval.
+4. **Delivery review:** review a stale task against the current rule, accept its updated scope, and record completion/checks for that scope and environment.
+5. **Shared-file review:** the sample already has a sharing round. Protect/save it, let another copy add a question, compare the returned file, and merge the reviewed edit. Inspect both preserved parents.
+
+The following is the original product proof story and usefulness targets. Real model quality and team time savings remain unmeasured.
+
 # Product Relay — the story that should prove its value
 
 This is a proposed fictional demonstration and pilot protocol, not behavior already implemented in release 0.2.0. Use it throughout the [single-session waves](BUILD_WAVES.md).

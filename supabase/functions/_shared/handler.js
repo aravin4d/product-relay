@@ -1,6 +1,15 @@
 import {AIError,AI_LIMITS,AI_PROTOCOL_VERSION,AI_PROMPT_VERSION,validateAIRequest,validateAIResult,aiInputHash,readBoundedJSON} from '../../../src/ai.js';
 
 // Dependency injection lets tests exercise the real endpoint without credentials or paid calls.
+/**
+ * @param {object} options
+ * @param {(token:string)=>Promise<{id:string}|null>} options.authenticate
+ * @param {(userId:string)=>Promise<{allowed:boolean,reason?:string,remaining?:number}>} options.consumeAllowance
+ * @param {{name:string,model:string,generate:(request:ReturnType<typeof validateAIRequest>)=>Promise<{result:unknown,usage?:unknown}>}} options.provider
+ * @param {string[]} [options.allowedOrigins]
+ * @param {()=>Date} [options.now]
+ * @param {()=>string} [options.randomUUID]
+ */
 export function createRelayHandler({authenticate,consumeAllowance,provider,allowedOrigins=[],now=()=>new Date(),randomUUID=()=>crypto.randomUUID()}) {
   const origins=new Set(allowedOrigins);
   return async function handler(request) {
