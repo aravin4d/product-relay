@@ -23,11 +23,11 @@ New exports use schema 4. Schemas 1/2/3 upgrade; future schemas reject. The prev
 
 ## Verification completed
 
-- 149 Node tests and source/script syntax checks passed.
+- 150 Node tests and source/script syntax checks passed.
 - Static parser preparation and GitHub Pages build passed.
 - 13 real-browser storage checks and 6 real-browser PDF/DOCX worker checks passed; tests removed only their own fictional records.
-- Browser UI exercised: complete sample and role work; current/historical fraud context and original citations; walkthrough comparison creating a pending rule proposal; encrypted example opening; matching returned-file comparison, merge, and inspection of both parent histories.
-- Real migration/operator fixture executed on ephemeral PGlite 0.5.8 / PostgreSQL 18.3. Nine tests cover grants/role denials, fail-closed admission, quotas, atomic rollback, UTC, constraints, and gateway allowance integration. These are included in the 149 Node tests.
+- Browser UI exercised: complete sample and role work; current/historical fraud context and original citations; walkthrough comparison creating a pending rule proposal; encrypted example opening and merged recovery reopening; stale task rescope/acceptance, explicit new completion and qualified R3 verification; matching returned-file comparison, merge, and inspection of both parent histories.
+- Real migration/operator fixture executed on ephemeral PGlite 0.5.8 / PostgreSQL 18.3. Nine tests cover grants/role denials, fail-closed admission, quotas, atomic rollback, UTC, constraints, and gateway allowance integration. These are included in the 150 Node tests.
 - Deno 2.9.6 type/module check passed. Actual gateway entry point + pinned Supabase SDK + Auth/RPC/provider envelope passed one runtime test with four substeps. HTTP was intercepted; no secrets or paid calls were used.
 - Old encrypted schema-1 example and new complete schema-4 example both reopened through the current domain and vault.
 

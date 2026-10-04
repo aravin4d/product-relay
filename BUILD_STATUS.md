@@ -14,7 +14,7 @@ Manual flows work without AI. Optional AI requires external Supabase/provider se
 
 ## Checks
 
-149 Node tests + syntax checks; static build; 13 browser storage checks; 6 actual browser parser-worker checks; UI walkthrough proposal, current/historical citations, stale team work, encrypted example opening, returned-file merge and parent inspection. Real PostgreSQL-compatible migration/grants/quota tests passed on PGlite PostgreSQL 18.3. Deno 2.9.6 gateway check and runtime fixture passed. Real network/provider calls and multi-connection database contention remain pending.
+150 Node tests + syntax checks; static build; 13 browser storage checks; 6 actual browser parser-worker checks; UI walkthrough proposal, current/historical citations, stale team work, encrypted example opening, returned-file merge and parent inspection. Real PostgreSQL-compatible migration/grants/quota tests passed on PGlite PostgreSQL 18.3. Deno 2.9.6 gateway check and runtime fixture passed. Real network/provider calls and multi-connection database contention remain pending.
 
 Checkpoint: [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md). Historical checkpoint: [CHECKPOINT_0.3.0.md](CHECKPOINT_0.3.0.md). The latter describes the earlier build only.
 

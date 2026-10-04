@@ -84,7 +84,7 @@ New saves use schema **4**, and schemas 1–3 upgrade on opening. Future schemas
 
 ## Validation
 
-On 4 October 2026: **149 Node tests** and source/script syntax checks passed; the static build passed. These include actual PDF.js/Mammoth parsing, portable rule/action/history validation, encrypted files, three-way merge cases, grounded-context isolation, and the real allowance migration running on PGlite PostgreSQL 18.3. A queued burst proves reservation counts; actual multi-connection database contention remains unverified.
+On 4 October 2026: **150 Node tests** and source/script syntax checks passed; the static build passed. These include actual PDF.js/Mammoth parsing, portable rule/action/history validation, encrypted files, three-way merge cases, grounded-context isolation, and the real allowance migration running on PGlite PostgreSQL 18.3. A queued burst proves reservation counts; actual multi-connection database contention remains unverified.
 
 The actual gateway entry point, pinned Supabase SDK, handler, and provider adapter passed a **Deno 2.9.6 runtime test with four substeps**, using intercepted fictional HTTP calls. Function type/module checking also passed. This does not prove external deployment or paid provider inference.
 

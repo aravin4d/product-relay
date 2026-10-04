@@ -2,7 +2,7 @@ import {validateReconciliations} from './reconciliation.js';
 import {validateBehaviorCollections, cleanBehaviorCollections, addBehavior, approveBehavior} from './behaviors.js';
 import {validateActionCollections, cleanActionCollections} from './actions.js';
 export {addBehavior, editBehavior, approveBehavior, proposeBehaviorChange, behaviorProposalBlocker, acceptBehaviorChange, rejectBehaviorChange, archiveBehavior, restoreBehavior, listBehaviors} from './behaviors.js';
-export {ACTION_ROLES, ACTION_STATUSES, getBehaviorRevision, getActionSuggestions, confirmBehaviorImpact, addAction, proposeRoleActions, editAction, acceptAction, updateActionStatus, proposeActionChange, acceptActionChange, rejectActionChange, acknowledgeAction, acknowledgeBehaviorChange, recordVerification, actionReviewState, verificationState, listActions, reviewSummary} from './actions.js';
+export {ACTION_ROLES, ACTION_STATUSES, getBehaviorRevision, getActionSuggestions, confirmBehaviorImpact, addAction, proposeRoleActions, editAction, acceptAction, updateActionStatus, proposeActionChange, acceptActionChange, rejectActionChange, acknowledgeAction, acknowledgeBehaviorChange, recordVerification, actionReviewState, verificationState, listActions, currentOwnerAcknowledgment, reviewSummary} from './actions.js';
 export const ROLES = ['Everyone', 'Product', 'QA', 'Development', 'Operations', 'Support'];
 export const uid = () => globalThis.crypto.randomUUID();
 const now = () => new Date().toISOString();

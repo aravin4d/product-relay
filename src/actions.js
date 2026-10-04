@@ -137,6 +137,7 @@ export function listActions(project,{role='Everyone',behaviorId='',versionId=''}
   const actions=versionId?project.versions.find(item=>item.id===versionId)?.actions??[]:project.actions??[];
   return actions.filter(item=>(role==='Everyone'||item.role===role)&&(!behaviorId||item.behaviorId===behaviorId));
 }
+export function currentOwnerAcknowledgment(project,action){return (project.acknowledgments??[]).some(receipt=>receipt.targetType==='action'&&receipt.actionId===action.id&&receipt.actionRevision===action.revision&&receipt.behaviorRevision===action.behaviorRevision&&receipt.memberId===action.ownerId);}
 export function reviewSummary(project,{behaviorId=''}={}) {
   const actions=listActions(project,{behaviorId}).map(action=>({action,state:actionReviewState(project,action)}));
   const verifications=(project.verifications??[]).filter(item=>!behaviorId||item.behaviorId===behaviorId).map(verification=>({verification,state:verificationState(project,verification)}));
@@ -147,6 +148,7 @@ export function reviewSummary(project,{behaviorId=''}={}) {
     for(const role of new Set(reviews.flatMap(item=>item.roles)))if(!related.some(item=>item.action.role===role&&!item.state.rulesStale))missingWork.push({behaviorId:behavior.id,kind:'suggested-action',reason:`${role} impact was selected, but no action has been proposed for this scope.`});
     if(isStale(project,behavior))missingWork.push({behaviorId:behavior.id,kind:'source-review',reason:'Supporting source revisions changed; the agreed rule needs source review.'});
     for(const {action,state} of related) {
+      if(action.status!=='proposed'&&!state.rulesStale&&!state.archived&&!currentOwnerAcknowledgment(project,action))missingWork.push({behaviorId:behavior.id,actionId:action.id,kind:'acknowledgment',reason:`${action.role} owner acknowledgment is missing for the current task scope.`});
       if(state.needsReview)missingWork.push({behaviorId:behavior.id,actionId:action.id,kind:'action-review',reason:state.reasons.join(' ')});
       else if(!['completed','not-applicable'].includes(action.status))missingWork.push({behaviorId:behavior.id,actionId:action.id,kind:'action-work',reason:action.status==='blocked'?`Blocked: ${project.actionDecisions?.filter(item=>item.actionId===action.id&&item.kind==='status').at(-1)?.note??'reason unavailable'}`:`${action.role} action is ${action.status}.`});
     }
