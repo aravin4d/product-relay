@@ -1,0 +1,101 @@
+[
+  {
+    "name": "Product lead (simulation)",
+    "role": "Product",
+    "headings": [
+      "Delivery review",
+      "Work for Product",
+      "Confirm the product scope: A sharing round preserves the common base",
+      "Completion criteria",
+      "Verification evidence",
+      "What still needs attention"
+    ],
+    "metrics": "Proposed work\n1\nNeeds scope review\nAssigned work\n1\nOwners recorded\nCompleted work\n0\nCompletion reported separately\nNeeds review\n1\nRule or source context changed",
+    "owners": [
+      "ProductproposedNeeds reviewOwner: Product lead (simulation)"
+    ]
+  },
+  {
+    "name": "QA lead (simulation)",
+    "role": "QA",
+    "headings": [
+      "Delivery review",
+      "Work for QA",
+      "Check shared-copy compatibility and warn before restarting a round",
+      "Completion criteria",
+      "Check the agreed behavior: Browser recovery does not distribute project changes",
+      "Completion criteria",
+      "Verification evidence",
+      "What still needs attention"
+    ],
+    "metrics": "Proposed work\n1\nNeeds scope review\nAssigned work\n2\nOwners recorded\nCompleted work\n0\nCompletion reported separately\nNeeds review\n1\nRule or source context changed",
+    "owners": [
+      "QAacceptedNeeds reviewOwner: QA lead (simulation)",
+      "QAproposedOwner: QA lead (simulation)"
+    ]
+  },
+  {
+    "name": "Developer lead (simulation)",
+    "role": "Development",
+    "headings": [
+      "Delivery review",
+      "Work for Development",
+      "Implement the agreed behavior: A sharing round preserves the common base",
+      "Completion criteria",
+      "Verification evidence",
+      "What still needs attention"
+    ],
+    "metrics": "Proposed work\n1\nNeeds scope review\nAssigned work\n1\nOwners recorded\nCompleted work\n0\nCompletion reported separately\nNeeds review\n1\nRule or source context changed",
+    "owners": [
+      "DevelopmentproposedNeeds reviewOwner: Developer lead (simulation)"
+    ]
+  },
+  {
+    "name": "BA (simulation; mapped to Product)",
+    "role": "Product",
+    "headings": [
+      "Delivery review",
+      "Work for Product",
+      "Confirm the product scope: A sharing round preserves the common base",
+      "Completion criteria",
+      "Verification evidence",
+      "What still needs attention"
+    ],
+    "metrics": "Proposed work\n1\nNeeds scope review\nAssigned work\n1\nOwners recorded\nCompleted work\n0\nCompletion reported separately\nNeeds review\n1\nRule or source context changed",
+    "owners": [
+      "ProductproposedNeeds reviewOwner: Product lead (simulation)"
+    ]
+  },
+  {
+    "name": "Support lead (simulation)",
+    "role": "Support",
+    "headings": [
+      "Delivery review",
+      "Work for Support",
+      "Prepare the support guidance: A sharing round preserves the common base",
+      "Completion criteria",
+      "Verification evidence",
+      "What still needs attention"
+    ],
+    "metrics": "Proposed work\n1\nNeeds scope review\nAssigned work\n1\nOwners recorded\nCompleted work\n0\nCompletion reported separately\nNeeds review\n1\nRule or source context changed",
+    "owners": [
+      "SupportproposedNeeds reviewOwner: Support lead (simulation)"
+    ]
+  },
+  {
+    "name": "Operations lead (simulation)",
+    "role": "Operations",
+    "headings": [
+      "Delivery review",
+      "Work for Operations",
+      "Prepare the applicable rollout: A sharing round preserves the common base",
+      "Completion criteria",
+      "Verification evidence",
+      "What still needs attention"
+    ],
+    "metrics": "Proposed work\n1\nNeeds scope review\nAssigned work\n1\nOwners recorded\nCompleted work\n0\nCompletion reported separately\nNeeds review\n1\nRule or source context changed",
+    "owners": [
+      "OperationsproposedNeeds reviewOwner: Operations lead (simulation)"
+    ]
+  }
+]

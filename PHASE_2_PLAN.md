@@ -4,7 +4,9 @@
 
 This plan replaces the original ten-session schedule for future work. Application version 0.4.0 remains deployed. The later live review found three confirmed defects, including a portable-file validation failure. Earlier passing checks remain historical results; they do not establish that the reviewed combined workflow is reliable.
 
-Execution detail: [Phase 2 backlog](PHASE_2_BACKLOG.csv). Verification and pilot gates: [Phase 2 validation](PHASE_2_VALIDATION.md). Current implementation: [build status](BUILD_STATUS.md).
+**Completeness revision:** [every earlier feedback point and response](PHASE_2_FEEDBACK_COVERAGE.md) now lists 138 entries, including the six-role review and earlier section-review/architecture suggestions. The backlog has expanded from 69 to **91 engineering items**, with **22 newly explicit items**. Multiple related points may share a fix; these counts do not mean 138 unique features. Read the coverage register first when checking whether a particular suggestion was retained.
+
+Execution detail: [Phase 2 backlog](PHASE_2_BACKLOG.csv). Filterable feedback mapping: [coverage CSV](PHASE_2_FEEDBACK_COVERAGE.csv). Verification and pilot gates: [Phase 2 validation](PHASE_2_VALIDATION.md). Original evidence: [archived six-role review](docs/reviews/2026-10-04/TEAM_REVIEW.md). Current implementation: [build status](BUILD_STATUS.md).
 
 ## 1. The decision in one page
 
@@ -88,8 +90,9 @@ Official product documentation reviewed on 4 October 2026 supports the capabilit
 | Azure DevOps | End-to-end work/code/build/test/deployment traceability. | Build-specific proof and actual deployment linkage. | Explain product meaning and team obligations before and after that technical delivery chain. | Not a replacement for CI, repositories, or mature test/build management. |
 | ClickUp / Brain / Super Agents | Broad work management and agents with contextual tools/actions. | Useful intake and automation of repetitive coordination. | Require evidence, applicable scope and approval history for each proposed change/action. | Far fewer scheduling, collaborative, automation and management features. |
 | Google's source-grounded notebook tools | Understanding and answering from supplied sources. | Clear citations and simple source-based exploration. | Move from understanding to reviewed agreement, scoped work, real evidence and production learning. | Narrower input support and an unvalidated live AI experience. |
+| Slite | Knowledge verification, source-based answers and reviewed maintenance of knowledge. | Content owners, review dates and stale-knowledge handling. | Connect knowledge freshness to exact delivery/test/deployment obligations and production learning. | Far less mature collaborative knowledge maintenance and adoption tooling. |
 
-Sources: [Jama features](https://www.jamasoftware.com/platform/jama-connect/features/), [Jama traceability](https://help.jamasoftware.com/ah/en/getting-to-know-jama-connect-features/traceability-from-requirements-to-test.html), [Qase traceability matrix](https://docs.qase.io/en/articles/9123660-requirements-traceability-matrix), [Rovo agents](https://support.atlassian.com/rovo/docs/agents/), [Azure end-to-end traceability](https://learn.microsoft.com/en-us/azure/devops/cross-service/end-to-end-traceability?view=azure-devops), [ClickUp Super Agents](https://help.clickup.com/hc/en-us/articles/31010910371991-What-are-Super-Agents), [Google source-based notebook guidance](https://support.google.com/gemininotebook/answer/16215270?hl=en).
+Sources: [Jama features](https://www.jamasoftware.com/platform/jama-connect/features/), [Jama traceability](https://help.jamasoftware.com/ah/en/getting-to-know-jama-connect-features/traceability-from-requirements-to-test.html), [Qase traceability matrix](https://docs.qase.io/en/articles/9123660-requirements-traceability-matrix), [Rovo agents](https://support.atlassian.com/rovo/docs/agents/), [Azure end-to-end traceability](https://learn.microsoft.com/en-us/azure/devops/cross-service/end-to-end-traceability?view=azure-devops), [ClickUp Super Agents](https://help.clickup.com/hc/en-us/articles/31010910371991-What-are-Super-Agents), [Google source-based notebook guidance](https://support.google.com/gemininotebook/answer/16215270?hl=en), [Slite verification guidance](https://slite.com/help/F9erHftuXmOHY0), [Slite knowledge workflow](https://slite.com/solutions/knowledge-base).
 
 ### Six advantages worth building
 
@@ -214,6 +217,26 @@ Audit labels with explicit `for`/`id`, stable control names and hints referenced
 
 **Exit.** A user can complete intake, review, run recording, save/reopen and conflict resolution without a pointer. Accessible names stay useful after fields are populated. Publish the tested browser/device list and outstanding limitations.
 
+### Additional individual feedback that must not be buried in the broad REL groups
+
+The full row-by-row mapping is in [the coverage register](PHASE_2_FEEDBACK_COVERAGE.md). The following additions close requests that were previously implied, grouped too broadly or insufficiently specified.
+
+**Requirement structure and developer context — P2-071 / P2-074.** Add stable parent/group hierarchies and linked exceptions; prevent parent cycles and implicit approval/scope inheritance. A requirement can reference reviewed service/API/component/code locations, feature-flag constraints, compatibility obligations and data migrations. Each affected area has an owner and a reason. Source-backed AI suggestions remain candidates; no link recorded means unknown impact. These structures participate in schema migration, baseline snapshots and merges from W03.
+
+**Evidence-led authoring — P2-072 / P2-073 / P2-088.** Let reviewers select exact passages from several source revisions and see evidence added, replaced or removed before approving. Conflicting passages retain separate authority decisions. Add safe handbook blocks for headings/lists/tables/callouts/code, with plain-text/Markdown fallback and no arbitrary executable HTML. Derived facts stay linked; narrative overrides remain reviewed. Reusable work/test/NFR templates cover conditions, exceptions and measurable performance/accessibility/security/retention/operational criteria. Unknown thresholds stay questions rather than invented acceptance numbers.
+
+**QA's working view and execution — P2-075 / P2-076 / P2-077.** Build the current evidence matrix by requirement, case, release and environment, retaining result origin and applicability. Propose risk-based regression suites/charters from reviewed graph paths; QA reviews both inclusion and exclusion reasons. Native manual runs remain available without a server. Connected automated execution invokes a specifically configured existing test workflow after a human reviews allowed ref/inputs and checks authority; track the actual run/build/artifacts. GitHub supports [workflow dispatch](https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event), requiring a dispatch-enabled workflow and appropriate access. A timeout is an ambiguous request, not permission to blindly launch another run. Reconcile provider run identity before retrying; dispatch success never creates a test pass. Production deployment workflows are excluded from this test-execution capability.
+
+**Current receipts, personal context and useful alerts — P2-070 / P2-078 / P2-079 / P2-080.** Missing required current-owner acknowledgment becomes an attention reason, separate from completion/result. Create a concise before/after/why/scope/unknowns/evidence change contract accessible from a linked external work item or portable summary. Retain an encrypted local last-view cursor and show relevant changes since that actual revision. Connected mode adds a permission-filtered in-app feed and configurable subscriptions/digests; avoid duplicate/noisy alerts. Optional external delivery channels require user configuration and authorization. Static portable mode shows a briefing when the user opens the updated copy, not fictional background push notifications.
+
+**Support and Operations detail — P2-081 / P2-082.** Add approved, release-scoped known issues, workarounds and responsible escalation owners, with review/expiry dates and defect/incident links. Capture selected deployment manifests/config/flags, rollout audience, monitoring/dashboard references, measurable rollback thresholds and actual rollback validation evidence. Keep intended configuration, supplied manifest and observed deployed state distinct. A monitoring URL does not prove a threshold was checked; a runbook checkbox does not prove rollback executed. Stale workaround/runbook basis enters the same review inbox.
+
+**Continuity and recovery — P2-083.** Record a master owner and alternate custodian; the organization retains authorized secret material separately from project files. Implement known-passphrase rotation/re-encryption with original backup and reopen validation, preserving content identities/history. Retained old files remain decryptable with their old secret. Evaluate an optional separately held recovery wrapping key behind an explicit encryption-format/migration gate; existing v1 readers/files remain supported. This option cannot be simulated by storing the passphrase in the browser. If all original/recovery keys are lost, the honest outcome is unrecoverable content. The first continuity drill uses retained authorized custody, not a claimed reset from nothing.
+
+**Connected governance and reliable operation — P2-086 / P2-087 / P2-089 / P2-090 / P2-091.** Add job leases, checkpoints/resume, expiry/cancellation and input/access rechecks; accepted domain effects are idempotent, while provider billing/external side effects can still be uncertain. Exclude Relay-generated outputs from automatic source ingestion and treat timeouts separately from deletion. Verified source-access loss invalidates affected shared answer context. Add the second provider through the same reviewed task contract and explicit selection. Authenticated receipts/approvals record server actor, capability and exact revision; ordinary-user history is append-only, without claiming a regulatory or tamper-proof audit. Publish health/job/connector/backup signals with responsible owners and content-minimized diagnostics.
+
+**Cross-product and self-host expansion — P2-084 / P2-085.** Add explicit scoped dependencies between accessible projects, with permission-safe unknown/unavailable handling; portable mode can only reason from authorized snapshots it has received. No whole-company crawling or inferred secret dependencies. Package the same selected backend for self-hosting, with pinned configuration, secret setup, HTTPS/Auth callbacks, database/storage/job migrations and tested backup/upgrade/rollback. [Supabase's Docker guidance](https://supabase.com/docs/guides/self-hosting/docker) supports that deployment direction; operating it remains the organization's responsibility. Verify the actual supported components rather than assuming parity with every managed-host feature.
+
 ## 7. Additional modules that make the lifecycle complete
 
 ### Requirement and delivery structure
@@ -304,21 +327,21 @@ A package is a coherent capability, not a forced new chat session. We can finish
 | Package | Scope / reviewable result | Depends on | Estimated blocks |
 | --- | --- | --- | --- |
 | W01 | Canonical equality, idempotent validation, affected-file recovery and authored lifecycle regression. | Current code / public regression | 1–2 |
-| W02 | Unified review inbox/counts, honest empty states, reliable labels/focus and portable identity labels. | W01 | 2–3 |
-| W03 | Typed requirements/NFRs, scope, configurable roles, graph contract and migrations. | W01–W02 | 3–5 |
-| W04 | Guided intake, bulk review, native work, derived role guidance and My work. | W03 | 3–5 |
+| W02 | Unified review inbox/counts, current-owner receipt gaps, honest empty states, labels/focus and identity labels. | W01 | 2–4 |
+| W03 | Typed requirements/NFRs, hierarchy/exceptions, scope, roles, component/API constraints, graph contract and migrations. | W01–W02 | 4–6 |
+| W04 | Guided intake, multi-source picker, bulk review, safe handbook blocks, native work, derived guidance and My work. | W03 | 4–6 |
 | W05 | Glossary retrieval, agreed/source separation and release/baseline filters. | W03–W04 | 2–4 |
-| W06 | Native cases/manual runs/defects, evidence provenance, bounded report import. | W03–W04 | 4–6 |
-| W07 | Reviewed dependency graph, change rehearsal, impact reasons and evidence carry-forward. | W03–W06 | 4–6 |
-| W08 | File return manifests/lineage, capacity, deduplication, backups and bounded source fidelity. | W01, W03, W07 | 2–4 |
-| W09 | Release/deployment/exception views, Support/Operations guidance, incident loop and sanitized exports. | W04–W08 | 3–5 |
-| W10 | Live AI setup, task contracts, holdout evaluations, cost/latency and safe failures. | W03–W07; external provider/backend | 4–6 |
-| W11 | Shared Auth/policies/storage, transactional commands, conflicts, durable jobs and encrypted export. | W03–W09; backend access | 5–8 |
-| W12 | GitHub adapter, real run/build evidence, external ownership and reviewed write-back groundwork. | W06, W11; GitHub access | 3–5 |
+| W06 | Cases/manual runs/defects, reusable NFR/edge-case templates, evidence matrix/provenance and report import. | W03–W04 | 5–7 |
+| W07 | Reviewed graph, change rehearsal, regression selection, impact reasons and evidence carry-forward. | W03–W06 | 4–7 |
+| W08 | Return manifests/lineage, personal change digest, capacity/dedup, custody/rotation/recovery options and fidelity. | W01, W03, W07 | 3–5 |
+| W09 | Release/deployment/exception views, known issues/escalation, monitoring/rollback obligations, incident loop and sanitized exports. | W04–W08 | 4–6 |
+| W10 | Live AI setup, task contracts, holdouts, second-provider comparison, cost/latency and safe failures. | W03–W07; external providers/backend | 4–7 |
+| W11 | Auth/policies/storage, authenticated approvals, transactions/conflicts, subscriptions, leased/resumable jobs and encrypted export. | W03–W09; backend access | 6–10 |
+| W12 | GitHub adapter, real evidence, reviewed test-workflow execution, work-item change contract, ownership and ingestion safeguards. | W06, W11; GitHub access | 4–7 |
 | W13 | Confluence → Drive → Azure/ClickUp adapters, representative tenant checks and difficult-source extensions. | W08, W11–W12; respective accounts | 6–10 |
-| W14 | Permission-aware portfolio, company controls, measured real-team pilot and full hardening. | W01–W13 for full connected pilot | 4–6 |
+| W14 | Portfolio/cross-project links, company controls, self-host package, service health, real-team pilot and full hardening. | W01–W13 for full connected pilot | 6–9 |
 
-Estimated totals: **3–5 blocks** for the reliable foundation; **24–40 cumulative** for the complete portable journey; **46–75 cumulative** for the broad connected plan. These are substantial capabilities, not cosmetic fixes. Real account setup, permissions, provider quality, difficult documents and unexpected migration problems can extend the estimate. No current usage percentage has been read or assumed for this plan.
+Revised estimates including the newly explicit items: **3–6 blocks** for the reliable foundation; **29–47 cumulative** for the complete portable journey; **55–90 cumulative** for the broad connected plan. This replaces the earlier 46–75 full-plan range; the additions include real functionality such as hierarchy, richer authoring, execution integration, notifications and self-host packaging. Blocks are not sessions or hours. Real account setup, permissions, provider quality, difficult documents and unexpected migration problems can extend the estimate. No current usage percentage has been read or assumed for this plan.
 
 W10 evaluations and connector contract fixtures can proceed after their own foundations without blocking the manual journey. W14's baseline metrics and participant recruitment start early; its final acceptance waits for the relevant completed mode. W13 providers are delivered and labeled individually rather than waiting to pretend all integrations are ready.
 
@@ -373,6 +396,6 @@ Phase 2 does not include an IDE, arbitrary browser test-code execution, full obs
 
 ## 13. Completion rule and next implementation step
 
-The entire Phase 2 is complete only when the applicable backlog acceptance criteria and validation gates are met, account-dependent features are actually exercised or explicitly deferred by scope decision, and the real-team pilot is reported honestly. Writing this plan does not resolve the fifteen findings.
+The entire Phase 2 is complete only when the applicable backlog acceptance criteria and validation gates are met, the 138 feedback entries have an honest outcome, account-dependent features are actually exercised or explicitly deferred by scope decision, and the real-team pilot is reported honestly. Writing this plan does not resolve the fifteen broad findings or their individually tracked requests. Keep stable feedback/work IDs as scope evolves.
 
 **Start implementation with W01 / P2-001 through P2-004.** Reproduce the authored-history failure, repair structured comparison/normalization, preserve affected files, and pass repeated lifecycle and tamper-rejection checks. W02 follows immediately. This establishes the trustworthy foundation before expanding the product's reach.

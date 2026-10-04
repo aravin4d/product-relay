@@ -1,0 +1,38 @@
+{
+  "firstImport": "passes",
+  "sameValues": true,
+  "sameJSON": false,
+  "snapshotKeys": [
+    "id",
+    "title",
+    "actor",
+    "condition",
+    "outcome",
+    "applicability",
+    "owner",
+    "audiences",
+    "status",
+    "ownerNote",
+    "revision",
+    "updatedAt",
+    "evidence"
+  ],
+  "comparisonKeys": [
+    "id",
+    "title",
+    "actor",
+    "condition",
+    "outcome",
+    "applicability",
+    "owner",
+    "audiences",
+    "evidence",
+    "status",
+    "ownerNote",
+    "revision",
+    "updatedAt"
+  ],
+  "secondImport": "Invalid original rule comparison.",
+  "sharingRound": "Invalid original rule comparison.",
+  "encryptedReopen": "Invalid original rule comparison."
+}

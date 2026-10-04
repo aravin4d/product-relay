@@ -1,4 +1,4 @@
-Current implementation is 0.4.0: see [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md). This document retains the earlier section review as historical context.
+Current implementation is 0.4.0: see [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md). This document retains the earlier section review as historical context. The later live review found open reliability/attention defects; see [BUILD_STATUS.md](BUILD_STATUS.md). Remaining requests and preservation checks from this review are now individually mapped in [the Phase 2 feedback register](PHASE_2_FEEDBACK_COVERAGE.md), with corresponding backlog and validation references. Historical limitations already addressed in 0.4 are labeled for reverification.
 
 # Implementation review — 2 October 2026
 

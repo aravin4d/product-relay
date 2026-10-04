@@ -8,7 +8,7 @@ The later live six-role exercise found **REL-001 (P0)**: valid newly authored wa
 
 These findings are **not fixed**. Earlier passing checks are historical results and do not establish a dependable combined portable lifecycle. Preserve original affected files; recovery must retain history validation.
 
-[PHASE_2_PLAN.md](PHASE_2_PLAN.md) is the authoritative continuation plan. [PHASE_2_BACKLOG.csv](PHASE_2_BACKLOG.csv) maps all 15 findings into 69 planned work items across 14 packages. [PHASE_2_VALIDATION.md](PHASE_2_VALIDATION.md) defines evidence and usefulness gates. No application code, schema, backend, or deployment changed when these planning documents were created.
+[PHASE_2_PLAN.md](PHASE_2_PLAN.md) is the authoritative continuation plan. The completeness revision expands [PHASE_2_FEEDBACK_COVERAGE.md](PHASE_2_FEEDBACK_COVERAGE.md) to **138 individually visible entries**, including role requests and older reviews. [PHASE_2_BACKLOG.csv](PHASE_2_BACKLOG.csv) now has **91 planned engineering items** across 14 packages, including 22 newly explicit items; all 15 broad findings remain mapped. [PHASE_2_VALIDATION.md](PHASE_2_VALIDATION.md) defines evidence and usefulness gates. The [original role review and evidence](docs/reviews/2026-10-04/TEAM_REVIEW.md) are archived in the repository. No application code, schema, backend, or deployment changed when these planning documents were created or expanded.
 
 ## Product direction
 

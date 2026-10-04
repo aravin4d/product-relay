@@ -2,7 +2,7 @@
 
 **4 October 2026. Planned verification, not passing results.**
 
-Read with [the product plan](PHASE_2_PLAN.md) and [the actionable backlog](PHASE_2_BACKLOG.csv). V01–V18 below are referenced by backlog rows. The 150 Node, 13 storage-browser and 6 document-worker checks reported for 0.4.0 are historical coverage. The later authored lifecycle failed despite them; Phase 2 must add that combined journey rather than merely repeat the old suite.
+Read with [the product plan](PHASE_2_PLAN.md), [all 138 feedback entries](PHASE_2_FEEDBACK_COVERAGE.md) and [the expanded 91-item backlog](PHASE_2_BACKLOG.csv). V01–V18 below are referenced by backlog and feedback rows. The 150 Node, 13 storage-browser and 6 document-worker checks reported for 0.4.0 are historical coverage. The later authored lifecycle failed despite them; Phase 2 must add that combined journey rather than merely repeat the old suite.
 
 ## How we will record results
 
@@ -36,6 +36,8 @@ Use focused tests for the changed invariants, then the relevant lifecycle at pac
 - Share to two reviewers. Accept one return, detect its duplicate, keep another outstanding, preview a new round, and handle an older return using preserved validated ancestry or an explicit proposal review. No blind guessed merge.
 - Two master copies with divergent edits must surface conflict. An offline reader sees **latest known**, not an assertion of absolute freshness.
 - Compaction preserves logical parent IDs/hashes and every referenced revision. Missing deduplicated objects, changed hashes and orphaned archive links reject.
+- Rotate a known passphrase with backup and compare content/history before and after. Old saved copies remain readable with the old secret. Drill owner departure with an authorized alternate custodian. If the optional recovery-key format is implemented, test legacy migration, separately retained recovery, missing key, tampered wrapping material and incorrect recovery key; losing all keys must never produce a fictional reset.
+- Last-view comparison is pinned to the reader's actual known revision, persists encrypted, and identifies changes accurately after returned-file merge. An offline copy must not claim a live latest revision.
 
 **Gate:** every supported portable lifecycle remains recoverable; incompatible input leaves current state unchanged; every expected return has an accountable state.
 
@@ -47,6 +49,8 @@ Create a pending requirement proposal, handbook proposal, action update, unresol
 
 Check bulk preview, per-item rejection, deferral/rationale, partial approval and a base revision changing during review. Repeated submission must not duplicate decisions. My work and Team view must show explicit different ownership scopes. Opening an item must reach its actual next action.
 
+Require a current-scope receipt where configured; change its owner and applicable scope. Preserve the earlier receipt as history while exposing the new acknowledgment gap. A prior owner's receipt, old-scope receipt or task completion cannot clear that gap. Cases without a configured receipt obligation do not generate artificial blockers.
+
 **Gate:** no pending requirement is omitted, counts agree for the same scope, and partial or narrow empty states do not imply the whole project is caught up.
 
 ## V04 — roles, requirements and applicability
@@ -54,6 +58,8 @@ Check bulk preview, per-item rejection, deferral/rationale, partial approval and
 **Covers:** REL-004, REL-010, REL-012; BA/Product capabilities.
 
 Test behavior, constraint and NFR types; goals and acceptance measures; exclusions and decision-table combinations; evidence and approval history. Conflicting conditions become visible questions. Role renaming/removal must not orphan owned work or change past receipts. BA has a distinct seeded role.
+
+Test requirement parents/groups and linked exceptions, rejecting hierarchy cycles. Inheritance is explicit and reviewed; child creation does not inherit approval automatically. Link requirements to reviewed component/service/API/code references, compatibility constraints, flags and migrations, preserving owners and unknown impact. NFR templates retain measurable units/thresholds or an explicit unknown rather than a made-up acceptance value.
 
 Migrate legacy free-text scope without inventing release identities. Test unknown, general, release-specific, environment-specific and audience-limited applicability. An approved future rule is not a deployed rule. Choose an explicit scope or expose ambiguity before using it.
 
@@ -94,6 +100,8 @@ Review a same-meaning wording change and a real change with similar words. Carry
 
 **Gate:** recorded indirect effects appear with reasons; cycles remain bounded; unknown coverage is explicit; unaffected scope is preserved only with justified review.
 
+For regression selection, show included and excluded cases/charters, their dependency paths/risk basis, reviewer and scope. Excluding an unknown path must remain a reviewed risk, not a claim of verified safety. Cross-project paths use only authorized known endpoints; hidden project details and counts cannot leak through a graph edge.
+
 ## V07 — work, cases, results and evidence
 
 **Covers:** REL-008, REL-011; QA/Development.
@@ -103,6 +111,10 @@ Create relevant-role work, concrete case conditions/exceptions, NFR measures, ex
 Try a completion with no run, a URL-only artifact, a self-reported pass, an imported report and an independently retrieved run. The origin and supported coverage must differ. An unrelated successful CI job cannot imply all requirements were verified.
 
 Import bounded report fixtures twice; recognize duplicates. Include unknown cases, ambiguous case names, incomplete/skipped results, malformed/oversized markup and stale builds. Do not execute imported code or resolve untrusted external entities/network locations. Mapping choices are reviewed and retained.
+
+Compare the evidence matrix with its underlying requirement/case/run records for each release/environment. All missing/blocked/failed/stale/current/exception states must explain their basis. Reusing a reviewed edge-case/NFR template preserves concrete expected outcomes and qualifiers, without selecting every role by default.
+
+For connected execution, select a configured test-only workflow and preview the exact permitted ref/inputs/case selection. Check denied authority, wrong build, cancellation, provider outage, dispatch timeout/ambiguous acceptance, duplicate command and actual retrieved result. Reconcile a potentially accepted remote request before retrying; dispatch acknowledgment never implies test success. No deploy/production-control workflow is silently invoked by this feature.
 
 **Gate:** each coverage claim traces to actual supporting case/result/scope and evidence origin. Historical failures are never rewritten; retries create new results. Unmapped results cannot inflate coverage.
 
@@ -115,6 +127,8 @@ Build a candidate release with one failed critical check, one stale run, missing
 Approve release intent; verify it does not create a deployment record. Add a reported or retrieved deployment with build/environment/flag/audience; origin remains visible. Support answers use the actual selected scope, and Operations runbooks identify missing evidence rather than asserting execution.
 
 Record an incident against that deployment. Triage an observation into a hypothesis/question/defect and proposed requirement change. Review resulting regression and runbook work. Preserve the observation, investigation, owner decisions and earlier agreement separately.
+
+Add a supplied deployment manifest, intended flag configuration and observed rollout state that disagree. The view must expose that discrepancy. Monitoring links, actual observations, rollback thresholds and executed validation remain distinct. Check a known issue/workaround against the customer's scope, expiration/review date and escalation owner; stale/unapproved advice cannot become a customer-safe answer.
 
 **Gate:** one complete agreement → work → evidence → deployment → incident → reviewed improvement chain is inspectable. A production symptom alone does not establish root cause or approve a new rule.
 
@@ -148,6 +162,8 @@ Where OCR/audio is implemented, use bounded scanned/recorded material and visibl
 
 Count repeated entries from intake to rule, work and brief. One reviewed condition should be referenced by the derived records rather than retyped. Bulk review remains evidence-led; selecting all candidates is not automatic approval.
 
+Use the multi-source picker to cite two exact revisions with conflicting authority; add/replace/remove a passage and preserve the earlier approved evidence. Roundtrip structured handbook blocks and editable overrides. Test sanitized pasted markup, malicious links and formatting focus preservation; rich authoring must not introduce executable HTML or hide a fact's original basis.
+
 **Gate:** source fidelity limits are visible, old citations stay resolvable, failed import preserves current state, and the same fact is not maintained independently across role narratives.
 
 ## V12 — actual AI behavior and evaluation
@@ -161,6 +177,8 @@ Begin with at least **60 labeled cases** divided into development and frozen hol
 Required critical-suite outcomes: no silently lost exception/negation that changes agreement meaning, no wrong-project/baseline citation, no unsupported claim accepted as an approved fact, and no imported instruction changing authority/access/tool behavior. Quality gates apply to the resulting reviewed workflow as well as raw candidates; rejected/corrected outputs and reviewer effort are retained in the report.
 
 Measure useful candidate rate, correction effort, no-answer correctness, latency and usage cost for actual configured models. Embeddings/provider alternatives are enabled only when they justify their added complexity on the same tasks. Human approval remains required even after good scores.
+
+The second-provider adapter runs the same task/privacy/revision contract and holdout under its explicit configured choice. Report provider-specific results and blocked access separately. No error silently routes company content to an unselected provider.
 
 **Gate:** real inference meets the labeled critical checks and failures preserve the manual workflow. Model identity, dataset size, rejected output and provider limits are reported. No universal model-superiority claim.
 
@@ -184,6 +202,8 @@ Execute genuinely concurrent transactions from separate sessions. Competing same
 
 Queue an offline draft, change its server base, revoke its author and reconnect. Stale approvals must enter review; denied writes fail closed. A crashed/retried job must recheck current input/access and produce at most one accepted effect. Inspect service credentials only in secret configuration, never the client.
 
+Validate authenticated receipts/decisions against capability and exact current revision; ordinary users cannot edit earlier journal entries. The UI must distinguish them from portable self-reported receipts. Test in-app subscriptions/digests for deduplication, scope/ownership, quiet settings, access revocation and permission-safe summaries. A notification event refreshes context; it does not silently resolve conflicting edits.
+
 **Gate:** the denial matrix and multi-session contention tests pass on the actual backend. PGlite/fixture success is not enough to claim production shared-mode concurrency.
 
 ## V15 — operations, retention and company administration
@@ -194,6 +214,10 @@ Name project and backup owners. Test ownership transfer, organization/project me
 
 Check logs for plaintext source bodies, customer text, passphrases, provider keys and unnecessary identity data. Record retained diagnostics and their expiry/access. Confirm that archival/deletion affects current references and indexes as designed. Document infrastructure/job/storage responsibility and account-dependent costs without promising a free unlimited service.
 
+Crash a leased worker after a checkpoint and after an uncertain provider effect. Reclaim/resume safely; expired/cancelled/revoked work must not publish. Domain idempotency is tested separately from external execution/billing uncertainty. Health/job/connector/backup signals must reach their responsible operator without leaking confidential content.
+
+For self-host packaging, configure a fresh isolated environment using the pinned supported stack and non-default secrets. Exercise HTTPS/Auth callback setup, policies/assets/jobs, encrypted export, backup restore, upgrade and rollback. Publish supported components and measured recovery objectives; self-host operation is not automatically equal to every managed-service feature.
+
 **Gate:** recovery is demonstrated, responsible owners and limits are explicit, access changes work, and confidential payloads are absent from routine diagnostics.
 
 ## V16 — connector truth, ownership and safe writes
@@ -201,6 +225,8 @@ Check logs for plaintext source bodies, customer text, passphrases, provider key
 **Covers:** REL-004, REL-008, REL-013.
 
 Each adapter passes contract fixtures for stable IDs, pagination, rate limits, retries, changed revision, permission denial, deletion/inaccessibility, duplicate events and unavailable artifacts. Then run a representative real tenant/repository journey and label that provider separately. No tenant access means **fixture-tested only**, not a shipped verified integration.
+
+Tag app-generated outputs and confirm they do not recursively become new source material. A timeout cannot archive/delete an external record. Verified access loss invalidates restricted shared retrieval/cached-answer context. Open the concise reviewed change contract from a linked work item; correct scope and evidence must be preserved without a second manually maintained task status.
 
 Read refresh creates source revisions/observations and reviewed candidates. External-owned fields refresh from the external tool; native contextual decisions remain independent. Verify no task status needs to be manually synchronized twice.
 
@@ -240,6 +266,7 @@ At the reliable-foundation checkpoint run V01–V03 plus changed identity/form c
 Before calling the full Phase 2 complete:
 
 - [ ] Every REL-001 through REL-015 finding has its corresponding implementation and acceptance result, or an explicit approved scope decision.
+- [ ] Every FB-001 through FB-138 entry has a recorded outcome; existing capabilities have regression results and mode boundaries have truthful labels/controls.
 - [ ] Every backlog row has an honest result, with no blocked real-provider check represented as passing.
 - [ ] No known critical file/history corruption, unauthorized access, fabricated proof or incompatible-scope answer remains.
 - [ ] Earlier baselines, old results and source locations remain inspectable after changes/migrations/compaction.

@@ -4,7 +4,7 @@ A living product handbook for the whole delivery team, from the first PRD/SOP to
 
 **[Open Product Relay](https://aravin4d.github.io/product-relay/)** · **[Source repository](https://github.com/aravin4d/product-relay)**
 
-**Post-build review, 4 October 2026:** newly authored walkthrough history can fail repeated import, sharing preparation and encrypted recovery reopening in 0.4.0. Review screens also omit some pending/stale work. Preserve original project files; earlier passing checks did not cover this combined lifecycle. These defects remain open. The [Phase 2 plan](PHASE_2_PLAN.md), [69-item backlog](PHASE_2_BACKLOG.csv) and [validation gates](PHASE_2_VALIDATION.md) define the repair and full delivery-lifecycle expansion.
+**Post-build review, 4 October 2026:** newly authored walkthrough history can fail repeated import, sharing preparation and encrypted recovery reopening in 0.4.0. Review screens also omit some pending/stale work. Preserve original project files; earlier passing checks did not cover this combined lifecycle. These defects remain open. The [138-point feedback register](PHASE_2_FEEDBACK_COVERAGE.md), [Phase 2 plan](PHASE_2_PLAN.md), [91-item backlog](PHASE_2_BACKLOG.csv) and [validation gates](PHASE_2_VALIDATION.md) define the repair and full delivery-lifecycle expansion. The register includes each role's individual requests and earlier review suggestions, not only the 15 broad finding IDs.
 
 Choose **Explore the sample product**. The fictional R3 fraud change needs fresh QA work, while ordinary cancellation keeps its applicable verification. This is the core differentiator: preserve what was agreed and checked, then show exactly which scoped work needs review.
 
@@ -105,6 +105,8 @@ The 0.4.0 deployment was verified on 4 October 2026: [successful Pages workflow]
 The original ten-session plan is a historical feature map. The new Phase 2 plan covers every review finding, native work/testing/releases, production learning, optional shared services and connectors. It has 14 capability packages, not a rule to stop after one package per chat. Planning documents do not repair the deployed app.
 
 - [Phase 2 product and engineering plan](PHASE_2_PLAN.md)
+- [Every earlier feedback point and response](PHASE_2_FEEDBACK_COVERAGE.md)
+- [Filterable feedback mapping](PHASE_2_FEEDBACK_COVERAGE.csv)
 - [Phase 2 actionable backlog](PHASE_2_BACKLOG.csv)
 - [Phase 2 validation and real-team pilot](PHASE_2_VALIDATION.md)
 - [Latest checked implementation](CHECKPOINT_0.4.0.md)
