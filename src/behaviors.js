@@ -1,5 +1,6 @@
+import {equal} from './value.js';
 // Qualified product rules retain their scope through review and historical snapshots.
-import {ROLES, uid, clone, isStale, makeEvidence} from './domain.js';
+import {ROLES, getRoles, uid, clone, isStale, makeEvidence} from './domain.js';
 const now = () => new Date().toISOString();
 const fields = ['title','actor','condition','outcome','applicability','owner','audiences','evidence','originRunId'];
 const text = value => typeof value === 'string';
@@ -22,7 +23,7 @@ function details(project, input, base = null) {
   if (!text(owner) || owner.length > 300) throw new Error('Use a valid product rule owner.');
   value.owner = owner.trim();
   const audiences = input.audiences ?? base?.audiences ?? ['Everyone'];
-  if (!Array.isArray(audiences) || !audiences.length || audiences.some(role => !ROLES.includes(role)) || new Set(audiences).size !== audiences.length) throw new Error('Select valid team perspectives for this rule.');
+  if (!Array.isArray(audiences) || !audiences.length || audiences.some(role => !getRoles(project).includes(role)) || new Set(audiences).size !== audiences.length) throw new Error('Select valid team perspectives for this rule.');
   value.audiences = clone(audiences);
   if (input.sourceId === '__none') value.evidence = [];
   else if (input.sourceId) value.evidence = [makeEvidence(project, input.sourceId, input.quote)];
@@ -74,7 +75,7 @@ export function proposeBehaviorChange(project, id, input, reason) {
   if (behavior.archived || behavior.status !== 'approved') throw new Error('Only active approved rules can receive change proposals.');
   if (!required(reason)) throw new Error('Explain why this product rule should change.');
   const proposed = details(project,input,behavior);
-  if (fields.every(key=>JSON.stringify(proposed[key])===JSON.stringify(behavior[key]))) throw new Error('Change the rule, scope, owner, audiences, or evidence before proposing an update.');
+  if (fields.every(key=>equal(proposed[key],behavior[key]))) throw new Error('Change the rule, scope, owner, audiences, or evidence before proposing an update.');
   ensure(project);
   const proposal = {id:uid(),behaviorId:id,base:clone(behavior),proposed,reason:reason.trim(),status:'pending',at:now()};
   project.behaviorChanges.push(proposal); event(project,`Proposed product rule update: ${behavior.title}`); return proposal;
@@ -82,7 +83,7 @@ export function proposeBehaviorChange(project, id, input, reason) {
 export function behaviorProposalBlocker(project, proposal) {
   const behavior = project.behaviors?.find(item=>item.id===proposal.behaviorId);
   if (!behavior || behavior.archived) return 'Product rule is unavailable.';
-  if (JSON.stringify(behavior)!==JSON.stringify(proposal.base)) return 'Product rule changed after this proposal. Recreate it from the current rule.';
+  if (!equal(behavior,proposal.base)) return 'Product rule changed after this proposal. Recreate it from the current rule.';
   if (isStale(project,proposal.proposed)) return 'Supporting evidence changed. Recreate this proposal with current evidence.';
   return '';
 }
@@ -113,7 +114,7 @@ export function archiveBehavior(project,id) {
 }
 export function restoreBehavior(project,id) { const behavior=find(project,id);behavior.archived=false;event(project,`Restored product rule: ${behavior.title}`); }
 export function listBehaviors(project,{audience='Everyone',versionId='',includeDrafts=true}={}) {
-  if (!ROLES.includes(audience)) throw new Error('Unknown team perspective.');
+  if (!getRoles(project).includes(audience)) throw new Error('Unknown team perspective.');
   const records=versionId ? project.versions.find(version=>version.id===versionId)?.behaviors??[] : project.behaviors??[];
   return records.filter(record=>!record.archived&&(includeDrafts||record.status==='approved')&&(audience==='Everyone'||record.audiences.includes('Everyone')||record.audiences.includes(audience)));
 }
@@ -123,7 +124,7 @@ export function validateBehaviorCollections(project, context) {
   if (!Array.isArray(behaviors)||behaviors.length>1000||!Array.isArray(changes)||changes.length>2000||!Array.isArray(decisions)||decisions.length>5000) throw new Error('Invalid product rule collections.');
   unique(behaviors,'behavior');unique(changes,'behavior proposal');unique(decisions,'decision');
   function validateFields(record) {
-    if (!record || ['title','actor','condition','outcome','applicability'].some(key=>!required(record[key])) || !text(record.owner) || record.owner.length>300 || !Array.isArray(record.audiences) || !record.audiences.length || record.audiences.some(role=>!ROLES.includes(role)) || new Set(record.audiences).size!==record.audiences.length) throw new Error('Invalid qualified product rule.');
+    if (!record || ['title','actor','condition','outcome','applicability'].some(key=>!required(record[key])) || !text(record.owner) || record.owner.length>300 || !Array.isArray(record.audiences) || !record.audiences.length || record.audiences.some(role=>!getRoles(project).includes(role)) || new Set(record.audiences).size!==record.audiences.length) throw new Error('Invalid qualified product rule.');
     validateEvidence(record.evidence);
     if(record.originRunId!==undefined&&!aiRunIds?.has(record.originRunId))throw new Error('Invalid originating AI run reference.');
   }

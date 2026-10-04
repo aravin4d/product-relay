@@ -16,3 +16,8 @@ src/vendor/
 
 # Temporary local verification caches.
 work/
+
+# Operator credentials and private validation reports.
+*.local.env
+*.private.json
+deploy/operator-state/

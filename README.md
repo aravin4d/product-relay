@@ -1,115 +1,95 @@
 # Product Relay
 
-A living product handbook for the whole delivery team, from the first PRD/SOP to walkthrough decisions, changed rules, owned work, and verification. Each project travels in one encrypted `.relay` file. The app runs on GitHub Pages; manual use needs no account or server.
+A delivery context system connecting the original PRD/SOP and walkthrough decisions to owned work, test evidence, releases, Support guidance and production learning. One encrypted `.relay` file per project works without accounts or AI. An optional shared service adds authenticated collaboration and selected integrations to the same domain.
 
-**[Open Product Relay](https://aravin4d.github.io/product-relay/)** · **[Source repository](https://github.com/aravin4d/product-relay)**
+**[Live 0.4.0 site](https://aravin4d.github.io/product-relay/)** · **[Repository](https://github.com/aravin4d/product-relay)** · **[Phase 2 build branch](https://github.com/aravin4d/product-relay/tree/codex/phase2-delivery-build)**
 
-**Post-build review, 4 October 2026:** newly authored walkthrough history can fail repeated import, sharing preparation and encrypted recovery reopening in 0.4.0. Review screens also omit some pending/stale work. Preserve original project files; earlier passing checks did not cover this combined lifecycle. These defects remain open. The [138-point feedback register](PHASE_2_FEEDBACK_COVERAGE.md), [Phase 2 plan](PHASE_2_PLAN.md), [91-item backlog](PHASE_2_BACKLOG.csv) and [validation gates](PHASE_2_VALIDATION.md) define the repair and full delivery-lifecycle expansion. The register includes each role's individual requests and earlier review suggestions, not only the 15 broad finding IDs.
+**4 October 2026:** Phase 2 code is built as **0.5.0-phase2.0** on a separate branch. Functional testing is deferred to the next session at the user's request. The live site remains the earlier build with its recorded authored-history/review-queue defects. Repair code is present on this branch; that is not yet proof of a reliable save/share/reopen journey.
 
-Choose **Explore the sample product**. The fictional R3 fraud change needs fresh QA work, while ordinary cancellation keeps its applicable verification. This is the core differentiator: preserve what was agreed and checked, then show exactly which scoped work needs review.
+Start with [the implementation checkpoint](PHASE_2_BUILD.md). All **91 engineering items** and **138 feedback entries** retain their individual acceptance contracts and concrete open work. No completion percentage substitutes for those checks.
 
-## Start in five steps
+## Why this exists
 
-1. Create a project and choose a passphrase of at least 12 characters.
-2. Import a PRD/SOP, add teammates, and review qualified product rules and handbook drafts.
-3. Capture walkthrough statements against the agreement; record owner decisions and approve any resulting proposals separately.
-4. Plan relevant team work, assign owners, and record acknowledgment, completion, and verification as separate steps.
-5. Start a **sharing round**, save the master file, and send it to teammates. Share its passphrase separately. Review returned copies in **Shared-file review** before merging selected edits.
+After a product decision changes, a team needs to know which requirement, work item, case, result, briefing or deployment context is affected, and why. Relay records the agreed revision and reviewed links instead of relying on the newest paragraph or a successful generic workflow. It keeps approval, ownership receipts, completion, test evidence and actual deployment as separate facts.
 
-A recipient opens the file and selects their name or team. Perspectives filter the reading view; every recipient can read the complete project. The PM remains responsible for the master copy.
+This is the proposed differentiator. Real-team savings and competitor superiority have not been established.
 
-## Code implemented in 0.4.0
+## Begin manually
 
-The table describes implemented capabilities. It is not a claim that all authored save/share/reopen journeys are reliable; see the confirmed defects above.
+1. Create a project, choose a passphrase of at least 12 characters and add teammates.
+2. Import the original PRD/SOP or walkthrough transcript; inspect extraction before using it as evidence.
+3. Use **Guided intake** and **Delivery records** to draft typed requirements, scope and numerical NFR measures. Review exact source quotations before approving.
+4. Create only relevant owned work, approved cases and guidance. Record current-owner receipt separately from completion and actual test results.
+5. Review a change through **Review inbox**, recorded dependency paths and an isolated rehearsal. Approve resulting changes separately and inspect the current evidence matrix.
+6. Record release obligations and actual build/environment observations; use applicable Support/Operations guidance. Incidents create reviewed follow-up drafts.
+7. Start a sharing round, record expected returns, save the encrypted master and send it through your existing channel. Share the secret separately. Review returned copies before merging.
 
-| Area | Implemented behavior |
+**Explore the sample product** opens a fictional six-role journey. Nothing in the demonstration proves a real execution or deployment. `examples/orbit-demo.relay` is the earlier encrypted example; its public demonstration passphrase is **orbit-demo-context**. Never use that secret for real work.
+
+## Built areas
+
+| Area | Code present in Phase 2 |
 | --- | --- |
-| Original context | Local PDF/DOCX/text import, extraction preview/correction, metadata, duplicate warnings, revision history, and exact page/paragraph citations. |
-| Product rules | Stable IDs; actor, condition, outcome, release/environment scope, owner, audiences; draft approval, reviewed changes, archive/restore, and decision history. |
-| Handbook | Role views, editable drafts, evidence and owner decisions, proposals, immutable approved baseline snapshots, and readable export. |
-| Walkthrough review | A quoted statement beside its original agreed rule; unresolved questions, deferrals, owner interpretation, and separate rule proposals or new drafts. Recency never decides authority. |
-| Ask the product | Local retrieval over approved rules/sections, current or historical baseline, qualifiers, original evidence, and explicit missing context. Optional AI explains the displayed approved evidence after consent. |
-| Changes | Adjacent source-revision comparison; manually reviewed interpretation or AI candidates become proposals. Unrelated rules remain unchanged. |
-| Delivery review | Reviewer-selected role actions, named owners, scope acceptance, work statuses, task-update proposals, acknowledgment, qualified verification records, selective stale work, and missing-work reasons. |
-| Shared files | Embedded common base, three-way record comparison, explicit conflict choices, reviewed merge, linked-history validation, and complete encrypted parent archives. |
-| Optional AI | Protected Supabase gateway, OpenAI Responses adapter, validated rule/section/question candidates, stale-output checks, grounded explanation, provenance, and server-enforced request allowance. |
-| Files and recovery | AES-encrypted portable files and IndexedDB recovery, lock/reopen, stale-tab/file checks, separate review identities, and older-format migration. |
+| Agreement | Objectives, behavior/constraint/exception/NFR requirements, hierarchy, glossary, release/environment/audience/flag scope and multi-source revision evidence. |
+| Review | Unified attention/inbox, per-item batch decisions, exact-base proposals, preserved history and explicit My work/Team view. |
+| Delivery | Owned work, scope-bound receipts, component/API/compatibility/migration references and reviewed role handoffs. |
+| QA | Versioned cases and measures, immutable actual runs, JUnit/JSON mapping, defects, regression selection and reason-based evidence matrix. |
+| Release and learning | Obligations/accepted risks, actual deployment observations, Support/Operations guidance and incident follow-up. |
+| Knowledge | Agreement versus raw sources, aliases, historical baselines and explicitly mapped deployed context; optional grounded AI. |
+| Portable coordination | Encrypted master/cache, named returns, common bases, three-way record-group review, parent histories, lossless packing, rotation/recovery snapshots and sanitized exports. |
+| Optional shared service | Membership/capability policies, transactional revision commands/journals, offline conflict retention, private originals, authorized in-app feed and portfolio. |
+| Optional integrations | Selected GitHub, Confluence, Drive, Azure and ClickUp reads; reviewed GitHub comments/test-only dispatch; bounded image/audio processing. |
+| Optional AI | OpenAI/Anthropic selection, bounded tasks, exact citations, preserved unknowns, shared-project reauthorization and request allowances. |
 
-No provider account is configured. The AI code and its credential-free runtime tests work; paid inference, deployed Supabase behavior, and model extraction quality remain unverified. [AI setup](AI_SETUP.md) explains the exact external steps.
+See [PHASE_2_BUILD.md](PHASE_2_BUILD.md) for specific unfinished capabilities. Notable gaps include archive offloading, direct old-return/rebase wizards, OAuth/token-refresh wizards, automatic artifact-content ingestion, scheduled external notifications and automated retention/backup operations. These are not reported as complete.
 
 ## Run and host
 
-Node.js 24 is the tested development target:
+Node.js 24 is the development target:
 
 ```sh
 npm ci --ignore-scripts
 npm run dev
-npm run check
-npm run build
 ```
 
-Open http://127.0.0.1:4173. The sample stays in memory until protected/saved. Local PDF.js and Mammoth assets are bundled; visitors do not install packages.
+Open http://127.0.0.1:4173. Local PDF.js/Mammoth assets are bundled; no visitor package installation is needed.
 
-GitHub Pages publishes `index.html` and `src/` from the built `site/` directory. The included workflow installs locked dependencies, runs checks, builds, and deploys pushes to `main`. Pull requests run checks without publishing. In a new repository, select **Settings → Pages → GitHub Actions**. A deployment must finish before new code is live. Tests, documents, examples, and backend code are excluded from the published website.
+For construction checks and artifacts:
 
-The manual application remains static. Optional AI requires a separately deployed gateway and provider access; its secret key never belongs in the public website. No Confluence, Drive, ClickUp, or Azure account is needed to try the local-file product.
+```sh
+npm run check:static
+npm run build
+npm run package:backend
+```
 
-## Saving and returning files
+`site/` contains the static website. `work/relay-backend-package/` contains optional functions, their colocated domain modules, migrations, operator templates, worker runner and a file-hash manifest. Packaging starts no service and transfers no project.
 
-Protected edits automatically update encrypted browser recovery. **Save project file** exports the portable copy; recovery alone does not share changes. Closing/reloading forgets the decryption key. Clearing browser storage removes recovery copies, not files already saved on disk.
+GitHub Pages deploys the static site through the included workflow on `main`, after `npm run check` and the build. Feature branch pushes do not deploy. **Do not merge this checkpoint until next-session validation is recorded.** Tests/docs/examples/backend code are excluded from the site. For another repository select **Settings → Pages → GitHub Actions**.
 
-Browsers supporting File System Access can link a file for direct updates through **How sharing works → Open file for editing**. Other browsers download a new copy. **Download project file** always exports without writing the linked original. Issuing a download cannot prove the user retained it on disk.
+Optional shared/AI/connector jobs require a separately operated backend. Use [deploy/README.md](deploy/README.md) and [AI_SETUP.md](AI_SETUP.md); GitHub Pages cannot hold provider secrets or run a worker. No backend/provider/connector account was provisioned during this build.
 
-Start a sharing round **before** sending the master. Its common base stays inside the encrypted file while teammates return edits. Starting another round makes old returns incompatible with automatic comparison. Open returned files in **Shared-file review**, select incoming edits, explicitly choose conflicting branches, and name the merge reviewer. Incoming approval/accepted-task history requires an additional review checkbox. Inconsistent linked rule/task/source histories reject the entire merge. Both full parent histories are archived before the active result replaces the master.
+## Files, privacy and limits
 
-These are record-group merges, not simultaneous editing. Same-task/same-rule histories stay together. Independent task edits can merge; incompatible branch dependencies require separate review files. Source branches keep original revision IDs and preserve both passages when an incoming branch is selected. Concurrent baselines retain stable IDs/snapshots and receive sequential display numbers. A project supports at most 10 merge archives and a 10-million-character decrypted bundle; anchors and archives consume that budget.
+Protected edits update encrypted browser recovery; **Save project file** exports the portable copy. Recovery alone does not share changes. File System Access browsers can link a native file; other browsers download another copy. A download request cannot prove it was retained on disk. File handles and unlocked keys stay in the active tab.
 
-Opening an incoming file directly is blocked when matching recovery has unexported changes. **Open as a separate review copy** creates another project identity and preserves parent archives, but does not remain merge-compatible with the original master. Return edits using the normal shared project file.
+AES-256-GCM files/cache use fresh nonces and PBKDF2-SHA-256 with random salt and 600,000 iterations. Recovery metadata exposes IDs/timestamps/export state, not project contents. Every passphrase holder can read the complete portable project with a compatible implementation. Perspectives are filters; portable names/receipts are self-reported. Downloaded copies cannot be revoked. Losing every retained secret remains unrecoverable.
 
-## Try the encrypted example
+Phase 2 saves containing native delivery context use **schema 5**, retaining 26 record families, source revisions and logical history. Schemas 1–4 remain supported; future schemas reject. Keep originals before upgrading. The encryption envelope is unchanged. The file budget is 10 million serialized characters with a bounded 32 MB packing expansion; ten merge archives remain the supported parent limit. Lossless packing does not remove logical parents.
 
-Open `examples/orbit-demo.relay`. Its public demonstration passphrase is **orbit-demo-context**. All people, decisions, and evidence are fictional; never reuse that passphrase for real work.
+Text PDF/DOCX import is bounded to 15 MB/document, 200 PDF pages and 200,000 extracted characters. CSV/SRT/VTT preserve bounded text locations. Original bytes are retained only when explicitly selected: portable originals 2 MB each/6 MB total, optional private shared originals 6 MB each. Remote references are not offline copies. Editing extracted text removes original layout claims. OCR accepts bounded PNG/JPEG; transcription accepts short PCM WAV. Rich layout, scanned-PDF conversion and diarization remain unsupported.
 
-Select Alex, open **Delivery review**, and compare ordinary and fraud verification. In **Ask the product**, search “fraud” using the current agreement and the R2 baseline. The outcome and original cited source differ. Review the walkthrough decision, rescope a stale task, and record a new qualified check. See [DEMO_STORY.md](DEMO_STORY.md).
+Manual use performs no product-content network request. Optional AI/media/connector/shared actions send authorized plaintext to the configured backend/providers after the relevant consent. Server/provider processing is not end-to-end encrypted. Provider secrets stay on the backend, sign-in tokens in tab memory and local pending review drafts encrypted. Shared-project identity/capability checks differ from portable self-reported decisions.
 
-## Privacy and limits
+Recorded paths cannot prove all dependencies are known. Semantic equivalence, conflicting interpretations, carry-forward and actual deployment mappings require human review. A quoted passage, artifact URL, workflow success, task completion or runbook does not prove a requirement was tested or a rollback executed. No averaged readiness score or regulatory-grade audit claim is made.
 
-AES-256-GCM encrypts project files/recovery with a fresh nonce. PBKDF2-SHA-256 uses a random salt and 600,000 iterations to derive a non-extractable key. Keys remain in the active tab. Recovery metadata exposes only IDs, timestamps, sequence/export state; project contents stay encrypted until opened. Anyone with the passphrase and a compatible implementation can decrypt the file. There is no lost-passphrase recovery, per-person access control, or authenticated portable sign-off.
+## Verification and continuation
 
-Manual use and extraction make no external requests for fonts, analytics, or product content. Optional AI sends only confirmed selected plaintext context to the configured gateway/provider over HTTPS. Provider secrets stay on the backend; sign-in tokens stay in tab memory; public connection settings can be retained locally. Inference is not end-to-end encrypted. Answers and unsaved candidates stay in memory; saved drafts, input revision references, and provenance enter the encrypted file.
+New code passed construction checks only; full tests/browser journeys, SQL migrations/RLS, Deno type checking, live Auth/models/connectors, recovery drills and measured performance remain deferred. Previous 0.4.0 tests/deployment evidence in [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md) are historical and do not certify this branch.
 
-Documents support ordinary text PDFs/DOCX and raw text imports: 15 MB per document, 200 PDF pages, 200,000 extracted characters. Original binaries/layout are not embedded. Editing extracted text removes original page/paragraph claims. OCR, audio transcription, difficult table fidelity, connectors, shared cloud storage, and authenticated team identity are outside this prototype.
+Next session follows [the test handoff](docs/PHASE_2_NEXT_SESSION.md) and [V01–V18](PHASE_2_VALIDATION.md), beginning with a newly authored walkthrough/save/share/reopen journey rather than the prepared demo. `npm run check` includes functional tests and is intentionally reserved for that session. Retrieval/model runners in [docs/evaluation/](docs/evaluation/README.md) are opt-in and have not been run.
 
-Scope staleness compares the approved actor, condition, outcome, and applicability exactly. Title/owner/audience changes do not invalidate checks. This is not an automatic semantic classifier: a human reviews meaning, and a semantically equivalent rewording of those scope fields can still trigger review. Source-revision warnings are separate and conservative. Completion, acknowledgments, and test results are self-reported; linked artifacts are not executed or independently verified. There is no release-readiness percentage or tamper-proof audit claim.
-
-File handles last for the tab session. Cache compare-and-set, Web Locks where available, and original-file fingerprint checks help avoid stale writes; they are not distributed locks. One master owner remains the supported sharing workflow.
-
-New saves use schema **4**, and schemas 1–3 upgrade on opening. Future schemas are rejected. Keep an original copy before upgrading; earlier app builds cannot read schema 4. The encryption envelope is unchanged.
-
-## Validation
-
-The results below precede the later live review. They remain historical results; the authored-history failure and incomplete review counts remain unresolved.
-
-On 4 October 2026: **150 Node tests** and source/script syntax checks passed; the static build passed. These include actual PDF.js/Mammoth parsing, portable rule/action/history validation, encrypted files, three-way merge cases, grounded-context isolation, and the real allowance migration running on PGlite PostgreSQL 18.3. A queued burst proves reservation counts; actual multi-connection database contention remains unverified.
-
-The actual gateway entry point, pinned Supabase SDK, handler, and provider adapter passed a **Deno 2.9.6 runtime test with four substeps**, using intercepted fictional HTTP calls. Function type/module checking also passed. This does not prove external deployment or paid provider inference.
-
-Actual-browser checks: **13 encrypted storage checks** and **6 document worker checks** passed. UI walkthrough-to-proposal, current/historical evidence, scoped stale work, and returned-file merge/parent inspection were exercised in the in-app browser. Direct native writing/download retention varies by browser. Mobile, accessibility, security, and performance audits remain further validation work.
-
-Start the local server and open `/_checks` or `/_document-checks` to rerun isolated fictional browser checks. Existing recovery projects are preserved. Test pages are not deployed.
-
-The 0.4.0 deployment was verified on 4 October 2026: [successful Pages workflow](https://github.com/aravin4d/product-relay/actions/runs/37184393300). Live QA perspective and PDF import were checked.
-
-## Build record
-
-The original ten-session plan is a historical feature map. The new Phase 2 plan covers every review finding, native work/testing/releases, production learning, optional shared services and connectors. It has 14 capability packages, not a rule to stop after one package per chat. Planning documents do not repair the deployed app.
-
-- [Phase 2 product and engineering plan](PHASE_2_PLAN.md)
-- [Every earlier feedback point and response](PHASE_2_FEEDBACK_COVERAGE.md)
-- [Filterable feedback mapping](PHASE_2_FEEDBACK_COVERAGE.csv)
-- [Phase 2 actionable backlog](PHASE_2_BACKLOG.csv)
-- [Phase 2 validation and real-team pilot](PHASE_2_VALIDATION.md)
-- [Latest checked implementation](CHECKPOINT_0.4.0.md)
-- [Current status and continuation](BUILD_STATUS.md)
-- [Feature-wave plan](BUILD_WAVES.md)
-- [Product direction](BUILD_PLAN.md)
+- [Implementation checkpoint and remaining work](PHASE_2_BUILD.md)
+- [All 138 feedback points](PHASE_2_FEEDBACK_COVERAGE.md)
+- [91-item engineering backlog](PHASE_2_BACKLOG.csv)
+- [Detailed product/architecture plan](PHASE_2_PLAN.md)
+- [Current build status](BUILD_STATUS.md)

@@ -1,8 +1,8 @@
 import * as D from './domain.js';
 const now=()=>new Date().toISOString();
-const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+import {equal as same} from './value.js';
 export function captureStatement(p,{title,sourceId,quote,behaviorId='',role='Everyone',owner=''}) {
-  if(!title?.trim()||!D.ROLES.includes(role))throw new Error('Give the statement a title and team perspective.');
+  if(!title?.trim()||!D.getRoles(p).includes(role))throw new Error('Give the statement a title and team perspective.');
   const evidence=D.makeEvidence(p,sourceId,quote),behavior=p.behaviors.find(b=>b.id===behaviorId);
   if(behaviorId&&(!behavior||behavior.status!=='approved'||behavior.archived))throw new Error('Compare with an active agreed rule.');
   const question=D.addQuestion(p,title,role,owner);
@@ -33,7 +33,7 @@ export function validateReconciliations(p,{identifier,timestamp,unique,validateE
   const list=p.reconciliations??[];if(!Array.isArray(list)||list.length>2000)throw new Error('Invalid walkthrough reviews.');unique(list,'walkthrough review');
   for(const r of list){
     validateEvidence([r.evidence]);
-    if(typeof r.title!=='string'||!r.title.trim()||r.title.length>2000||!D.ROLES.includes(r.role)||typeof r.owner!=='string'||!p.questions.some(q=>q.id===r.questionId)||!['open','reviewed'].includes(r.status)||!timestamp(r.at)||typeof r.resolution!=='string'||r.resolution.length>20000||typeof r.reviewerId!=='string'||typeof r.resultType!=='string'||typeof r.resultId!=='string')throw new Error('Invalid walkthrough decision.');
+    if(typeof r.title!=='string'||!r.title.trim()||r.title.length>2000||!D.getRoles(p).includes(r.role)||typeof r.owner!=='string'||!p.questions.some(q=>q.id===r.questionId)||!['open','reviewed'].includes(r.status)||!timestamp(r.at)||typeof r.resolution!=='string'||r.resolution.length>20000||typeof r.reviewerId!=='string'||typeof r.resultType!=='string'||typeof r.resultId!=='string')throw new Error('Invalid walkthrough decision.');
     if(r.behaviorId){if(!identifier(r.behaviorId)||!r.base||!same(D.getBehaviorRevision(p,r.behaviorId,r.base.revision),r.base))throw new Error('Invalid original rule comparison.');}else if(r.base!==null)throw new Error('Invalid original rule comparison.');
     if(r.reviewerId&&!p.members.some(m=>m.id===r.reviewerId))throw new Error('Unknown walkthrough reviewer.');
     if(r.status==='reviewed'){

@@ -30,6 +30,7 @@ async function writeCache(entry,expected) {
 export async function listCachedFiles(){return (await readAll()).map(e=>({id:e.id,dirty:e.dirty,updatedAt:e.updatedAt,lastExportAt:e.lastExportAt,sequence:e.sequence}));}
 export function storageState(id){const s=sessions.get(id);return s?{protected:true,dirty:s.entry.dirty,linked:!!s.handle,lastExportAt:s.entry.lastExportAt}: {protected:false,dirty:true,linked:false};}
 export function lockProjects(){sessions.clear();}
+export function closeProject(id){sessions.delete(id);}
 export async function createProtectedProject(project,passphrase) {
  return withLock(project.id,async()=>{
   project=importProject(exportProject(project));
@@ -70,9 +71,29 @@ export function encryptedProjectFile(id) {
   return JSON.stringify(session.entry.envelope,null,2);
 }
 export function linkedHandle(id){return sessions.get(id)?.handle;}
+export async function rotateProjectPassphrase(id,knownPassphrase,newPassphrase) {
+ return withLock(id,async()=>{
+  const session=sessions.get(id);if(!session)throw new Error('Unlock this project first.');
+  const {data}=await openVault(session.entry.envelope,knownPassphrase);
+  const project=importProject(JSON.stringify(data));if(project.id!==id)throw new Error('Project identity mismatch.');
+  const backup=JSON.stringify(session.entry.envelope),{envelope,key}=await createVault(JSON.parse(exportProject(project)),newPassphrase);
+  importProject(JSON.stringify((await openVault(envelope,key)).data));
+  const entry={...session.entry,envelope,dirty:true,updatedAt:new Date().toISOString()};
+  entry.sequence=await writeCache(entry,session.entry.sequence);session.entry=entry;session.key=key;
+  return {backup,project};
+ });
+}
+export async function createRecoveryBackup(id) {
+ const session=sessions.get(id);if(!session)throw new Error('Unlock this project first.');
+ const {data}=await openVault(session.entry.envelope,session.key);importProject(JSON.stringify(data));
+ const secret=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
+ const {envelope}=await createVault(data,secret);
+ return {secret,file:JSON.stringify(envelope),createdAt:new Date().toISOString()};
+}
 export async function saveProjectFile(id,handle=null,exportOnly=false) {
  return withLock(id,async()=>{
   const session=sessions.get(id);if(!session)throw new Error('Unlock the project first.');
+  const opened=await openVault(session.entry.envelope,session.key);importProject(JSON.stringify(opened.data));
   const text=encryptedProjectFile(id);const chosen=exportOnly?null:handle??session.handle;
   const stored=(await readAll()).find(e=>e.id===id);
   if(stored?.sequence!==session.entry.sequence)throw new Error('Another tab saved a newer recovery copy. Lock and reopen the project before saving its file.');

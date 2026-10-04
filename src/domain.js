@@ -1,9 +1,14 @@
+import {packProject,unpackProject} from './packing.js';
+import * as L from './lifecycle.js';
+import {equal} from './value.js';
 import {validateReconciliations} from './reconciliation.js';
 import {validateBehaviorCollections, cleanBehaviorCollections, addBehavior, approveBehavior} from './behaviors.js';
 import {validateActionCollections, cleanActionCollections} from './actions.js';
 export {addBehavior, editBehavior, approveBehavior, proposeBehaviorChange, behaviorProposalBlocker, acceptBehaviorChange, rejectBehaviorChange, archiveBehavior, restoreBehavior, listBehaviors} from './behaviors.js';
 export {ACTION_ROLES, ACTION_STATUSES, getBehaviorRevision, getActionSuggestions, confirmBehaviorImpact, addAction, proposeRoleActions, editAction, acceptAction, updateActionStatus, proposeActionChange, acceptActionChange, rejectActionChange, acknowledgeAction, acknowledgeBehaviorChange, recordVerification, actionReviewState, verificationState, listActions, currentOwnerAcknowledgment, reviewSummary} from './actions.js';
-export const ROLES = ['Everyone', 'Product', 'QA', 'Development', 'Operations', 'Support'];
+export const ROLES = L.BASE_ROLES;
+export const getRoles=project=>L.roleNames(project);
+export const activeRoles=project=>L.roleNames(project,{historical:false});
 export const uid = () => globalThis.crypto.randomUUID();
 const now = () => new Date().toISOString();
 export const clone = value => structuredClone(value);
@@ -14,17 +19,17 @@ export function createProject(name, description = '') {
 function event(project, text) { project.events.push({id: uid(), text, at: now()}); }
 export function updateProject(project,name,description){if(!name.trim())throw new Error('Give the product a name.');project.name=name.trim();project.description=description.trim();event(project,'Updated product details');}
 export function addMember(project,name,role){
-  if(!name.trim()||!ROLES.includes(role))throw new Error('Add a name and choose a team perspective.');
+  if(!name.trim()||!getRoles(project).includes(role))throw new Error('Add a name and choose a team perspective.');
   project.members??=[];if(project.members.some(m=>m.name.toLowerCase()===name.trim().toLowerCase()))throw new Error('That team member already exists.');
   const member={id:uid(),name:name.trim(),role};project.members.push(member);event(project,`Added ${member.name} to the project team`);return member;
 }
 export function updateMember(project,id,name,role){
- const member=project.members?.find(m=>m.id===id);if(!member||!name.trim()||!ROLES.includes(role))throw new Error('Choose a teammate, name, and perspective.');
+ const member=project.members?.find(m=>m.id===id);if(!member||!name.trim()||!getRoles(project).includes(role))throw new Error('Choose a teammate, name, and perspective.');
  if(project.members.some(m=>m.id!==id&&m.name.toLowerCase()===name.trim().toLowerCase()))throw new Error('That team member already exists.');
  member.name=name.trim();member.role=role;event(project,`Updated teammate: ${member.name}`);
 }
 export function addQuestion(project,title,role='Everyone',owner=''){
-  if(!title.trim()||!ROLES.includes(role))throw new Error('Add a question and audience.');project.questions??=[];
+  if(!title.trim()||!getRoles(project).includes(role))throw new Error('Add a question and audience.');project.questions??=[];
   const question={id:uid(),title:title.trim(),role,owner:owner.trim(),status:'open',resolution:'',at:now()};project.questions.push(question);event(project,`Raised question: ${question.title}`);return question;
 }
 export function resolveQuestion(project,id,resolution){const q=project.questions?.find(q=>q.id===id);if(!q||q.status!=='open'||!resolution.trim())throw new Error('Record an answer or decision before resolving this question.');q.status='resolved';q.resolution=resolution.trim();event(project,`Resolved question: ${q.title}`);}
@@ -42,13 +47,14 @@ export function restoreSection(project,id){const s=project.sections.find(s=>s.id
 export function archiveSource(project,id){
   const s=project.sources.find(s=>s.id===id);if(!s)throw new Error('Source not found.');
   if(project.sections.some(section=>!section.archived&&section.evidence.some(e=>e.sourceId===id))||project.changes.some(c=>c.status==='pending'&&c.evidence.some(e=>e.sourceId===id))||(project.behaviors??[]).some(b=>!b.archived&&b.evidence.some(e=>e.sourceId===id))||(project.behaviorChanges??[]).some(c=>c.status==='pending'&&c.proposed.evidence.some(e=>e.sourceId===id)))throw new Error('This source supports active content. Update or archive its linked sections and product rules, and resolve proposals first.');
+  if(L.FAMILIES.some(k=>L.list(project,k).some(r=>!r.archived&&r.evidence?.some(e=>e.sourceId===id))))throw new Error('This source supports active delivery context. Review or archive its linked records first.');
   s.archived=true;event(project,`Archived source: ${s.title}`);
 }
 export function restoreSource(project,id){const s=project.sources.find(s=>s.id===id);if(!s)throw new Error('Source not found.');s.archived=false;event(project,`Restored source: ${s.title}`);}
 export function proposalBlocker(project,proposal){
   const section=project.sections.find(s=>s.id===proposal.sectionId);
   if(!section||section.archived)return 'Section is unavailable.';
-  if(JSON.stringify(section)!==JSON.stringify(proposal.base))return 'Section changed since this proposal. Recreate it from the current handbook.';
+  if(!equal(section,proposal.base))return 'Section changed since this proposal. Recreate it from the current handbook.';
   if(isStale(project,{evidence:proposal.evidence}))return 'Supporting evidence changed. Recreate this proposal with current evidence.';
   return '';
 }
@@ -67,18 +73,14 @@ function normalizeDocumentMetadata(content, metadata) {
   });
   return {fileName:metadata.fileName,mediaType:metadata.mediaType,byteLength:metadata.byteLength,sha256:metadata.sha256,parser:metadata.parser,parserVersion:metadata.parserVersion,warnings:clone(metadata.warnings),blocks,...(metadata.pageCount===undefined?{}:{pageCount:metadata.pageCount}),...(metadata.reviewed===undefined?{}:{reviewed:metadata.reviewed})};
 }
-export function makeEvidence(project, sourceId, quote) {
-  const source=project.sources.find(item=>item.id===sourceId),revision=source?.revisions.at(-1);
-  if (!revision||source.archived||typeof quote!=='string'||!quote.trim()||!revision.content.includes(quote)) throw new Error('Evidence must be an exact passage from the selected active source.');
-  const evidence={sourceId,revisionId:revision.id,quote};
-  const start=revision.content.indexOf(quote);
-  // Repeated wording cannot reliably identify one original page or paragraph.
-  if (revision.document && revision.content.indexOf(quote,start+1)===-1) {
-    const locations=revision.document.blocks.filter(block=>block.start<start+quote.length&&block.end>start).map(block=>({blockId:block.id,...clone(block.location)}));
-    if(locations.length)evidence.locations=locations;
-  }
-  return evidence;
+export function makeRevisionEvidence(project,sourceId,revisionId,quote){
+ const source=project.sources.find(s=>s.id===sourceId),revision=source?.revisions.find(r=>r.id===revisionId);if(!revision||typeof quote!=='string'||!quote.trim()||!revision.content.includes(quote))throw new Error('Select an exact original source-revision passage.');const evidence={sourceId,revisionId,quote},start=revision.content.indexOf(quote);if(revision.document&&revision.content.indexOf(quote,start+1)===-1){const locations=revision.document.blocks.filter(b=>b.start<start+quote.length&&b.end>start).map(b=>({blockId:b.id,...clone(b.location)}));if(locations.length)evidence.locations=locations;}return evidence;
 }
+export function makeEvidence(project, sourceId, quote) {
+ const source=project.sources.find(s=>s.id===sourceId);if(!source||source.archived||source.origin?.access==='lost')throw new Error('Choose an active, available source.');return makeRevisionEvidence(project,sourceId,source.revisions.at(-1).id,quote);
+}
+function sourceOrigin(origin){if(origin===undefined)return undefined;const allowed=['github','confluence','drive','azure','clickup','openai-ocr','openai-transcribe'];if(!origin||!allowed.includes(origin.provider)||typeof origin.externalId!=='string'||origin.externalId.length>300||typeof origin.revision!=='string'||origin.revision.length>300||!['available','lost','unknown'].includes(origin.access)||typeof origin.retrievedAt!=='string'||!Number.isFinite(Date.parse(origin.retrievedAt))||typeof origin.lastJobId!=='string'||!/^[a-f0-9-]{36}$/i.test(origin.lastJobId)||!origin.locator||typeof origin.locator!=='object'||JSON.stringify(origin.locator).length>2000)throw new Error('Invalid source origin.');return clone(origin);}
+export function setSourceOrigin(project,id,origin){const source=project.sources.find(s=>s.id===id);if(!source)throw new Error('Source not found.');L.ensure(project);source.origin=sourceOrigin(origin);}
 export function addSource(project, title, content, kind = 'Document', metadata) {
   if (typeof title!=='string'||typeof content!=='string'||!title.trim() || !content.trim()||typeof kind!=='string') throw new Error('A source needs a title and some text.');
   if (content.length > 200000) throw new Error('Split this source into files smaller than 200,000 characters.');
@@ -91,7 +93,7 @@ export function reviseSource(project, sourceId, content, metadata) {
   if (!source || source.archived || typeof content!=='string'||!content.trim()) throw new Error('Choose an active source and supply its revised text.');
   if (content.length > 200000) throw new Error('Source text is too large.');
   const document=normalizeDocumentMetadata(content,metadata);
-  if (source.revisions.at(-1).content === content&&JSON.stringify(source.revisions.at(-1).document)===JSON.stringify(document)) return false;
+  if (source.revisions.at(-1).content === content&&equal(source.revisions.at(-1).document,document)) return false;
   source.revisions.push({id: uid(), content, at: now(),...(document?{document}:{})});
   event(project, `New source revision: ${source.title}`); return true;
 }
@@ -105,7 +107,8 @@ function normalizeAIRun(project, input) {
     const source=project.sources.find(source=>source.id===reference?.sourceId),revision=source?.revisions.find(revision=>revision.id===reference.revisionId),key=reference?.sourceId+':'+reference?.revisionId;
     if(!revision||used.has(key))throw new Error('Invalid AI source revision reference.');used.add(key);return {sourceId:source.id,revisionId:revision.id};
   });
-  return {id:input.id,task:input.task,provider:input.provider,model:input.model,promptVersion:input.promptVersion,schemaVersion:input.schemaVersion,inputHash:input.inputHash,at:input.at,sourceRefs,draftIds:clone(input.draftIds),sectionDraftIds:clone(input.sectionDraftIds??[]),proposalIds:clone(input.proposalIds??[])};
+  if(input.metrics!==undefined&&(!input.metrics||Object.keys(input.metrics).some(k=>!['latencyMs','usage'].includes(k))||!Number.isSafeInteger(input.metrics.latencyMs)||input.metrics.latencyMs<0||input.metrics.usage!==null&&(!input.metrics.usage||Object.keys(input.metrics.usage).some(k=>!['inputTokens','outputTokens','totalTokens'].includes(k))||['inputTokens','outputTokens','totalTokens'].some(k=>!Number.isSafeInteger(input.metrics.usage[k])||input.metrics.usage[k]<0))))throw new Error('Invalid AI run measurements.');
+  return {id:input.id,task:input.task,provider:input.provider,model:input.model,promptVersion:input.promptVersion,schemaVersion:input.schemaVersion,inputHash:input.inputHash,at:input.at,sourceRefs,draftIds:clone(input.draftIds),sectionDraftIds:clone(input.sectionDraftIds??[]),proposalIds:clone(input.proposalIds??[]),...(input.metrics?{metrics:clone(input.metrics)}:{})};
 }
 export function recordAIRun(project,input) {
   const record=normalizeAIRun(project,{id:uid(),draftIds:[],...input});
@@ -123,7 +126,7 @@ export function linkRunProposal(project,runId,proposalId){const run=project.aiRu
 export function linkRunSection(project,runId,sectionId){const run=project.aiRuns?.find(r=>r.id===runId),section=project.sections.find(s=>s.id===sectionId);if(!run||!section||section.status!=='draft'||section.archived)throw new Error('Choose an AI run and an active handbook draft.');run.sectionDraftIds??=[];if(!run.sectionDraftIds.includes(sectionId))run.sectionDraftIds.push(sectionId);}
 export function addSection(project, {title, body, role = 'Everyone', sourceId, quote}) {
   if (!title.trim() || !body.trim()) throw new Error('A handbook section needs a title and content.');
-  if (!ROLES.includes(role)) throw new Error('Unknown audience.');
+  if (!getRoles(project).includes(role)) throw new Error('Unknown audience.');
   const evidence = [];
   if (sourceId) {
     evidence.push(makeEvidence(project,sourceId,quote));
@@ -132,7 +135,7 @@ export function addSection(project, {title, body, role = 'Everyone', sourceId, q
   project.sections.push(section); event(project, `Drafted ${section.title}`); return section;
 }
 export function isStale(project, section) {
-  return section.evidence.some(e => { const source=project.sources.find(s => s.id === e.sourceId); return !source||source.archived||source.revisions.at(-1)?.id !== e.revisionId; });
+  return section.evidence.some(e => { const source=project.sources.find(s => s.id === e.sourceId); return !source||source.archived||source.origin?.access==='lost'||source.revisions.at(-1)?.id !== e.revisionId; });
 }
 export function approveSection(project, sectionId, ownerNote = '') {
   const section = project.sections.find(s => s.id === sectionId);
@@ -151,8 +154,8 @@ export function proposeChange(project, sectionId, body, reason, sourceId = '', q
     evidence = [makeEvidence(project,sourceId,quote)];
   }
   const title=details.title?.trim()??section.title,role=details.role??section.role;
-  if(!title||!ROLES.includes(role))throw new Error('A proposal needs a title and valid audience.');
-  if(body.trim()===section.body && title===section.title && role===section.role && JSON.stringify(evidence)===JSON.stringify(section.evidence)) throw new Error('Change the wording, audience, title, or evidence before proposing an update.');
+  if(!title||!getRoles(project).includes(role))throw new Error('A proposal needs a title and valid audience.');
+  if(body.trim()===section.body && title===section.title && role===section.role && equal(evidence,section.evidence)) throw new Error('Change the wording, audience, title, or evidence before proposing an update.');
   const proposal = {id: uid(), sectionId, base: clone(section), title,role, body: body.trim(), reason: reason.trim(), evidence, status: 'pending', at: now()};
   project.changes.push(proposal); event(project, `Proposed an update to ${section.title}`); return proposal;
 }
@@ -160,7 +163,7 @@ export function acceptChange(project, proposalId, ownerNote = '') {
   const proposal = project.changes.find(c => c.id === proposalId);
   const section = project.sections.find(s => s.id === proposal?.sectionId);
   if (!proposal || proposal.status !== 'pending' || !section || section.archived) throw new Error('This proposal is no longer available.');
-  if (JSON.stringify(section) !== JSON.stringify(proposal.base)) throw new Error('This section changed after the proposal. Create a fresh proposal.');
+  if (!equal(section,proposal.base)) throw new Error('This section changed after the proposal. Create a fresh proposal.');
   if (isStale(project, {evidence: proposal.evidence})) throw new Error('Proposal evidence is outdated. Create a fresh proposal with current evidence.');
   if (!proposal.evidence.length && !ownerNote.trim()) throw new Error('Record an owner decision for an update without source evidence.');
   section.title=proposal.title??section.title;section.role=proposal.role??section.role;
@@ -175,9 +178,10 @@ export function rejectChange(project, proposalId) {
 export function saveVersion(project, label, {includeActions=false} = {}) {
   const sections = project.sections.filter(s => s.status === 'approved' && !s.archived);
   const behaviors=(project.behaviors??[]).filter(b=>b.status==='approved'&&!b.archived);
-  if (!sections.length&&!behaviors.length) throw new Error('Approve at least one section or product rule before saving a version.');
+  if (!sections.length&&!behaviors.length&&!L.list(project,'requirements').some(r=>r.status==='approved')) throw new Error('Approve at least one section or product rule before saving a version.');
   if ([...sections,...behaviors].some(s => isStale(project, s))) throw new Error('Some approved sections have changed evidence. Review those sections first.');
-  const version = {id: uid(), number: project.versions.length + 1, label: label.trim() || 'Approved handbook', at: now(), sections: clone(sections), questions:clone(project.questions??[]),behaviors:clone(behaviors)};
+  if(L.APPROVABLE.some(kind=>L.list(project,kind).some(r=>r.status==='approved'&&!r.archived&&(L.sourceNeedsReview(project,r)||L.staleRefs(project,r).length||kind==='guidance'&&L.guidanceNeedsReview(project,r)))))throw new Error('Approved delivery context has a changed or expired basis. Review it before saving an approved baseline.');
+  const version = {id: uid(), number: project.versions.length + 1, label: label.trim() || 'Approved handbook', at: now(), sections: clone(sections), questions:clone(project.questions??[]),behaviors:clone(behaviors),...(project.delivery?{delivery:clone(project.delivery)}:{})};
   if(includeActions)version.actions=clone((project.actions??[]).filter(action=>behaviors.some(behavior=>behavior.id===action.behaviorId&&['actor','condition','outcome','applicability'].every(key=>behavior[key]===action.behaviorSnapshot[key]))));
   project.versions.push(version); event(project, `Saved handbook v${version.number}`); return version;
 }
@@ -187,12 +191,14 @@ export function searchEvidence(project, query, versionId = '', audience='Everyon
   const sections = versionId ? project.versions.find(v => v.id === versionId)?.sections ?? [] : project.sections.filter(s => s.status === 'approved' && !s.archived);
   return sections.filter(s=>audience==='Everyone'||s.role==='Everyone'||s.role===audience).map(section => ({section, score: words.reduce((score, w) => score + (section.title + ' ' + section.body).toLowerCase().split(w).length - 1, 0)})).filter(x => x.score > 0).sort((a,b) => b.score - a.score).slice(0,8);
 }
-export function exportProject(project) { return JSON.stringify({format: 'product-relay', schemaVersion: 4, exportedAt: now(), project}, null, 2); }
+export function exportProject(project) { const bundle={format:'product-relay',schemaVersion:project.delivery?5:4,exportedAt:now(),project};if(project.delivery){const packed=packProject(project);if(JSON.stringify(packed).length<JSON.stringify(project).length)bundle.project=packed;}return JSON.stringify(bundle); }
 export function importProject(text) {
   if (text.length > 10000000) throw new Error('Project bundle exceeds the 10 MB import limit.');
   const bundle = JSON.parse(text);
-  if (bundle.format !== 'product-relay' || ![1,2,3,4].includes(bundle.schemaVersion)) throw new Error('Unsupported project bundle.');
-  const p = bundle.project;
+  if (bundle.format !== 'product-relay' || ![1,2,3,4,5].includes(bundle.schemaVersion)) throw new Error('Unsupported project bundle.');
+  if(bundle.project?.encoding&&bundle.schemaVersion!==5)throw new Error('Schema 5 is required for packed records.');const p=bundle.project?.encoding?unpackProject(bundle.project):bundle.project;
+  if(bundle.schemaVersion<5&&p?.delivery)throw new Error('Schema 5 is required for delivery workspace records.');
+  if(bundle.schemaVersion<5&&p?.sources?.some(source=>source.origin))throw new Error('Schema 5 is required for connected-source provenance.');
   if(bundle.schemaVersion<4&&(p?.sharing||p?.reconciliations?.length||p?.mergeArchives?.length))throw new Error('Schema 4 is required for sharing rounds and walkthrough reviews.');
   if(bundle.schemaVersion===1&&p&&['behaviors','behaviorChanges','decisions','aiRuns'].some(key=>p[key]?.length))throw new Error('Schema 1 cannot contain newer product rule records. Export this project with schema 2.');
   if(bundle.schemaVersion<3&&(p&&['impactReviews','actions','actionChanges','actionDecisions','acknowledgments','verifications'].some(key=>p[key]?.length)||p?.versions?.some(version=>version.actions?.length)))throw new Error('Schema 1 or 2 cannot contain newer team work records. Export this project with schema 3.');
@@ -208,7 +214,7 @@ export function importProject(text) {
   const sources = new Map(); const revisions = new Map();
   for (const s of p.sources) {
     if (!string(s.title) || !s.title.trim() || !string(s.kind) || !archived(s.archived) || !Array.isArray(s.revisions) || !s.revisions.length || s.revisions.length>1000) throw new Error('Invalid source record.');
-    sources.set(s.id, s);
+    sourceOrigin(s.origin);sources.set(s.id, s);
     for (const r of s.revisions) {
       if (!identifier(r.id) || revisions.has(r.id) || !string(r.content) || !r.content.trim() || r.content.length > 200000 || !timestamp(r.at)) throw new Error('Invalid source revision.');
       const document=normalizeDocumentMetadata(r.content,r.document);
@@ -234,7 +240,7 @@ export function importProject(text) {
     }
   }
   function validateSection(s) {
-    if (!s || !identifier(s.id) || !string(s.title) || !s.title.trim() || !string(s.body) || !s.body.trim() || !ROLES.includes(s.role) || !['draft','approved'].includes(s.status) || !string(s.ownerNote) || !timestamp(s.updatedAt) || !archived(s.archived)) throw new Error('Invalid section record.');
+    if (!s || !identifier(s.id) || !string(s.title) || !s.title.trim() || !string(s.body) || !s.body.trim() || !getRoles(p).includes(s.role) || !['draft','approved'].includes(s.status) || !string(s.ownerNote) || !timestamp(s.updatedAt) || !archived(s.archived)) throw new Error('Invalid section record.');
     validateEvidence(s.evidence);
     if (s.status === 'approved' && !s.evidence.length && !s.ownerNote.trim()) throw new Error('Approved content needs evidence or an owner decision.');
   }
@@ -243,10 +249,10 @@ export function importProject(text) {
   for (const c of p.changes) {
     if (!sectionIds.has(c.sectionId) || c.base?.id!==c.sectionId || !string(c.body) || !c.body.trim() || !string(c.reason) || !c.reason.trim() || !['pending','accepted','rejected'].includes(c.status) || !timestamp(c.at)) throw new Error('Invalid change record.');
     validateSection(c.base); validateSection({...c.base, status:'draft', evidence:c.evidence});
-    if((c.title!==undefined&&(!string(c.title)||!c.title.trim()))||(c.role!==undefined&&!ROLES.includes(c.role)))throw new Error('Invalid proposed title or audience.');
+    if((c.title!==undefined&&(!string(c.title)||!c.title.trim()))||(c.role!==undefined&&!getRoles(p).includes(c.role)))throw new Error('Invalid proposed title or audience.');
   }
   for (const v of p.versions) {
-    if (!Number.isInteger(v.number) || v.number!==p.versions.indexOf(v)+1 || !string(v.label) || !timestamp(v.at) || !Array.isArray(v.sections) || (!v.sections.length&&!(v.behaviors?.length)) || v.sections.length>1000) throw new Error('Invalid handbook version.');
+    if (!Number.isInteger(v.number) || v.number!==p.versions.indexOf(v)+1 || !string(v.label) || !timestamp(v.at) || !Array.isArray(v.sections) || (!v.sections.length&&!(v.behaviors?.length)&&!v.delivery?.requirements?.some(r=>r.status==='approved')) || v.sections.length>1000) throw new Error('Invalid handbook version.');
     unique(v.sections,'snapshot section');
     if(v.sections.some(s=>s.status!=='approved'||s.archived||!sectionIds.has(s.id)))throw new Error('A baseline must contain approved sections from this project.');
     v.sections.forEach(validateSection);
@@ -261,36 +267,38 @@ export function importProject(text) {
   const members=p.members??[];const questions=p.questions??[];
   if(!Array.isArray(members)||members.length>200||!Array.isArray(questions)||questions.length>1000)throw new Error('Invalid team or question list.');
   unique(members,'member');unique(questions,'question');
-  for(const m of members)if(!string(m.name)||!m.name.trim()||!ROLES.includes(m.role))throw new Error('Invalid team member.');
+  for(const m of members)if(!string(m.name)||!m.name.trim()||!getRoles(p).includes(m.role))throw new Error('Invalid team member.');
   validateActionCollections(p,{identifier,timestamp,unique,validateEvidence});
   function validateQuestions(items){
     if(!Array.isArray(items)||items.length>1000)throw new Error('Invalid questions.');unique(items,'question');
-    for(const q of items)if(!string(q.title)||!q.title.trim()||!ROLES.includes(q.role)||!string(q.owner)||!['open','resolved'].includes(q.status)||!string(q.resolution)||!timestamp(q.at)||(q.status==='resolved'&&!q.resolution.trim()))throw new Error('Invalid walkthrough question.');
+    for(const q of items)if(!string(q.title)||!q.title.trim()||!getRoles(p).includes(q.role)||!string(q.owner)||!['open','resolved'].includes(q.status)||!string(q.resolution)||!timestamp(q.at)||(q.status==='resolved'&&!q.resolution.trim()))throw new Error('Invalid walkthrough question.');
   }
   validateQuestions(questions);p.versions.forEach(v=>validateQuestions(v.questions??[]));
+  const delivery=L.validateLifecycle(p,{identifier,timestamp,validateEvidence});
   const reconciliations=validateReconciliations({...p,questions},{identifier,timestamp,unique,validateEvidence});
   if(p.reviewOf!==undefined&&!identifier(p.reviewOf))throw new Error('Invalid review-copy origin.');
   let sharing;
   if(p.sharing!==undefined){
     const a=p.sharing;if(!a||!identifier(a.id)||!timestamp(a.at)||typeof a.hash!=='string'||!/^[a-f0-9]{64}$/.test(a.hash)||!a.base||a.base.sharing!==undefined||a.base.id!==p.id||a.base.createdAt!==p.createdAt)throw new Error('Invalid shared-file ancestry.');
-    const base=importProject(JSON.stringify({format:'product-relay',schemaVersion:4,project:a.base}));sharing={id:a.id,at:a.at,hash:a.hash,base};
+    const base=importProject(exportProject(a.base));sharing={id:a.id,at:a.at,hash:a.hash,base};
   }
   const mergeArchives=p.mergeArchives??[];
   if(!Array.isArray(mergeArchives)||mergeArchives.length>10)throw new Error('Invalid merge archives.');unique(mergeArchives,'merge archive');
   const cleanMergeArchives=mergeArchives.map(a=>{
     if(!identifier(a.anchorId)||!timestamp(a.at)||!members.some(m=>m.id===a.reviewerId)||typeof a.note!=='string'||!a.note.trim()||a.note.length>20000||!a.current||!a.incoming||[a.current,a.incoming].some(parent=>(parent.id!==p.id&&parent.id!==p.reviewOf)||parent.createdAt!==p.createdAt||parent.sharing!==undefined||parent.mergeArchives!==undefined))throw new Error('Invalid preserved merge parents.');
-    const clean=parent=>{const result=importProject(JSON.stringify({format:'product-relay',schemaVersion:4,project:parent}));delete result.mergeArchives;delete result.sharing;return result;};return {id:a.id,anchorId:a.anchorId,at:a.at,reviewerId:a.reviewerId,note:a.note,current:clean(a.current),incoming:clean(a.incoming)};
+    const clean=parent=>{const result=importProject(exportProject(parent));delete result.mergeArchives;delete result.sharing;return result;};return {id:a.id,anchorId:a.anchorId,at:a.at,reviewerId:a.reviewerId,note:a.note,current:clean(a.current),incoming:clean(a.incoming)};
   });
   const pick=(object,keys)=>Object.fromEntries(keys.filter(k=>object[k]!==undefined).map(k=>[k,object[k]]));
   const cleanEvidence=list=>list.map(e=>({...pick(e,['sourceId','revisionId','quote']),...(e.locations?{locations:e.locations.map(location=>pick(location,['blockId','label','page','paragraph']))}:{})}));
   const behaviorCollections=cleanBehaviorCollections(p,cleanEvidence,pick);
   const actionCollections=cleanActionCollections(p,behaviorCollections.cleanBehavior,pick);
+  for(const v of p.versions)if(v.delivery)L.validateLifecycle({...p,delivery:v.delivery},{identifier,timestamp,validateEvidence});
   const cleanSection=s=>({...pick(s,['id','title','body','role','status','ownerNote','updatedAt','archived']),evidence:cleanEvidence(s.evidence)});
   const cleanQuestion=q=>pick(q,['id','title','role','owner','status','resolution','at']);
-  return clone({id:p.id,name:p.name,description:p.description,createdAt:p.createdAt,...(p.reviewOf?{reviewOf:p.reviewOf}:{}),reconciliations,mergeArchives:cleanMergeArchives,...(sharing?{sharing}:{}),
-    sources:p.sources.map(s=>({...pick(s,['id','title','kind','archived']),revisions:s.revisions.map(r=>({...pick(r,['id','content','at']),...(r.document?{document:normalizeDocumentMetadata(r.content,r.document)}:{})}))})),
+  return clone({id:p.id,name:p.name,description:p.description,createdAt:p.createdAt,...(delivery?{delivery}:{}),...(p.reviewOf?{reviewOf:p.reviewOf}:{}),reconciliations,mergeArchives:cleanMergeArchives,...(sharing?{sharing}:{}),
+    sources:p.sources.map(s=>({...pick(s,['id','title','kind','archived']),...(s.origin?{origin:sourceOrigin(s.origin)}:{}),revisions:s.revisions.map(r=>({...pick(r,['id','content','at']),...(r.document?{document:normalizeDocumentMetadata(r.content,r.document)}:{})}))})),
     sections:p.sections.map(cleanSection),changes:p.changes.map(c=>({...pick(c,['id','sectionId','title','role','body','reason','status','at']),base:cleanSection(c.base),evidence:cleanEvidence(c.evidence)})),
-    versions:p.versions.map(v=>({...pick(v,['id','number','label','at']),sections:v.sections.map(cleanSection),...(v.questions?{questions:v.questions.map(cleanQuestion)}:{}),behaviors:(v.behaviors??[]).map(behaviorCollections.cleanBehavior),...(v.actions?{actions:v.actions.map(actionCollections.cleanAction)}:{})})),
+    versions:p.versions.map(v=>({...pick(v,['id','number','label','at']),sections:v.sections.map(cleanSection),...(v.questions?{questions:v.questions.map(cleanQuestion)}:{}),behaviors:(v.behaviors??[]).map(behaviorCollections.cleanBehavior),...(v.actions?{actions:v.actions.map(actionCollections.cleanAction)}:{}),...(v.delivery?{delivery:clone(v.delivery)}:{})})),
     events:p.events.map(e=>pick(e,['id','text','at'])),members:members.map(m=>pick(m,['id','name','role'])),questions:questions.map(cleanQuestion),behaviors:behaviorCollections.behaviors,behaviorChanges:behaviorCollections.behaviorChanges,decisions:behaviorCollections.decisions,aiRuns:cleanAIRuns,...Object.fromEntries(Object.entries(actionCollections).filter(([key])=>key!=='cleanAction'))});
 }
 export function toMarkdown(project, versionId = '') {

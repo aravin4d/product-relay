@@ -1,0 +1,15 @@
+// Operator opt-in only: each eligible case makes a paid request per chosen provider.
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {prepareEvaluationCase} from './evaluation-fixture.mjs';
+import {retrieveKnowledge,answerPayload,validateGroundedAnswer} from '../src/knowledge.js';
+import {createAIRequest,runAI,validateAIConfig} from '../src/ai.js';
+import {digest} from '../src/value.js';
+const args=process.argv.slice(2),providers=(args.find(a=>a.startsWith('--providers='))??'').slice(12).split(',').filter(Boolean),split=(args.find(a=>a.startsWith('--split='))??'--split=holdout').slice(8);
+if(!args.includes('--allow-provider-calls')||!providers.length||new Set(providers).size!==providers.length||providers.some(p=>!['openai','anthropic'].includes(p))||!['development','holdout'].includes(split))throw new Error('Select --providers=openai,anthropic --split=holdout and explicitly add --allow-provider-calls. This runner sends fictional plaintext and consumes configured API allowances.');
+const config=validateAIConfig({supabaseUrl:process.env.RELAY_EVAL_URL,publishableKey:process.env.RELAY_EVAL_PUBLIC_KEY}),accessToken=process.env.RELAY_EVAL_ACCESS_TOKEN;if(!accessToken)throw new Error('Supply a short-lived enabled-account token in the ignored operator environment; never pass credentials as CLI arguments.');
+const bytes=await readFile(new URL('../docs/evaluation/cases.json',import.meta.url)),dataset=JSON.parse(bytes),results=[];
+for(const test of dataset.cases.filter(t=>t.split===split)){const f=prepareEvaluationCase(test);let ctx,payload;try{ctx=retrieveKnowledge(f.project,test.question,f.selection);payload=answerPayload(f.project,ctx);}catch{results.push({id:test.id,status:'no authorized source-backed payload',providerCalls:0,review:test.review});continue;}const request=createAIRequest({...payload,task:'answer_question',consent:true}),contextHash=await digest(request);
+ for(const provider of providers){try{const output=await runAI({...config,accessToken,request:{...request,provider}});validateGroundedAnswer(f.project,ctx,output);results.push({id:test.id,provider,contextHash,status:'shape and citation checks passed',metadata:output.metadata,answer:{status:output.status,text:output.answer,evidence:output.evidence,unknowns:output.unknowns},review:test.review,semanticResult:'human review required',correctionSeconds:null,qualifiersPreserved:null,correctAbstention:null,unsupportedAssertions:null});}catch(error){results.push({id:test.id,provider,contextHash,status:'failed',code:error.code??'runner_error',review:test.review,semanticResult:'not assessed'});}}
+}
+await mkdir('work/evaluation',{recursive:true});const path='work/evaluation/providers-'+Date.now()+'.json';await writeFile(path,JSON.stringify({dataset:dataset.dataset,fixtureSha256:createHash('sha256').update(bytes).digest('hex'),split,at:new Date().toISOString(),results,claim:'No model ranking until human qualifier/authority/unknown/correction review is recorded.'},null,2));console.log(`Evaluation outputs saved locally: ${path}. Review every result before scoring model quality.`);

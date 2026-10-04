@@ -1,6 +1,6 @@
 # Product Relay — Phase 2 validation and usefulness gates
 
-**4 October 2026. Planned verification, not passing results.**
+**4 October 2026. Phase 2 code checkpoint built; every new gate remains not run. Functional testing was explicitly deferred to the next session.**
 
 Read with [the product plan](PHASE_2_PLAN.md), [all 138 feedback entries](PHASE_2_FEEDBACK_COVERAGE.md) and [the expanded 91-item backlog](PHASE_2_BACKLOG.csv). V01–V18 below are referenced by backlog and feedback rows. The 150 Node, 13 storage-browser and 6 document-worker checks reported for 0.4.0 are historical coverage. The later authored lifecycle failed despite them; Phase 2 must add that combined journey rather than merely repeat the old suite.
 
@@ -29,7 +29,7 @@ Use focused tests for the changed invariants, then the relevant lifecycle at pac
 
 **Covers:** REL-001, REL-005, REL-013.
 
-- Keep schema 1–4 fixtures and new planned-schema fixtures; open/migrate/save/reopen/share each supported input. Preserve baselines, source locations, original approvals, historical role labels and full logical parent ancestry. Unsupported future versions reject clearly.
+- Keep schema 1–4 fixtures and new schema 5 fixtures; open/migrate/save/reopen/share each supported input. Preserve baselines, source locations, original approvals, historical role labels and full logical parent ancestry. Unsupported future versions reject clearly.
 - Include all new record families in the cycle: roles/scope/edges, native work, cases/runs/defects, releases/deployments, guidance/incidents and asset references. Compare branches with linked revisions/results; inconsistent selections reject atomically instead of dropping new collections or choosing last-write-wins.
 - Preserve the original file before upgrade/recovery. Simulate wrong passphrase, corrupted ciphertext, invalid plaintext history, disk/write denial, stale linked-file fingerprint and browser-cache conflict. None may destroy the last valid file/recovery entry.
 - A save success requires serialization/reopen validation. Native writing and download fallback have separate expected results; verify a retained disk file when claiming that outcome.

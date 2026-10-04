@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "REPLACE_PROJECT_UUID": {
+      "providers": {
+        "github": {
+          "credentialEnv": "RELAY_GITHUB_TOKEN",
+          "repositories": ["YOUR_ORG/YOUR_TEST_REPOSITORY"],
+          "writeComments": false,
+          "workflows": [{"id": "REPLACE_NUMERIC_WORKFLOW_ID", "repository": "YOUR_ORG/YOUR_TEST_REPOSITORY", "testOnly": true, "refs": ["relay-test"], "inputs": ["relay_command_id"]}]
+        },
+        "confluence": {"credentialEnv": "RELAY_CONFLUENCE_TOKEN", "origin": "https://YOUR_TENANT.atlassian.net", "email": "REPLACE_ACCOUNT_EMAIL", "pageIds": []},
+        "drive": {"credentialEnv": "RELAY_DRIVE_ACCESS_TOKEN", "fileIds": []},
+        "azure": {"credentialEnv": "RELAY_AZURE_PAT", "organization": "REPLACE_ORGANIZATION", "project": "REPLACE_PROJECT", "workItemIds": [], "runIds": []},
+        "clickup": {"credentialEnv": "RELAY_CLICKUP_TOKEN", "workspaceId": "REPLACE_WORKSPACE_ID", "taskIds": [], "docIds": []}
+      }
+    }
+  }
+}

@@ -9,3 +9,10 @@ enable_signup = false
 # JWTs/public-key versions and CORS preflight share one explicit verified path.
 # This does not make processing public: authenticated + allowlisted users only.
 verify_jwt = false
+
+[functions.relay-projects]
+verify_jwt = false
+
+[functions.relay-jobs]
+# Requires a separate worker secret; this endpoint never accepts a browser session.
+verify_jwt = false

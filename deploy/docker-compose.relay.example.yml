@@ -1,0 +1,6 @@
+# Merge into the pinned official Supabase Docker Compose project.
+# Copy the generated package/functions/* into volumes/functions/ first.
+services:
+  functions:
+    env_file:
+      - ./relay-secrets.local.env

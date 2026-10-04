@@ -1,14 +1,17 @@
+import {getRoles} from './domain.js';
+import {equal} from './value.js';
 // Manual, portable follow-through. Names and receipts are self-reported, not authenticated.
 import {uid, clone, isStale} from './domain.js';
 
-export const ACTION_ROLES = ['Product','Development','QA','Operations','Support'];
+export const ACTION_ROLES = ['Product','Development','QA','BA','Operations','Support'];
+const rolesFor=p=>getRoles(p).filter(role=>role!=='Everyone');
 export const ACTION_STATUSES = ['proposed','accepted','in-progress','blocked','completed','not-applicable'];
 const now = () => new Date().toISOString();
 const meaningFields = ['actor','condition','outcome','applicability'];
 const editableFields = ['impactReviewId','role','title','acceptanceCriteria','rationale','ownerId'];
 const text = value => typeof value === 'string' && value.length <= 20000;
 const required = value => text(value) && !!value.trim();
-const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+const same = (a,b) => equal(a,b);
 const meaningEqual = (a,b) => meaningFields.every(key => a?.[key] === b?.[key]);
 const changedActionScope = (before,after) => !meaningEqual(before.behaviorSnapshot,after.behaviorSnapshot)||before.role!==after.role||before.acceptanceCriteria!==after.acceptanceCriteria;
 const expectedStatusRevision = (before,after) => !changedActionScope(before,after)&&before.statusRevision===before.revision?after.revision:before.statusRevision;
@@ -35,18 +38,18 @@ const templates = {
 };
 export function getActionSuggestions(project,behaviorId) {
   const snapshot=currentSnapshot(project,behaviorId);
-  return ACTION_ROLES.map(role=>({role,title:`${templates[role][0]}: ${snapshot.title}`,acceptanceCriteria:`${templates[role][1]}\nActor: ${snapshot.actor}\nWhen: ${snapshot.condition}\nOutcome: ${snapshot.outcome}\nApplies to: ${snapshot.applicability}`,rationale:`Manual ${role} follow-through for ${snapshot.title}; applicability must be confirmed by the reviewer.`,behaviorId,behaviorRevision:snapshot.revision,behaviorSnapshot:clone(snapshot)}));
+  return rolesFor(project).map(role=>({role,title:`${(templates[role]??['Review the applicable agreement','List concrete conditions, exceptions, dependencies and acceptance checks for your team.'])[0]}: ${snapshot.title}`,acceptanceCriteria:`${(templates[role]??['Review the applicable agreement','List concrete conditions, exceptions, dependencies and acceptance checks for your team.'])[1]}\nActor: ${snapshot.actor}\nWhen: ${snapshot.condition}\nOutcome: ${snapshot.outcome}\nApplies to: ${snapshot.applicability}`,rationale:`Manual ${role} follow-through for ${snapshot.title}; applicability must be confirmed by the reviewer.`,behaviorId,behaviorRevision:snapshot.revision,behaviorSnapshot:clone(snapshot)}));
 }
 export function confirmBehaviorImpact(project,behaviorId,{reviewerId,roles,rationale}) {
   const snapshot=currentSnapshot(project,behaviorId);member(project,reviewerId);
-  if(!Array.isArray(roles)||!roles.length||roles.some(role=>!ACTION_ROLES.includes(role))||new Set(roles).size!==roles.length||!required(rationale))throw new Error('Select applicable team perspectives and explain the manually reviewed impact.');
+  if(!Array.isArray(roles)||!roles.length||roles.some(role=>!rolesFor(project).includes(role))||new Set(roles).size!==roles.length||!required(rationale))throw new Error('Select applicable team perspectives and explain the manually reviewed impact.');
   const review={id:uid(),behaviorId,behaviorRevision:snapshot.revision,behaviorSnapshot:snapshot,reviewerId,roles:clone(roles),rationale:rationale.trim(),at:now(),selfReported:true};
   ensure(project);project.impactReviews.push(review);event(project,`Manually reviewed team impact: ${snapshot.title}`);return review;
 }
 function actionDetails(project,input,base=null) {
   const values={};for(const key of editableFields)values[key]=input[key]??base?.[key]??(key==='ownerId'?'':undefined);
   const review=applicableReview(project,values.impactReviewId);
-  if(!review.roles.includes(values.role)||!ACTION_ROLES.includes(values.role)||!['title','acceptanceCriteria','rationale'].every(key=>required(values[key])))throw new Error('An action needs a reviewed perspective, title, acceptance criteria, and rationale.');
+  if(!review.roles.includes(values.role)||!rolesFor(project).includes(values.role)||!['title','acceptanceCriteria','rationale'].every(key=>required(values[key])))throw new Error('An action needs a reviewed perspective, title, acceptance criteria, and rationale.');
   if(typeof values.ownerId!=='string')throw new Error('Choose a valid action owner.');if(values.ownerId)member(project,values.ownerId);
   return {...values,title:values.title.trim(),acceptanceCriteria:values.acceptanceCriteria.trim(),rationale:values.rationale.trim(),behaviorId:review.behaviorId,behaviorRevision:review.behaviorRevision,behaviorSnapshot:clone(review.behaviorSnapshot)};
 }
@@ -133,7 +136,7 @@ export function verificationState(project,verificationOrId) {
   const state=record.context==='historical'?'historical':reasons.length?'stale':'applicable';return {state,rulesStale,sourceNeedsReview,reasons};
 }
 export function listActions(project,{role='Everyone',behaviorId='',versionId=''}={}) {
-  if(role!=='Everyone'&&!ACTION_ROLES.includes(role))throw new Error('Unknown team action perspective.');
+  if(role!=='Everyone'&&!rolesFor(project).includes(role))throw new Error('Unknown team action perspective.');
   const actions=versionId?project.versions.find(item=>item.id===versionId)?.actions??[]:project.actions??[];
   return actions.filter(item=>(role==='Everyone'||item.role===role)&&(!behaviorId||item.behaviorId===behaviorId));
 }
@@ -169,10 +172,10 @@ export function validateActionCollections(project,{identifier,timestamp,unique,v
     validateEvidence(record.behaviorSnapshot.evidence);
     if(!same(getBehaviorRevision(project,record.behaviorId,record.behaviorRevision),record.behaviorSnapshot))throw new Error('Team work must preserve the exact agreed rule snapshot.');
   }
-  for(const review of reviews){snapshot(review);if(!knownMember(review.reviewerId)||!Array.isArray(review.roles)||!review.roles.length||review.roles.some(role=>!ACTION_ROLES.includes(role))||new Set(review.roles).size!==review.roles.length||!required(review.rationale)||!timestamp(review.at)||review.selfReported!==true)throw new Error('Invalid manual impact review.');}
+  for(const review of reviews){snapshot(review);if(!knownMember(review.reviewerId)||!Array.isArray(review.roles)||!review.roles.length||review.roles.some(role=>!rolesFor(project).includes(role))||new Set(review.roles).size!==review.roles.length||!required(review.rationale)||!timestamp(review.at)||review.selfReported!==true)throw new Error('Invalid manual impact review.');}
   function details(record) {
     snapshot(record);const review=reviewMap.get(record.impactReviewId);
-    if(!review||review.behaviorId!==record.behaviorId||review.behaviorRevision!==record.behaviorRevision||!same(review.behaviorSnapshot,record.behaviorSnapshot)||!review.roles.includes(record.role)||!ACTION_ROLES.includes(record.role)||!['title','acceptanceCriteria','rationale'].every(key=>required(record[key]))||typeof record.ownerId!=='string'||(record.ownerId&&!knownMember(record.ownerId)))throw new Error('Invalid reviewed team action scope or owner.');
+    if(!review||review.behaviorId!==record.behaviorId||review.behaviorRevision!==record.behaviorRevision||!same(review.behaviorSnapshot,record.behaviorSnapshot)||!review.roles.includes(record.role)||!rolesFor(project).includes(record.role)||!['title','acceptanceCriteria','rationale'].every(key=>required(record[key]))||typeof record.ownerId!=='string'||(record.ownerId&&!knownMember(record.ownerId)))throw new Error('Invalid reviewed team action scope or owner.');
   }
   function action(record) {
     details(record);if(!identifier(record.id)||!ACTION_STATUSES.includes(record.status)||!validRevision(record.revision)||!validRevision(record.statusRevision)||record.statusRevision>record.revision||!timestamp(record.createdAt)||!timestamp(record.updatedAt)||(record.status!=='proposed'&&!record.ownerId))throw new Error('Invalid team action state.');

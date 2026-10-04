@@ -10,7 +10,7 @@ import {AIError,AI_LIMITS,AI_PROTOCOL_VERSION,AI_PROMPT_VERSION,validateAIReques
  * @param {()=>Date} [options.now]
  * @param {()=>string} [options.randomUUID]
  */
-export function createRelayHandler({authenticate,consumeAllowance,provider,allowedOrigins=[],now=()=>new Date(),randomUUID=()=>crypto.randomUUID()}) {
+export function createRelayHandler({authenticate,consumeAllowance,provider,providers={},defaultProvider,authorizeInput=async()=>{},recordReceipt=async()=>{},allowedOrigins=[],now=()=>new Date(),randomUUID=()=>crypto.randomUUID()}) {
   const origins=new Set(allowedOrigins);
   return async function handler(request) {
     const origin=request.headers.get('origin');
@@ -32,14 +32,16 @@ export function createRelayHandler({authenticate,consumeAllowance,provider,allow
     let input;
     try{input=validateAIRequest(await readBoundedJSON(request,AI_LIMITS.requestBytes));}
     catch(cause){return error(cause.code==='response_limit'?413:400,cause.code==='response_limit'?'context_limit':cause.code??'invalid_request','Selected context is invalid.');}
+    const selectedName=input.provider??defaultProvider??provider?.name,selected=providers[selectedName]??(provider?.name===selectedName?provider:null);if(!selected)return error(503,'not_configured','The selected provider is not configured.');
+    try{await authorizeInput(user.id,input);}catch{return error(403,'context_access_denied','Selected shared context is unavailable or changed.');}
     let allowance;
-    try{allowance=await consumeAllowance(user.id);}catch{return error(503,'allowance_unavailable','Usage control is unavailable.');}
+    try{allowance=await consumeAllowance(user.id,input);}catch{return error(503,'allowance_unavailable','Usage control is unavailable.');}
     if(!allowance?.allowed)return error(allowance?.reason==='not_allowed'?403:429,allowance?.reason==='not_allowed'?'not_allowed':'usage_limit','AI access or daily allowance is unavailable.');
-    const runId=randomUUID();
+    const runId=randomUUID(),startedAt=Date.now();
     try {
-      const output=await provider.generate(input);
+      const output=await selected.generate(input);
       const result=validateAIResult(output.result,input);
-      return reply(200,{version:AI_PROTOCOL_VERSION,result,metadata:{runId,inputHash:await aiInputHash(input),provider:provider.name,model:provider.model,promptVersion:AI_PROMPT_VERSION,schemaVersion:AI_PROTOCOL_VERSION,at:now().toISOString(),usage:output.usage??null,remainingRequests:allowance.remaining??null}});
+      await authorizeInput(user.id,input);const metadata={runId,inputHash:await aiInputHash(input),provider:selected.name,model:selected.model,promptVersion:AI_PROMPT_VERSION,schemaVersion:AI_PROTOCOL_VERSION,at:now().toISOString(),usage:output.usage??null,remainingRequests:allowance.remaining??null,latencyMs:Date.now()-startedAt};await recordReceipt(user.id,input,metadata);return reply(200,{version:AI_PROTOCOL_VERSION,result,metadata});
     } catch(cause) {
       const code=cause instanceof AIError?cause.code:'provider_unavailable';
       const status=code==='provider_timeout'?504:code==='provider_refusal'?422:502;

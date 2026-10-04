@@ -30,14 +30,14 @@ export function renderRules(p, context) {
 }
 
 export function ruleFields(rule, helpers) {
-  const {field, esc, options} = helpers;
+  const {field, esc, options, project} = helpers;
   return field('Rule title', 'title', rule?.title ?? '') +
     field('Who performs this behavior?', 'actor', rule?.actor ?? '', 'text', 'For example: workspace owner, customer, or billing service.') +
     field('When does this rule apply?', 'condition', rule?.condition ?? '', 'textarea', 'Keep qualifying conditions explicit, such as fraud-confirmed accounts only.') +
     field('What happens?', 'outcome', rule?.outcome ?? '', 'textarea') +
     field('Release, environment, and scope', 'applicability', rule?.applicability ?? '', 'textarea', 'For example: Release 2 onward · confirmed fraud · production.') +
     field('Decision owner', 'owner', rule?.owner ?? '') +
-    `<fieldset class="audience-field"><legend>Teams that need this rule</legend>${D.ROLES.map(a => `<label class="checkbox-label"><input type="checkbox" name="audiences" value="${esc(a)}" ${(rule?.audiences ?? ['Everyone']).includes(a) ? 'checked' : ''}>${esc(a)}</label>`).join('')}<small>These are perspective filters. Everyone with the project file can read all its content.</small></fieldset>`;
+    `<fieldset class="audience-field"><legend>Teams that need this rule</legend>${(project?D.activeRoles(project):D.ROLES).map(a => `<label class="checkbox-label"><input type="checkbox" name="audiences" value="${esc(a)}" ${(rule?.audiences ?? ['Everyone']).includes(a) ? 'checked' : ''}>${esc(a)}</label>`).join('')}<small>These are perspective filters. Everyone with the project file can read all its content.</small></fieldset>`;
 }
 
 export function ruleDetailsFromForm(form, rule = null) {

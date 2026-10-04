@@ -1,55 +1,43 @@
 # Current Product Relay build status
 
-Updated 4 October 2026. Latest implementation: **0.4.0**. The user requested finishing core implementation in this continued run, followed by complete testing. The old ten-session schedule now serves as feature groups, not a limit on this run.
+**4 October 2026 · 0.5.0-phase2.0 · implementation checkpoint, untested.**
 
-## Post-build review and Phase 2
+The user requested building the fixes in one continued run and testing in the next session. Phase 2 application/domain/service code is now present on `codex/phase2-delivery-build`. The live GitHub Pages site remains 0.4.0. Do not describe the new code as released or functionally verified.
 
-The later live six-role exercise found **REL-001 (P0)**: valid newly authored walkthrough history fails repeated import, sharing preparation and encrypted recovery reopening because snapshot equality depends on JSON property order. It also confirmed **REL-002**: Change review omits pending rule proposals, and **REL-003**: Overview omits stale delivery actions from its review count. The other twelve findings cover design boundaries and validation gaps. Role assessments were simulated, not customer interviews.
+## Scope and traceability
 
-These findings are **not fixed**. Earlier passing checks are historical results and do not establish a dependable combined portable lifecycle. Preserve original affected files; recovery must retain history validation.
+[PHASE_2_BUILD.md](PHASE_2_BUILD.md) records all built areas, specific implementation limits and every engineering item's checkpoint status. [PHASE_2_BACKLOG.csv](PHASE_2_BACKLOG.csv) retains **91** items with original dependencies/acceptance criteria plus actual code/open-work columns. [PHASE_2_FEEDBACK_COVERAGE.md](PHASE_2_FEEDBACK_COVERAGE.md) and its CSV retain **138** individual feedback points.
 
-[PHASE_2_PLAN.md](PHASE_2_PLAN.md) is the authoritative continuation plan. The completeness revision expands [PHASE_2_FEEDBACK_COVERAGE.md](PHASE_2_FEEDBACK_COVERAGE.md) to **138 individually visible entries**, including role requests and older reviews. [PHASE_2_BACKLOG.csv](PHASE_2_BACKLOG.csv) now has **91 planned engineering items** across 14 packages, including 22 newly explicit items; all 15 broad findings remain mapped. [PHASE_2_VALIDATION.md](PHASE_2_VALIDATION.md) defines evidence and usefulness gates. The [original role review and evidence](docs/reviews/2026-10-04/TEAM_REVIEW.md) are archived in the repository. No application code, schema, backend, or deployment changed when these planning documents were created or expanded.
+- 62 items: code built; validation deferred.
+- 14 items: partial build; remaining implementation specifically named.
+- 10 items: code built; approved external setup/live verification required.
+- 3 items: validation deferred; no passing measurement claimed.
+- 2 items: actual participant/competitor evidence required.
 
-## Product direction
+These are dispositions, not a feature-completion percentage. Acceptance remains unrun for every new path. The three confirmed review defects have repair code; the original authored regression must still prove it fixes the combined lifecycle.
 
-One encrypted local `.relay` file per project; PM-owned master; shared files opened by teammates with named/role perspectives; encrypted local recovery. GitHub Pages hosts the static interface. No mandatory database/account. Future Confluence/Drive/ClickUp/Azure integration remains outside this portable core.
+## Built
 
-## Implemented
+Canonical comparison/history normalization; unified review selector and inbox; schema 5 typed delivery families; source-led intake and multi-source evidence; custom roles/BA; numerical NFR measures; native work/current receipts; cases/immutable actual runs/report import/defects; scope-aware evidence and release reasons; graph impact/rehearsal/regression packages; Support/Operations/incident context; explicit deployment mappings; named returns/earlier bases; lossless packing/originals/custody/recovery; sanitized exports and reader cursors.
 
-All core workflow code is present: qualified rules and decision history; local PDF/DOCX import; optional protected AI gateway; cited rule/section/question candidate review; walkthrough comparison and resolution; current/historical approved context and optional explanation; source comparison and reviewed rule updates; role work; ownership, acknowledgment, completion and qualified verification; selective stale work; common-base file comparison/merge with complete parent archives; and the complete fictional demo.
+Optional connected code includes Auth/capability/RLS policies, transactional commands/journals, encrypted offline draft retention, private assets, in-app events/portfolio/health/controls, durable jobs/outbox, selected provider adapters, reviewed test-only dispatch/comment publication, bounded OCR/audio, two explicit AI adapters and evaluation runners. Hosted/self-host installation uses the same backend contract. No real service or provider account is configured.
 
-Manual features do not require AI; the confirmed portable lifecycle defect still needs repair. Optional AI requires external Supabase/provider setup; no live account/key has been created. Code completion is not a claim that live model quality or hosted backend operation was verified.
+## Open implementation limits
 
-## Historical checks before the later review
+Direct incompatible-return/current-base rebase wizards; archive offloading to reduce the ten-parent bound; organization directory/group administration; full downstream simulation; automatic artifact-content ingestion; OAuth/automatic token refresh; scheduled digests/email/chat; destructive retention/automated backups/operational alerts; recovery wrapping-key format; broader media/layout support and automatic semantic conflict/equivalence classification. Other AI tasks still need individually labeled holdout inputs. Detailed boundaries are in the implementation checkpoint and per-item CSV.
 
-150 Node tests + syntax checks; static build; 13 browser storage checks; 6 actual browser parser-worker checks; UI walkthrough proposal, current/historical citations, stale team work, encrypted example opening, returned-file merge and parent inspection. Real PostgreSQL-compatible migration/grants/quota tests passed on PGlite PostgreSQL 18.3. Deno 2.9.6 gateway check and runtime fixture passed. Real network/provider calls and multi-connection database contention remain pending.
+## Checks and next session
 
-Checkpoint: [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md). Historical checkpoint: [CHECKPOINT_0.3.0.md](CHECKPOINT_0.3.0.md). The latter describes the earlier build only.
+Construction checks: JavaScript syntax, static module/export linking without evaluation, website assembly, backend source packaging and whitespace. Node parsing `.ts` files is not Deno type checking. Packaging does not apply SQL or start Docker. No functional tests, browser journeys, account calls, migrations, model benchmark or participant pilot were run for Phase 2.
 
-## Files and hosting
+Next session: [docs/PHASE_2_NEXT_SESSION.md](docs/PHASE_2_NEXT_SESSION.md), then all [V01–V18 gates](PHASE_2_VALIDATION.md). Start with fresh authored history and repeated encrypted save/share/merge/reopen; preserve the original regression and reject altered history. Follow with scope/evidence behavior, keyboard/browser paths, two-account backend authorization and real configured integration/provider journeys. Add regression fixtures for failures rather than weakening assertions.
 
-Repository: https://github.com/aravin4d/product-relay
+Pre-build commit: `964e85d376dc4a4ed98214377795ac78fb3959d9`. Historical earlier results remain in [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md); they do not validate these changes.
 
-Static site: https://aravin4d.github.io/product-relay/
+## Files and setup
 
-Verified 0.4.0 deployment: https://github.com/aravin4d/product-relay/actions/runs/37184393300 (application commit `14aa485`). Live QA perspective and PDF worker import passed.
+[Build branch](https://github.com/aravin4d/product-relay/tree/codex/phase2-delivery-build) · [live earlier site](https://aravin4d.github.io/product-relay/).
 
-Local preview: `npm run dev`, http://127.0.0.1:4173. Browser runners: `/_checks` and `/_document-checks`. Fictional portable example: `examples/orbit-demo.relay`, public demo passphrase `orbit-demo-context`.
+Local preview: `npm run dev`, http://127.0.0.1:4173. Static output: `npm run build` → `site/`. Optional backend package: `npm run package:backend` → ignored `work/relay-backend-package/`. See [deploy/README.md](deploy/README.md) and [AI_SETUP.md](AI_SETUP.md).
 
-New saves use schema 4. Schemas 1–3 import safely and future schemas reject. The encrypted envelope remains version 1. Keep original files before upgrading. `src/vendor` and `site` are generated/ignored. Development scratch/cache belongs outside the repository in the task-level `work/` directory. Real `.relay` files and credentials are ignored, apart from the fictional example.
-
-## Known constraints
-
-Perspectives are filters, not permissions. Names and sign-offs are self-reported. Keys/handles stay in the active tab; no lost-passphrase reset. Recovery is not a substitute for exporting the file. Native writing varies by browser and stale-write checks are not distributed locks.
-
-Scope staleness compares exact actor/condition/outcome/applicability fields. Source warnings are separate and conservative. Meaning still needs human review. File merging requires matching sharing-round ancestry and coherent branch selections. Preserve complete parent histories; do not silently discard them to make a merge pass. Ten archives and a 10-million-character total bundle bound growth.
-
-## Next implementation and external validation
-
-Begin with Phase 2 W01: reproduce the authored-history defect, repair structured comparison and idempotent normalization, recover affected files safely, and pass repeated lifecycle plus tamper-rejection checks. W02 unifies the review queues/counts. Do not skip these repairs to begin broad integrations.
-
-Follow [AI_SETUP.md](AI_SETUP.md) using one explicitly configured Supabase/provider account. Verify actual available model ID, real authentication, allowance enforcement, fictional extraction and baseline-grounded explanation. Assess wrong qualifiers and unsupported claims. No provider key belongs in the public app or chat.
-
-Connectors, shared storage, background jobs, document fidelity and broader validation are now explicitly sequenced in Phase 2. Account-free portable use remains the selected foundation; real connected-mode acceptance requires the relevant accounts.
-
-The user selected Ultra and authorized substantial available usage. Preserve checked commits; account-wide usage percentages do not guarantee a feature count or completion time. Do not infer permission to provision paid services from that usage instruction.
+Manual files need no backend. Native context saves use schema 5; older schemas 1–4 and the original encryption envelope remain supported. Keep originals. Browser cache, file writing and portable identities retain their documented boundaries. Real project files, credentials and local validation artifacts remain ignored.

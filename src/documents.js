@@ -1,3 +1,4 @@
+import {textLocations} from './structured-source.js';
 /** Local document extraction. Imported files are never uploaded by this module. */
 export const DOCUMENT_LIMITS = Object.freeze({bytes:15*1024*1024, characters:200000, pdfPages:200, zipEntries:1000, zipExpandedBytes:32*1024*1024, zipEntryBytes:8*1024*1024, milliseconds:45000});
 const PARSER_VERSIONS = Object.freeze({pdfjs:'6.3.289',mammoth:'1.13.0','plain-text':'1'});
@@ -80,9 +81,9 @@ export async function parseDocumentBytes(bytes,type,{pdfjs,mammoth,onProgress=()
  if(!Object.hasOwn(MIME,type))throw fail('Unsupported document type.','document-type');
  let content;try{content=normalizedText(new TextDecoder('utf-8',{fatal:true}).decode(data));}catch{throw fail('Text files must use UTF-8 encoding. Save an UTF-8 copy and import it again.','document-encoding');}
  if(content.includes('\0'))throw fail('This file contains binary data. Choose a supported text document.');checkText(content);
- if(type==='csv')warnings.push('CSV is imported as text; column relationships are not interpreted automatically.');
- if(['srt','vtt'].includes(type))warnings.push('Transcript timestamps are preserved as text; speakers are not identified automatically.');
- return {content,blocks:[{id:'text-1',start:0,end:content.length,location:{label:'Source text'}}],warnings,parser:'plain-text',parserVersion:PARSER_VERSIONS['plain-text']};
+ if(type==='csv')warnings.push('CSV cells and source-row offsets are retained. Map columns explicitly before drafting requirements; spreadsheet formulas are text, never executed.');
+ if(['srt','vtt'].includes(type))warnings.push('Transcript cue timestamps are retained as citation labels. Speaker identities are only those explicitly present in the source; no diarization is inferred.');
+ return {content,blocks:textLocations(content,type),warnings,parser:'plain-text',parserVersion:PARSER_VERSIONS['plain-text']};
 }
 async function workerParse(bytes,type,{signal,onProgress=()=>{}}={}){
  if(typeof Worker!=='function')throw fail('This browser cannot run the local document parser. Use a current browser with Web Worker support.','document-parser');

@@ -1,8 +1,10 @@
 # Product Relay — Phase 2 product and engineering plan
 
-**Planning baseline: 4 October 2026. Status: proposed build plan, not implemented fixes.**
+**Planning baseline: 4 October 2026. Phase 2 implementation checkpoint now built; functional validation remains deferred.**
 
-This plan replaces the original ten-session schedule for future work. Application version 0.4.0 remains deployed. The later live review found three confirmed defects, including a portable-file validation failure. Earlier passing checks remain historical results; they do not establish that the reviewed combined workflow is reliable.
+This document remains the full intended architecture and acceptance direction. Read [PHASE_2_BUILD.md](PHASE_2_BUILD.md) for actual code coverage and explicit unfinished capabilities. The 91-item backlog and 138-point register now contain checkpoint status and remaining work for every item. Planned behavior below is not automatically implemented or verified merely because it appears in this plan.
+
+The live site remains the earlier 0.4.0 deployment. New code is saved on `codex/phase2-delivery-build`; the user explicitly deferred testing to the next session. Preserve original files and begin validation with the authored-history failure before deploying this checkpoint.
 
 **Completeness revision:** [every earlier feedback point and response](PHASE_2_FEEDBACK_COVERAGE.md) now lists 138 entries, including the six-role review and earlier section-review/architecture suggestions. The backlog has expanded from 69 to **91 engineering items**, with **22 newly explicit items**. Multiple related points may share a fix; these counts do not mean 138 unique features. Read the coverage register first when checking whether a particular suggestion was retained.
 
