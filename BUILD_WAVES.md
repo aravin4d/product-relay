@@ -1,6 +1,8 @@
 # Product Relay — build in single-session waves
 
-Updated 4 October 2026. Current implementation: **0.4.0**. The user requested finishing the portable core together and testing afterward. All core workflow code is implemented and the manual story has been exercised; live Supabase/provider setup and AI quality validation remain pending. See [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md). This schedule is now a feature map, not a requirement to delay work across ten chats.
+Historical feature-wave schedule. **Continuation notice, 4 October 2026:** [PHASE_2_PLAN.md](PHASE_2_PLAN.md) and [PHASE_2_BACKLOG.csv](PHASE_2_BACKLOG.csv) replace this schedule for future work. Phase 2 starts with confirmed save/reopen/share and review-count repairs, then expands the whole delivery lifecycle. Its packages are not forced separate chat sessions.
+
+Current implementation: **0.4.0**. Core workflow code is present, but a later live authored journey failed valid-history sharing/reopening and revealed incomplete review counts. These issues remain open; see [BUILD_STATUS.md](BUILD_STATUS.md). Live Supabase/provider setup and AI quality validation also remain pending. [CHECKPOINT_0.4.0.md](CHECKPOINT_0.4.0.md) records the earlier checks.
 
 ## How to read this schedule
 
@@ -8,7 +10,7 @@ One wave means one focused coding block in this chat, ending with a working, ver
 
 Each session has a small must-finish scope, an optional stretch goal, a concrete check, and explicit deferrals. The latest user instruction overrides the earlier single-wave stopping rule: build the remaining core together, then test it. If a difficult change does not fit, save the safe checkpoint and name the remaining work for a follow-up session. Do not skip data-safety or authorization checks to preserve the session count.
 
-This is a useful prototype plan. Production release certification, every connector, and broad performance guarantees are outside the core sessions. Existing encryption, source history, review, and file sharing remain functional throughout.
+This was the original prototype scope. Its intended invariant was preserving encryption, source history, review and file sharing. The later authored-history failure is now the first repair priority; broader lifecycle modules and connectors are explicitly planned in Phase 2.
 
 | Session / wave | Main result | What a user can do afterward |
 | --- | --- | --- |

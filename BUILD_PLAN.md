@@ -1,6 +1,6 @@
 # Product Relay — product direction and selected build path
 
-Updated 3 October 2026. Future features described here are planned, not implemented. Current checked prototype: 0.4.0. Waves 1–2 are implemented; see [BUILD_STATUS.md](BUILD_STATUS.md) for tested progress and the pending live AI setup. Execution schedule: [10 single-session waves](BUILD_WAVES.md). Demonstration: [DEMO_STORY.md](DEMO_STORY.md).
+Historical product direction, originally updated 3 October 2026. **Continuation notice, 4 October 2026:** [PHASE_2_PLAN.md](PHASE_2_PLAN.md) now governs future scope and execution; see its [backlog](PHASE_2_BACKLOG.csv) and [validation gates](PHASE_2_VALIDATION.md). The later live review found a valid-history reopen/share defect and incomplete review counts in 0.4.0. Earlier checks do not establish a dependable combined workflow. This document and [the original ten-wave schedule](BUILD_WAVES.md) retain historical reasoning; they do not limit Phase 2 to ten sessions. Demonstration: [DEMO_STORY.md](DEMO_STORY.md).
 
 ## The product we are building
 

@@ -4,6 +4,8 @@ A living product handbook for the whole delivery team, from the first PRD/SOP to
 
 **[Open Product Relay](https://aravin4d.github.io/product-relay/)** · **[Source repository](https://github.com/aravin4d/product-relay)**
 
+**Post-build review, 4 October 2026:** newly authored walkthrough history can fail repeated import, sharing preparation and encrypted recovery reopening in 0.4.0. Review screens also omit some pending/stale work. Preserve original project files; earlier passing checks did not cover this combined lifecycle. These defects remain open. The [Phase 2 plan](PHASE_2_PLAN.md), [69-item backlog](PHASE_2_BACKLOG.csv) and [validation gates](PHASE_2_VALIDATION.md) define the repair and full delivery-lifecycle expansion.
+
 Choose **Explore the sample product**. The fictional R3 fraud change needs fresh QA work, while ordinary cancellation keeps its applicable verification. This is the core differentiator: preserve what was agreed and checked, then show exactly which scoped work needs review.
 
 ## Start in five steps
@@ -16,9 +18,11 @@ Choose **Explore the sample product**. The fictional R3 fraud change needs fresh
 
 A recipient opens the file and selects their name or team. Perspectives filter the reading view; every recipient can read the complete project. The PM remains responsible for the master copy.
 
-## What is implemented in 0.4.0
+## Code implemented in 0.4.0
 
-| Area | Working behavior |
+The table describes implemented capabilities. It is not a claim that all authored save/share/reopen journeys are reliable; see the confirmed defects above.
+
+| Area | Implemented behavior |
 | --- | --- |
 | Original context | Local PDF/DOCX/text import, extraction preview/correction, metadata, duplicate warnings, revision history, and exact page/paragraph citations. |
 | Product rules | Stable IDs; actor, condition, outcome, release/environment scope, owner, audiences; draft approval, reviewed changes, archive/restore, and decision history. |
@@ -84,6 +88,8 @@ New saves use schema **4**, and schemas 1–3 upgrade on opening. Future schemas
 
 ## Validation
 
+The results below precede the later live review. They remain historical results; the authored-history failure and incomplete review counts remain unresolved.
+
 On 4 October 2026: **150 Node tests** and source/script syntax checks passed; the static build passed. These include actual PDF.js/Mammoth parsing, portable rule/action/history validation, encrypted files, three-way merge cases, grounded-context isolation, and the real allowance migration running on PGlite PostgreSQL 18.3. A queued burst proves reservation counts; actual multi-connection database contention remains unverified.
 
 The actual gateway entry point, pinned Supabase SDK, handler, and provider adapter passed a **Deno 2.9.6 runtime test with four substeps**, using intercepted fictional HTTP calls. Function type/module checking also passed. This does not prove external deployment or paid provider inference.
@@ -96,8 +102,11 @@ The 0.4.0 deployment was verified on 4 October 2026: [successful Pages workflow]
 
 ## Build record
 
-The original ten-session plan is now a feature map: the user requested implementing the core in one continued run. All core workflow code is present; live AI setup/quality validation is still external work. Larger integrations and production hardening remain separately scoped.
+The original ten-session plan is a historical feature map. The new Phase 2 plan covers every review finding, native work/testing/releases, production learning, optional shared services and connectors. It has 14 capability packages, not a rule to stop after one package per chat. Planning documents do not repair the deployed app.
 
+- [Phase 2 product and engineering plan](PHASE_2_PLAN.md)
+- [Phase 2 actionable backlog](PHASE_2_BACKLOG.csv)
+- [Phase 2 validation and real-team pilot](PHASE_2_VALIDATION.md)
 - [Latest checked implementation](CHECKPOINT_0.4.0.md)
 - [Current status and continuation](BUILD_STATUS.md)
 - [Feature-wave plan](BUILD_WAVES.md)

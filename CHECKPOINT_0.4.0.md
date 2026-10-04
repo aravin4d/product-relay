@@ -2,6 +2,8 @@
 
 4 October 2026. The user requested building the remaining core together, then testing. This extends the checked 0.3.0 foundation in the same static GitHub Pages application.
 
+**Later review notice:** this is a historical implementation/check record. A subsequent live authored journey found valid-history repeated-import, sharing and recovery failures (REL-001), omitted rule proposals (REL-002), and omitted stale-action overview counts (REL-003). These are open defects despite the checks below. [Phase 2](PHASE_2_PLAN.md) begins with their repair; current status is in [BUILD_STATUS.md](BUILD_STATUS.md).
+
 ## User-visible result
 
 Start from PRD/SOP and source history; review qualified rules and handbook sections; reconcile quoted walkthrough statements; record owner interpretation without silent overwrites; retrieve current/historical approved context; create reviewed role actions; separate receipt, completion, and verification; flag affected older work; compare returned files against a preserved common base and merge reviewed supported edits.
@@ -45,7 +47,7 @@ OCR, audio transcription, connectors, enterprise identity, shared cloud storage/
 
 ## First continuation step
 
-If the portable story is satisfactory, configure one Supabase project/provider through AI_SETUP.md and run the fictional material through real extraction and grounded explanation. Measure lost qualifiers, unsupported claims, and incorrect baseline use before handling real product documents.
+The later review changes the first step: implement Phase 2 W01 to repair valid authored-history normalization/reopening/sharing while retaining tamper checks, then W02 to unify review counts. Live provider setup/evaluation follows its explicit Phase 2 dependencies; the earlier passing checks do not override the newly observed defects.
 
 ## Verified deployment
 
