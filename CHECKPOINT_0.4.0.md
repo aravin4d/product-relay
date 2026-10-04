@@ -46,3 +46,9 @@ OCR, audio transcription, connectors, enterprise identity, shared cloud storage/
 ## First continuation step
 
 If the portable story is satisfactory, configure one Supabase project/provider through AI_SETUP.md and run the fictional material through real extraction and grounded explanation. Measure lost qualifiers, unsupported claims, and incorrect baseline use before handling real product documents.
+
+## Verified deployment
+
+GitHub Pages deployment succeeded on 4 October 2026: [Actions run 37184393300](https://github.com/aravin4d/product-relay/actions/runs/37184393300), application commit `14aa48531f60aaaebf53959bed902f4560b48407`. The prior full-code deployment and owner-receipt repair also passed. All 20 published index/top-level source/style files matched the local build; the final navigation-only change was checked separately against the live app module.
+
+The published site was used to verify the complete sample, Alex’s QA view, selective stale work, and actual two-page PDF extraction/save from the GitHub Pages repository path. The optional provider remained disconnected. The final source archive is `outputs/product-relay.zip` in the task workspace.

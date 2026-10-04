@@ -24,6 +24,8 @@ Repository: https://github.com/aravin4d/product-relay
 
 Static site: https://aravin4d.github.io/product-relay/
 
+Verified 0.4.0 deployment: https://github.com/aravin4d/product-relay/actions/runs/37184393300 (application commit `14aa485`). Live QA perspective and PDF worker import passed.
+
 Local preview: `npm run dev`, http://127.0.0.1:4173. Browser runners: `/_checks` and `/_document-checks`. Fictional portable example: `examples/orbit-demo.relay`, public demo passphrase `orbit-demo-context`.
 
 New saves use schema 4. Schemas 1–3 import safely and future schemas reject. The encrypted envelope remains version 1. Keep original files before upgrading. `src/vendor` and `site` are generated/ignored. Development scratch/cache belongs outside the repository in the task-level `work/` directory. Real `.relay` files and credentials are ignored, apart from the fictional example.

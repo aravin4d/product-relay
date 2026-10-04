@@ -92,6 +92,8 @@ Actual-browser checks: **13 encrypted storage checks** and **6 document worker c
 
 Start the local server and open `/_checks` or `/_document-checks` to rerun isolated fictional browser checks. Existing recovery projects are preserved. Test pages are not deployed.
 
+The 0.4.0 deployment was verified on 4 October 2026: [successful Pages workflow](https://github.com/aravin4d/product-relay/actions/runs/37184393300). Live QA perspective and PDF import were checked.
+
 ## Build record
 
 The original ten-session plan is now a feature map: the user requested implementing the core in one continued run. All core workflow code is present; live AI setup/quality validation is still external work. Larger integrations and production hardening remain separately scoped.
