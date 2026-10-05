@@ -4,7 +4,7 @@ GitHub Pages hosts the interface and encrypted-file workflow. The optional servi
 
 ## Hosted Supabase path
 
-1. Create an approved Supabase project. Review all **seven migrations**, then apply them in filename order. They create project snapshots, immutable command journals, memberships, private-original receipts, request allowances, jobs, delivery receipts, directory groups, operational controls and encrypted connector-account storage. No portable file moves until its holder chooses **Create shared master**.
+1. Create an approved Supabase project. Review all **eight migrations**, then apply them in filename order. They create project snapshots, immutable command journals, memberships, private-original receipts, request allowances, jobs, delivery receipts, directory groups, operational controls and encrypted connector-account storage. No portable file moves until its holder chooses **Create shared master**.
 2. Disable public signup and create intended Auth accounts. Enable AI users in `relay_ai_access`. Project membership separately controls editor/reviewer/observer/sanitized-reader capabilities. A portable teammate name is not a server account.
 3. In the repository, `npm run setup:service` creates **ignored** `deploy/operator-state/` files with fresh worker/credential/backup keys and public example configurations. This only prepares local files. It refuses to overwrite existing keys. Fill in actual service/database values, provider app credentials and available API model IDs; retain the backup key separately. Never put a privileged key into browser settings or Git.
 4. Set `RELAY_ALLOWED_ORIGINS` to the exact website origins. Load reviewed JSON into `RELAY_CONNECTORS_JSON`, `RELAY_OAUTH_JSON` and `RELAY_DELIVERY_JSON`; private JSON files do not load themselves. Each selected connector still needs explicit project/reference allowlists. Use an ignored env file with the Supabase secrets command or dashboard.
@@ -40,7 +40,7 @@ Configure administrator-approved destinations using `delivery.example.json`: ver
 
 An organization owner can create groups of **existing Auth users**, map them to project members and grant capabilities on projects they own. A project/account has one managed group grant at a time. Removing group membership restores the earlier direct membership or revokes a group-created grant; a direct membership override detaches the group grant atomically. This is not external SSO/SCIM provisioning.
 
-Health rotates through bounded project batches and records changed backup/queue/failure/uncertainty signals in the owner's feed. Destination subscriptions control external delivery. Job counts describe the latest 200-job window. Monitoring infrastructure, provider availability and measured uptime remain operator responsibilities.
+Health rotates through bounded project batches and records changed backup/queue/failure/uncertainty signals in the owner's feed. Destination subscriptions control external delivery. Job counts aggregate all retained project jobs and uncertain deliveries. Failure alerts use the last 24 hours; the latest completed restore drill is tracked independently from ordinary backups. Monitoring infrastructure, provider availability and measured uptime remain operator responsibilities.
 
 ## Encrypted backups, retention and recovery
 
@@ -68,7 +68,7 @@ Retention is opt-in, needs a configured age **and a verified backup at the curre
 
 ## Self-host packaging and upgrade
 
-`npm run package:backend` creates `work/relay-backend-package/`: five function entries, colocated domain contracts, seven migrations, public operator templates/scripts and a SHA-256 manifest. It copies no ignored operator state and starts nothing.
+`npm run package:backend` creates `work/relay-backend-package/`: five function entries, colocated domain contracts, eight migrations, public operator templates/scripts and a SHA-256 manifest. It copies no ignored operator state and starts nothing.
 
 The existing reference is the official Supabase Docker `self-hosted/v0.8.2` snapshot. Review the [official installation guide](https://supabase.com/docs/guides/self-hosting/docker), pin the selected distribution and configure its secrets/HTTPS/Auth/Storage first. Copy packaged `functions/*` into its functions volume while preserving the upstream router, apply migrations in order with `ON_ERROR_STOP`, and merge the supplied Compose override. Set Auth site/callback URLs to the actual app; prohibit public signup. [Self-hosted functions](https://supabase.com/docs/guides/self-hosting/functions).
 
@@ -77,3 +77,11 @@ The optional operator Dockerfile uses the PostgreSQL APT repository and defaults
 For upgrades, preserve an encrypted master and verified full backup, inspect migration/package manifests, apply to an isolated restored copy, then complete authorization/lifecycle/job/connector/recovery validation before upgrading the real service. Rollback requires compatible database **and** function/runtime configuration; stop workers and reconcile external sends first. A frontend rollback does not undo migrations or external comments.
 
 Keep logs to IDs, timestamps, states and error codes. Do not log bodies, project plaintext, tokens or key-bearing URLs. Functional acceptance, Deno type/runtime checks, provider quality and real-team usefulness remain next-session gates.
+
+### Outcome reconciliation and migration 8
+
+Apply `202610050008_completion_hardening.sql` after the preceding seven migrations. Deploy the corresponding projects/jobs/operations functions together: media editor permissions, leased delivery completion, late job outcomes and aggregate health require the new RPCs. Existing settings and receipts are retained.
+
+In **Shared workspace → External receipts and reconciliation**, inspect actual outbox/delivery receipts and record a terminal job or delivery's observed outcome with evidence. Owner/reviewer authority is required. The report can acknowledge outcome/billing uncertainty for monitoring; it does not resend work, rewrite provider output, approve context or establish a passed test. If a worker actually receives output after its lease expires, the output is retained as uncertain and cannot be imported as a review-required result.
+
+Encrypted backup extraction now requires a destination that does not already exist. The restore script uses a fresh child directory inside private temporary staging. A malformed archive never triggers deletion of an existing destination. The schedule queries the earliest configured backup interval across the service rather than the first response page.

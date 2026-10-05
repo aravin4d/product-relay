@@ -275,4 +275,4 @@ Before calling the full Phase 2 complete:
 - [ ] Browser/accessibility/performance limits and recovery procedures are published.
 - [ ] Real team effort and company feedback are reported, including disadvantages and unproven claims.
 
-Plan status today: **all gates pending**. Phase 2 implementation starts with W01; the deployed 0.4.0 defects have not been repaired by these documents.
+Acceptance status: **all gates unrun for 0.5.0-phase2.2**, following the request to build first. Implementation and source repairs are saved on `codex/phase2-delivery-build`; the deployed site remains 0.4.0. Syntax/import/packaging construction checks do not establish acceptance. Include the additional failure cases in [the verification handoff](docs/PHASE_2_NEXT_SESSION.md).

@@ -28,7 +28,9 @@ async function writeCache(entry,expected) {
   });
 }
 export async function listCachedFiles(){return (await readAll()).map(e=>({id:e.id,dirty:e.dirty,updatedAt:e.updatedAt,lastExportAt:e.lastExportAt,sequence:e.sequence}));}
-export function storageState(id){const s=sessions.get(id);return s?{protected:true,dirty:s.entry.dirty,linked:!!s.handle,lastExportAt:s.entry.lastExportAt}: {protected:false,dirty:true,linked:false};}
+export function storageState(id){const s=sessions.get(id);return s?{protected:true,dirty:!!s.cacheStale||s.entry.dirty,cacheStale:!!s.cacheStale,recoveryError:s.recoveryError??'',linked:!!s.handle,lastExportAt:s.entry.lastExportAt}: {protected:false,dirty:true,linked:false};}
+export function markRecoveryStale(id,reason){const s=sessions.get(id);if(s){s.cacheStale=true;s.recoveryError=String(reason);}}
+function requireCurrentRecovery(session){if(session.cacheStale)throw new Error('The recovery copy is older than the open view. Export the current view as a separate encrypted file before closing or reopening.');}
 export function lockProjects(){sessions.clear();}
 export function closeProject(id){sessions.delete(id);}
 export async function createProtectedProject(project,passphrase) {
@@ -48,7 +50,7 @@ export async function unlockCached(id,passphrase) {
 export async function openProjectFile(text,passphrase,handle=null,asCopy=false) {
   if(text.length>45000000)throw new Error('Project file exceeds the supported size.');
   const envelope=JSON.parse(text);const {data,key}=await openVault(envelope,passphrase);const project=importProject(JSON.stringify(data));
-  if(asCopy){delete project.sharing;project.reviewOf=project.reviewOf??project.id;project.id=uid();project.name+=' · review copy';await createProtectedProject(project,passphrase);return project;}
+  if(asCopy){delete project.sharing;if(project.delivery)delete project.delivery.pendingShared;project.reviewOf=project.reviewOf??project.id;project.id=uid();project.name+=' · review copy';await createProtectedProject(project,passphrase);return project;}
  return withLock(project.id,async()=>{
   const existing=(await readAll()).find(e=>e.id===project.id);
   if(existing?.dirty)throw new Error('This project has unsaved local changes. Open and save its recovery copy first, then open the shared file.');
@@ -63,17 +65,19 @@ export async function putProject(project) {
   const session=sessions.get(project.id);if(!session)throw new Error('Unlock this project before saving.');
   const envelope=await sealVault(JSON.parse(exportProject(project)),session.key,session.entry.envelope.version===2?session.entry.envelope:session.entry.envelope.salt);
   const entry={...session.entry,envelope,dirty:true,updatedAt:new Date().toISOString()};
-  entry.sequence=await writeCache(entry,session.entry.sequence);session.entry=entry;
+  entry.sequence=await writeCache(entry,session.entry.sequence);session.entry=entry;session.cacheStale=false;session.recoveryError='';
  });
 }
 export function encryptedProjectFile(id) {
   const session=sessions.get(id);if(!session)throw new Error('Unlock the project before saving a file.');
+  requireCurrentRecovery(session);
   return JSON.stringify(session.entry.envelope,null,2);
 }
 export function linkedHandle(id){return sessions.get(id)?.handle;}
 export async function rotateProjectPassphrase(id,knownPassphrase,newPassphrase) {
  return withLock(id,async()=>{
   const session=sessions.get(id);if(!session)throw new Error('Unlock this project first.');
+  requireCurrentRecovery(session);
   const {data}=await openVault(session.entry.envelope,knownPassphrase);
   const project=importProject(JSON.stringify(data));if(project.id!==id)throw new Error('Project identity mismatch.');
   const backup=JSON.stringify(session.entry.envelope),{envelope,key}=await rotateVault(session.entry.envelope,knownPassphrase,newPassphrase);
@@ -86,6 +90,7 @@ export async function rotateProjectPassphrase(id,knownPassphrase,newPassphrase) 
 export async function createRecoveryBackup(id,knownPassphrase) {
  return withLock(id,async()=>{
  const session=sessions.get(id);if(!session)throw new Error('Unlock this project first.');
+ requireCurrentRecovery(session);
  const {data}=await openVault(session.entry.envelope,knownPassphrase);importProject(JSON.stringify(data));
  const {envelope,key,secret}=await createRecoverableVault(data,knownPassphrase);
  importProject(JSON.stringify((await openVault(envelope,secret)).data));
@@ -97,6 +102,7 @@ export async function createRecoveryBackup(id,knownPassphrase) {
 export async function saveProjectFile(id,handle=null,exportOnly=false) {
  return withLock(id,async()=>{
   const session=sessions.get(id);if(!session)throw new Error('Unlock the project first.');
+  requireCurrentRecovery(session);
   const opened=await openVault(session.entry.envelope,session.key);importProject(JSON.stringify(opened.data));
   const text=encryptedProjectFile(id);const chosen=exportOnly?null:handle??session.handle;
   const stored=(await readAll()).find(e=>e.id===id);

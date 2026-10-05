@@ -8,15 +8,16 @@ const id=value=>{const s=String(value??'');if(!/^[A-Za-z0-9_-]{1,150}$/.test(s))
 function htmlText(input){return text(input).replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi,'').replace(/<\/(p|div|h[1-6]|tr|li)>/gi,'\n').replace(/<\/?(td|th)\b[^>]*>/gi,'\t').replace(/<[^>]*>/g,'').replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').trim();}
 export function relayGenerated(input){return /product-relay-origin[:=]|"format"\s*:\s*"product-relay(?:-reading-pack)?"/i.test(text(input));}
 export function connectorCatalog(config){return Object.entries(config.providers??{}).map(([provider,c])=>({provider,label:c.label??provider,repositories:c.repositories??[],pageIds:c.pageIds??[],fileIds:c.fileIds??[],runIds:c.runIds??[],writeComments:c.writeComments===true,workItemIds:c.workItemIds??[],taskIds:c.taskIds??[],docIds:c.docIds??[],workflows:(c.workflows??[]).map(w=>({id:w.id,refs:w.refs,inputs:w.inputs,repository:w.repository,testOnly:w.testOnly===true}))}));}
-export function createConnectorService({config,secrets=()=>'',fetchImpl=fetch,XMLParser=globalThis.DOMParser}){
+export function createConnectorService({config,secrets=()=>'',fetchImpl=fetch,XMLParser=globalThis.DOMParser,beforeWrite=async()=>{}}){
  async function request(url,headers={},options={}){
   let response;try{response=await fetchImpl(url,{...options,headers:{Accept:'application/json',...headers,...options.headers},redirect:'error',signal:AbortSignal.timeout(8000)});}catch{fail(options.method&&options.method!=='GET'?'external_write_uncertain':'connector_timeout');}
+  if(options.method&&options.method!=='GET'&&response.status>=500)fail('external_write_uncertain');
   if(response.status===403&&(response.headers.get('x-ratelimit-remaining')==='0'||response.headers.get('retry-after')))fail('connector_rate_limited');
   if(response.status===403){let body;try{body=await readBoundedJSON(response.clone(),20000);}catch{}if(/rate.?limit|quota.?exceeded|dailyLimitExceeded|secondary.?rate|abuse.?detection/i.test(JSON.stringify(body??{})))fail('connector_rate_limited');}
   if(response.status===401)fail('connector_auth_unavailable');if(response.status===403)fail('connector_access_lost');if(response.status===404)fail('external_missing_or_inaccessible');if(response.status===410)fail('external_expired');if(response.status===429||response.status===503)fail('connector_rate_limited');if(!response.ok)fail('connector_provider_error');
   if(response.status===204)return null;
   if(options.responseText){const reader=response.body?.getReader();if(!reader)fail('connector_empty');let size=0,body='',decoder=new TextDecoder();try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>200000){await reader.cancel();fail('connector_content_limit');}body+=decoder.decode(value,{stream:true});}body+=decoder.decode();}finally{reader.releaseLock();}return body;}
-  return readBoundedJSON(response,2000000);
+  try{return await readBoundedJSON(response,2000000);}catch(error){if(options.method&&options.method!=='GET')fail('external_write_uncertain');throw error;}
  }
  function settings(provider){const c=config.providers?.[provider];if(!c)fail('connector_not_configured');return c;}
  function credential(c){const token=secrets(c.credentialEnv);if(!token&&!c.publicOnly)fail('connector_not_configured');return token;}
@@ -63,14 +64,14 @@ export function createConnectorService({config,secrets=()=>'',fetchImpl=fetch,XM
  async function writeComment({locator,expectedRevision,body,commandId,projectId}){
   if(locator.provider!=='github'||!['issue','pull'].includes(locator.type))fail('write_adapter_not_configured');const c=settings('github');if(c.writeComments!==true||!body?.trim()||body.length>20000)fail('write_adapter_not_configured');const current=await read(locator);if(current.revision!==expectedRevision)fail('external_revision_changed');
   const root='https://api.github.com/repos/'+locator.repository,headers={Authorization:'Bearer '+credential(c),'X-GitHub-Api-Version':c.apiVersion??'2026-03-10','Content-Type':'application/json'},marker='<!-- product-relay-origin:'+projectId+':'+commandId+' -->';
-  const result=await request(root+'/issues/'+id(locator.id)+'/comments',headers,{method:'POST',body:JSON.stringify({body:body+'\n\n'+marker})});return {id:String(result.id),url:result.html_url,origin:'relay-generated',marker};
+  await beforeWrite();const result=await request(root+'/issues/'+id(locator.id)+'/comments',headers,{method:'POST',body:JSON.stringify({body:body+'\n\n'+marker})});if(!result||!Number.isSafeInteger(result.id)||result.id<1||typeof result.html_url!=='string'||!result.html_url.startsWith('https://github.com/'+locator.repository+'/'))fail('external_write_uncertain');return {id:String(result.id),url:result.html_url,origin:'relay-generated',marker};
  }
  async function dispatch({repository,workflowId,ref,expectedSha,inputs={},commandId}){
   const c=settings('github'),w=c.workflows?.find(w=>String(w.id)===String(workflowId)&&w.repository===repository&&w.testOnly===true);if(!w)fail('test_workflow_not_configured');allowed(c.repositories,repository);allowed(w.refs,ref);
   if(Object.keys(inputs).some(k=>!w.inputs?.includes(k))||Object.values(inputs).some(v=>typeof v!=='string'||v.length>2000)||!w.inputs?.includes('relay_command_id'))fail('workflow_inputs_not_allowed');
   const root='https://api.github.com/repos/'+repository,headers={Authorization:'Bearer '+credential(c),'X-GitHub-Api-Version':c.apiVersion??'2026-03-10','Content-Type':'application/json'};
   const head=await request(root+'/commits/'+e(ref),headers);if(!expectedSha||head.sha!==expectedSha)fail('workflow_ref_changed');
-  await request(root+'/actions/workflows/'+id(workflowId)+'/dispatches',headers,{method:'POST',body:JSON.stringify({ref,inputs:{...inputs,relay_command_id:commandId}})});
+  await beforeWrite();await request(root+'/actions/workflows/'+id(workflowId)+'/dispatches',headers,{method:'POST',body:JSON.stringify({ref,inputs:{...inputs,relay_command_id:commandId}})});
   return {accepted:true,commandId,expectedSha,repository,workflowId,ref,state:'dispatch accepted; actual run and mapped results still unknown'};
  }
  return {read,writeComment,dispatch,catalog:()=>connectorCatalog(config)};

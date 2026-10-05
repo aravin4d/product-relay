@@ -1,21 +1,8 @@
 # Phase 2 continued implementation checkpoint
 
-**0.5.0-phase2.2 · build-only continuation · functional verification deferred.**
+**0.5.0-phase2.1 · build-only continuation · functional verification deferred.**
 
 This continuation adds implementation paths for all 14 previously partial engineering items and the separately listed OAuth, document/media and evaluation gaps. It does not establish acceptance, model quality, security, recovery performance or live integration behavior. The published GitHub Pages site remains 0.4.0; this checkpoint is on `codex/phase2-delivery-build`.
-
-## Additional implementation repairs in phase2.2
-
-This source review found and repaired concrete gaps after the phase2.1 implementation:
-
-- **Current-view recovery:** a server-accepted or outcome-uncertain change stays visible when its local encrypted save fails. A persistent warning blocks stale cache/file exports and key changes; a separate current-view encrypted snapshot retains the pending command. Separate review copies remove the original master's pending command. Closing a stale view requires an explicit discard acknowledgment.
-- **Returned context:** comparison ignores copied decisions/receipts, retains known scope/evidence/links and records unresolved qualifiers. Glossary, releases, environments and risk drafts are supported. Retrieved originals receive separate human correction sources; metadata-only/archived source returns become new context. Archived legacy content becomes new drafts; unknown legacy perspectives require explicit master-role setup.
-- **Source and archive integrity:** service origin checks bind actual retrieved text and metadata to the receipt and preserve earlier revisions. Human corrections cannot impersonate provider retrieval. History files must match the full manifest and valid merge-parent contracts; continuity/study/verification metadata has bounded schemas. Rehearsal proposals are limited to editable content; immutable observations remain obligations.
-- **Background authority and outcomes:** editors can enqueue/import media through the API, SQL and worker. External writes mark the send boundary after validation. Confirmed outbox/delivery receipts survive later local errors. Delivery leases bind completion; late job output is retained as uncertain context without a resend. Expired cancellation after a send remains uncertain. Paid/read retries stay distinct.
-- **Operations and consent:** in-app receipts and observed-outcome reconciliation retain authenticated reviewer evidence separately from actual provider output. Health aggregates all retained jobs and delivery uncertainty; billing/outcome observations acknowledge uncertainty without rewriting provider truth. Delivery settings preserve existing relevance filters. Retention preserves referenced jobs, outbox receipts and original offline drafts.
-- **Intake and backups:** strict JUnit parsing is shared across file/connector paths. Scanned page ranges are checked before enqueue; cancellation stops future media uploads and downloadable batch receipts preserve confirmed/uncertain command IDs. Restore extraction requires a fresh destination, handles empty final entries and validates byte/frame limits. Scheduled backups query the earliest interval across all controls and honor changed intervals.
-
-These are source changes, not evidence that the corresponding scenarios pass. The next session must exercise the added failure cases against the original acceptance contracts.
 
 ## Added implementation
 
@@ -36,7 +23,7 @@ These are source changes, not evidence that the corresponding scenarios pass. Th
 
 ## Construction and later verification
 
-No functional suite, browser journey, database migration, real provider request, notification, workflow dispatch, backup or restore was run during this continuation. Construction completed: `npm run check:static` (50 JavaScript modules linked without executing the application), syntax parsing of all 11 backend JavaScript modules, `npm run build`, `npm run package:backend` (50 public package files), packaged backend static linking (19 modules), and clean `git diff --check`. These are syntax/import/assembly checks only. New test fixtures exist for authored histories/tamper, old-return proposals, archive integrity, future-save recovery and actual report handling. The performance page runs only when explicitly started.
+No functional suite, browser journey, database migration, real provider request, notification, workflow dispatch, backup or restore was run during this continuation. Construction completed: `npm run check:static` (50 JavaScript modules linked without executing the application), syntax parsing of 22 backend/test JavaScript files, `npm run build`, `npm run package:backend` (49 public package files), packaged backend static linking (19 modules), and clean `git diff --check`. These are syntax/import/assembly checks only. New test fixtures exist for authored histories/tamper, old-return proposals, archive integrity, future-save recovery and actual report handling. The performance page runs only when explicitly started.
 
 See [the next-session handoff](docs/PHASE_2_NEXT_SESSION.md), [deployment](deploy/README.md) and [evaluation](docs/evaluation/README.md). External account registration, actual team/competitor evidence and V01–V18 execution are verification/setup work, not silently completed by source code.
 

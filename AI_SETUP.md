@@ -14,7 +14,7 @@ Selected plaintext goes over HTTPS to the configured service/provider. This proc
 
 ## Install when approved backend access is available
 
-Full operator instructions and self-host packaging are in [deploy/README.md](deploy/README.md). This repository now contains **seven migrations**, not only the earlier allowance migration. Review them before applying: they create optional project snapshots, revisions/journals, memberships, private asset receipts, jobs/outbox, notifications, request allowances, minimal AI receipts, directory groups, operational scheduling and encrypted connector-account records. A portable project moves into server plaintext only after **Create shared master** consent. Do not claim the database contains no project data after that action.
+Full operator instructions and self-host packaging are in [deploy/README.md](deploy/README.md). This repository now contains **eight migrations**, not only the earlier allowance migration. Review them before applying: they create optional project snapshots, revisions/journals, memberships, private asset receipts, jobs/outbox, notifications, request allowances, minimal AI receipts, directory groups, operational scheduling and encrypted connector-account records. A portable project moves into server plaintext only after **Create shared master** consent. Do not claim the database contains no project data after that action.
 
 For an approved hosted Supabase project:
 
@@ -72,3 +72,5 @@ Start with `npm run check` and [the test handoff](docs/PHASE_2_NEXT_SESSION.md).
 Deno module/type checks are also pending for the new entries. Review the pinned SDK/import/lock configuration before running the actual functions. The original SQL allowance fixture deliberately changes counters inside a rolled-back transaction and belongs only in a disposable test database.
 
 Optional answer/retrieval comparison is documented in [docs/evaluation/README.md](docs/evaluation/README.md). Its runners were created but not run. Only explicit operator invocation can make provider calls. The added delivery dataset includes 32 authored cases across every non-answer AI task, plus the existing answer dataset. Human qualifier/authority/unknown/correction scoring, independent label review and frozen holdout execution remain required before claiming model quality or any superiority.
+
+Retrieved OCR/transcription originals remain separate from human corrections. Use **Source library → Add revision** on a retrieved source to record a separately labeled correction source. Agreement approval remains a separate step. Media enqueue/import is available to authenticated editors; external publishing and workflow dispatch require reviewers.

@@ -88,14 +88,21 @@ export function addSource(project, title, content, kind = 'Document', metadata) 
   const source = {id: uid(), title: title.trim(), kind, revisions: [{id: uid(), content, at: now(),...(document?{document}:{})}]};
   project.sources.push(source); event(project, `Added ${source.title}`); return source;
 }
-export function reviseSource(project, sourceId, content, metadata) {
+export function reviseSource(project, sourceId, content, metadata, {retrieved=false}={}) {
   const source = project.sources.find(s => s.id === sourceId);
   if (!source || source.archived || typeof content!=='string'||!content.trim()) throw new Error('Choose an active source and supply its revised text.');
   if (content.length > 200000) throw new Error('Source text is too large.');
   const document=normalizeDocumentMetadata(content,metadata);
   if (source.revisions.at(-1).content === content&&equal(source.revisions.at(-1).document,document)) return false;
+  if(source.origin&&!retrieved)throw new Error('Keep retrieved text as original evidence. Save human corrections as a separately labeled source, or refresh this reference through its connector.');
   source.revisions.push({id: uid(), content, at: now(),...(document?{document}:{})});
   event(project, `New source revision: ${source.title}`); return true;
+}
+export function correctRetrievedSource(project,sourceId,content,memberId,note){
+ const original=project.sources.find(s=>s.id===sourceId),member=project.members.find(m=>m.id===memberId);
+ if(!original?.origin||!member||!note?.trim()||typeof content!=='string'||!content.trim()||content===original.revisions.at(-1).content)throw new Error('Choose retrieved context, changed text, a named reviewer and the correction basis.');
+ const body='Human correction of '+original.title+'\nOriginal source: '+original.id+' / revision '+original.revisions.at(-1).id+'\nRecorded by: '+member.name+' (source statement; approval remains separate)\nCorrection basis: '+note.trim()+'\n\n'+content;
+ return addSource(project,'Human correction · '+original.title,body,original.kind);
 }
 function normalizeAIRun(project, input) {
   const identifier=value=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);

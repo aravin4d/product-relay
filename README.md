@@ -4,7 +4,7 @@ A delivery context system connecting the original PRD/SOP and walkthrough decisi
 
 **[Live 0.4.0 site](https://aravin4d.github.io/product-relay/)** · **[Repository](https://github.com/aravin4d/product-relay)** · **[Phase 2 build branch](https://github.com/aravin4d/product-relay/tree/codex/phase2-delivery-build)**
 
-**Phase 2 continuation:** Code is built as **0.5.0-phase2.1** on a separate branch. Functional testing is deferred to the next session at the user's request. The live site remains the earlier build with its recorded authored-history/review-queue defects. Repair code is present on this branch; that is not yet proof of a reliable save/share/reopen journey.
+**Phase 2 continuation:** Source repairs and implementation are saved as **0.5.0-phase2.2** on a separate branch. Functional testing is deferred to the next session at the user's request. The live site remains the earlier build with its recorded authored-history/review-queue defects. Repair code is present on this branch; that is not yet proof of a reliable save/share/reopen journey.
 
 Start with [the implementation checkpoint](PHASE_2_BUILD.md). All **91 engineering items** and **138 feedback entries** retain their individual acceptance contracts and concrete open work. No completion percentage substitutes for those checks.
 
