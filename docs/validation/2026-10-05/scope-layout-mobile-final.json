@@ -1,0 +1,42 @@
+{
+  "labels": [
+    {
+      "controls": 1,
+      "left": 36,
+      "name": "Release",
+      "top": 701,
+      "width": 155
+    },
+    {
+      "controls": 1,
+      "left": 199,
+      "name": "Environment",
+      "top": 701,
+      "width": 155
+    },
+    {
+      "controls": 1,
+      "left": 36,
+      "name": "Ownership",
+      "top": 763.5,
+      "width": 155
+    },
+    {
+      "controls": 1,
+      "left": 199,
+      "name": "Audience",
+      "top": 763.5,
+      "width": 155
+    },
+    {
+      "controls": 1,
+      "left": 36,
+      "name": "Flag",
+      "top": 833,
+      "width": 318
+    }
+  ],
+  "pageWidth": 390,
+  "unlabeled": [],
+  "viewport": 390
+}

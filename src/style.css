@@ -18,3 +18,6 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
 .measure-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;align-items:center}fieldset{border:1px solid var(--line);border-radius:12px;margin:18px 0;padding:16px}legend{font-size:13px;color:var(--muted)}@media(max-width:650px){.measure-row{grid-template-columns:1fr 1fr}}
+
+/* Keep each scope label and control together when the toolbar wraps. */
+.lifecycle-scope{align-items:flex-start}.lifecycle-scope label{flex:1 1 150px;display:flex;flex-direction:column;align-items:stretch;gap:6px}.lifecycle-scope select,.lifecycle-scope input{width:100%;max-width:100%;min-width:0}.lifecycle-scope .small-note{flex-basis:100%;margin-top:4px}

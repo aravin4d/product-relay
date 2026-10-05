@@ -9,7 +9,7 @@ function scopeChange(f,behavior=f.fraud,input={outcome:'Revoke access immediatel
 const reopen = p => D.importProject(D.exportProject(p));
 
 test('role suggestions preserve the exact actor, condition, outcome, applicability, and evidence without mutating the project',()=>{
- const f=fixture(),before=D.clone(f.p),suggestions=D.getActionSuggestions(f.p,f.fraud.id);assert.equal(suggestions.length,5);assert.deepEqual(f.p,before);
+ const f=fixture(),before=D.clone(f.p),suggestions=D.getActionSuggestions(f.p,f.fraud.id);assert.deepEqual(suggestions.map(s=>s.role).sort(),['Product','QA','Development','BA','Support','Operations'].sort());assert.deepEqual(f.p,before);
  for(const suggestion of suggestions){for(const key of ['actor','condition','outcome','applicability'])assert.ok(suggestion.acceptanceCriteria.includes(f.fraud[key]));assert.deepEqual(suggestion.behaviorSnapshot,D.getBehaviorRevision(f.p,f.fraud.id,f.fraud.revision));assert.equal(suggestion.behaviorRevision,f.fraud.revision);}
  assert.throws(()=>D.getActionSuggestions(f.p,D.uid()),/approved/);
 });
@@ -99,7 +99,7 @@ test('action snapshots in baselines are optional and cannot replace baseline beh
 });
 test('schema 1 and 2 upgrade without dropping original content and reject mislabeled team work or future schemas',()=>{
  const f=fixture(),legacy=JSON.parse(D.exportProject(f.p));legacy.schemaVersion=2;for(const key of ['impactReviews','actions','actionChanges','actionDecisions','acknowledgments','verifications'])delete legacy.project[key];const upgraded=D.importProject(JSON.stringify(legacy));assert.equal(upgraded.sources[0].revisions[0].content,f.p.sources[0].revisions[0].content);assert.deepEqual(upgraded.behaviors,f.p.behaviors);assert.deepEqual(upgraded.actions,[]);
- work(f);for(const schemaVersion of [1,2]){const wrong=JSON.parse(D.exportProject(f.p));wrong.schemaVersion=schemaVersion;assert.throws(()=>D.importProject(JSON.stringify(wrong)),/Schema/);}legacy.schemaVersion=5;assert.throws(()=>D.importProject(JSON.stringify(legacy)),/Unsupported/);
+ work(f);for(const schemaVersion of [1,2]){const wrong=JSON.parse(D.exportProject(f.p));wrong.schemaVersion=schemaVersion;assert.throws(()=>D.importProject(JSON.stringify(wrong)),/Schema/);}legacy.schemaVersion=6;assert.throws(()=>D.importProject(JSON.stringify(legacy)),/Unsupported/);
 });
 test('imports reject forged snapshots, unknown owners, duplicate IDs, stale receipt scopes, and unsupported artifact schemes',()=>{
  const f=fixture(),{action}=work(f);D.acceptAction(f.p,action.id,{reviewerId:f.reviewer});D.acknowledgeAction(f.p,action.id,{memberId:f.qa});pass(f);

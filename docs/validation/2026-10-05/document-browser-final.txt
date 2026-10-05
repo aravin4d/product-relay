@@ -1,0 +1,4 @@
+- heading "Local document parser checks" [level=1]
+- paragraph: Runs fictional PDF/DOCX documents through the real browser extraction worker, then verifies source location persistence. No project data or files are uploaded.
+- button "Run document checks"
+- status: PASS · PDF.js worker reads two pages and preserves fraud qualifiers PASS · Mammoth worker extracts paragraphs without executing source markup PASS · PDF location survives project export and reopen PASS · Edited preview removes unavailable original locations PASS · Exact file duplicate is detected before committing another source PASS · Malformed DOCX and cancelled imports fail safely PASS · Scanned-page preprocessing rasterizes actual PDF pages within OCR bounds PASS · Actual audio decoding splits a long fictional recording with contiguous original offsets 8 document browser checks passed.

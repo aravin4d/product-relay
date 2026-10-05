@@ -1,6 +1,6 @@
 # Product Relay — Phase 2 validation and usefulness gates
 
-**4 October 2026. Phase 2 code checkpoint built; every new gate remains not run. Functional testing was explicitly deferred to the next session.**
+**5 October 2026. Local validation executed and five product bugs repaired. Full V01–V18 acceptance remains partial/blocked.** See [the report](docs/validation/2026-10-05/REPORT.md), [gate outcomes](docs/validation/2026-10-05/GATES.csv), [91 backlog results](docs/validation/2026-10-05/BACKLOG_RESULTS.csv) and [138 feedback results](docs/validation/2026-10-05/FEEDBACK_RESULTS.csv). The acceptance requirements below are unchanged.
 
 Read with [the product plan](PHASE_2_PLAN.md), [all 138 feedback entries](PHASE_2_FEEDBACK_COVERAGE.md) and [the expanded 91-item backlog](PHASE_2_BACKLOG.csv). V01–V18 below are referenced by backlog and feedback rows. The 150 Node, 13 storage-browser and 6 document-worker checks reported for 0.4.0 are historical coverage. The later authored lifecycle failed despite them; Phase 2 must add that combined journey rather than merely repeat the old suite.
 
@@ -275,4 +275,4 @@ Before calling the full Phase 2 complete:
 - [ ] Browser/accessibility/performance limits and recovery procedures are published.
 - [ ] Real team effort and company feedback are reported, including disadvantages and unproven claims.
 
-Acceptance status: **all gates unrun for 0.5.0-phase2.2**, following the request to build first. Implementation and source repairs are saved on `codex/phase2-delivery-build`; the deployed site remains 0.4.0. Syntax/import/packaging construction checks do not establish acceptance. Include the additional failure cases in [the verification handoff](docs/PHASE_2_NEXT_SESSION.md).
+Acceptance status: **locally exercised; original gates remain partial, fixture-tested only or blocked for 0.5.0-phase2.2**. The [dated results](docs/validation/2026-10-05/GATES.csv) record actual evidence and remaining work. 223 Node/25 browser checks and 15 lexical assertions pass; actual providers, independent service concurrency, full restore, native retained files and participant evidence remain incomplete. Source is on `codex/phase2-delivery-build`; this run does not deploy. Follow [the verification handoff](docs/PHASE_2_NEXT_SESSION.md).

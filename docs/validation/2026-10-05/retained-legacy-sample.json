@@ -1,0 +1,10 @@
+{
+  "artifact": "examples/orbit-demo.relay",
+  "originalSchema": 4,
+  "envelopeVersion": 1,
+  "project": "Orbit subscriptions",
+  "sources": 6,
+  "versions": 2,
+  "sharingReopened": true,
+  "limitation": "Public retained sample; the precise earlier failing review file was not available."
+}

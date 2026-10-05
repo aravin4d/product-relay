@@ -1,0 +1,75 @@
+{
+  "format": "relay-performance-evidence",
+  "version": 2,
+  "at": "2026-10-05T09:14:22.251Z",
+  "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "requirements": 1000,
+  "serializedCharacters": 1863137,
+  "samples": [
+    {
+      "exportMs": 101,
+      "queryMs": 7,
+      "saveMs": 92,
+      "reopenMs": 257,
+      "serializedCharacters": 1863137
+    },
+    {
+      "exportMs": 96,
+      "queryMs": 7,
+      "saveMs": 86,
+      "reopenMs": 251,
+      "serializedCharacters": 1863137
+    },
+    {
+      "exportMs": 91,
+      "queryMs": 7,
+      "saveMs": 87,
+      "reopenMs": 251,
+      "serializedCharacters": 1863137
+    },
+    {
+      "exportMs": 91,
+      "queryMs": 7,
+      "saveMs": 86,
+      "reopenMs": 252,
+      "serializedCharacters": 1863137
+    },
+    {
+      "exportMs": 90,
+      "queryMs": 7,
+      "saveMs": 86,
+      "reopenMs": 251,
+      "serializedCharacters": 1863137
+    }
+  ],
+  "measurements": {
+    "exportMs": {
+      "median": 91,
+      "p95": 101
+    },
+    "queryMs": {
+      "median": 7,
+      "p95": 7
+    },
+    "saveMs": {
+      "median": 86,
+      "p95": 92
+    },
+    "reopenMs": {
+      "median": 251,
+      "p95": 257
+    }
+  },
+  "budgets": {
+    "recordsPerFamily": 5000,
+    "queryMs": 1000,
+    "saveMs": 5000,
+    "reopenMs": 5000,
+    "mergeMs": 10000
+  },
+  "limitations": [
+    "Five sequential trials; p95 is the maximum observed sample, not a reliable population percentile. First trial is retained.",
+    "No UI/IndexedDB/file-system/network/merge latency or peak memory measured.",
+    "Fictional dataset includes requirement histories but no parent archives or large original assets."
+  ]
+}

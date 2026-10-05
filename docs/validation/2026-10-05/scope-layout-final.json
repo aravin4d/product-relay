@@ -1,0 +1,41 @@
+{
+  "labels": [
+    {
+      "controls": 1,
+      "left": 307,
+      "name": "Release",
+      "top": 341.5,
+      "width": 175.59375
+    },
+    {
+      "controls": 1,
+      "left": 492.59375,
+      "name": "Environment",
+      "top": 341.5,
+      "width": 175.6015625
+    },
+    {
+      "controls": 1,
+      "left": 678.1953125,
+      "name": "Ownership",
+      "top": 341.5,
+      "width": 175.6015625
+    },
+    {
+      "controls": 1,
+      "left": 863.796875,
+      "name": "Audience",
+      "top": 341.5,
+      "width": 175.6015625
+    },
+    {
+      "controls": 1,
+      "left": 1049.3984375,
+      "name": "Flag",
+      "top": 341.5,
+      "width": 175.6015625
+    }
+  ],
+  "pageWidth": 1280,
+  "width": 1280
+}

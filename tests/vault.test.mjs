@@ -26,7 +26,8 @@ test('ciphertext, salt, and nonce tampering are rejected',async()=>{
 test('unsupported envelope parameters are rejected before key derivation',async()=>{
  const {envelope}=await createVault({},passphrase);
  await assert.rejects(()=>openVault({...envelope,iterations:1},passphrase),/Unsupported/);
- await assert.rejects(()=>openVault({...envelope,version:2},passphrase),/Unsupported/);
+ await assert.rejects(()=>openVault({...envelope,version:3},passphrase),/Unsupported/);
+ await assert.rejects(()=>openVault({...envelope,version:2},passphrase),/Invalid encrypted key wrapper/);
  await assert.rejects(()=>openVault({...envelope,iv:'bad'},passphrase),/Invalid/);
 });
 test('repeated local saves have fresh nonces and remain decryptable',async()=>{

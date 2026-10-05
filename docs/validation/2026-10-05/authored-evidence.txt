@@ -1,0 +1,142 @@
+- complementary:
+  - link "Product Relay":
+    - /url: "#"
+    - text: Product
+    - strong: Relay
+  - button "New project":
+    - text: New project
+  - generic: OPEN PROJECTS
+  - combobox "OPEN PROJECTS":
+    - option "Project files"
+    - option "Fictional release validation" [selected]
+  - navigation "Project sections":
+    - paragraph: Connected service
+    - button "Shared workspace":
+      - generic: Shared workspace
+    - paragraph: Start here
+    - button "Overview":
+      - generic: Overview
+    - button "Guided intake":
+      - generic: Guided intake
+    - paragraph: Delivery
+    - button "Delivery records":
+      - generic: Delivery records
+    - button "Review inbox 1":
+      - generic: Review inbox
+      - generic: "1"
+    - button "Team work":
+      - generic: Team work
+    - button "Test evidence":
+      - generic: Test evidence
+    - button "Release & operations":
+      - generic: Release & operations
+    - button "Production learning":
+      - generic: Production learning
+    - paragraph: Original agreement
+    - button "Product rules":
+      - generic: Product rules
+    - button "Handbook":
+      - generic: Handbook
+    - button "Walkthrough review":
+      - generic: Walkthrough review
+    - button "Questions & decisions":
+      - generic: Questions & decisions
+    - button "Source library":
+      - generic: Source library
+    - button "Rule handoffs":
+      - generic: Rule handoffs
+    - button "Version history":
+      - generic: Version history
+    - button "Ask the product":
+      - generic: Ask the product
+    - paragraph: Sharing and company
+    - button "Shared-file review":
+      - generic: Shared-file review
+    - button "Project portfolio":
+      - generic: Project portfolio
+    - paragraph: Configuration
+    - button "Project settings":
+      - generic: Project settings
+    - button "Project team":
+      - generic: Project team
+    - button "AI workspace":
+      - generic: AI workspace
+  - button "Open project file":
+    - text: Open project file
+  - button "Lock & close projects":
+    - text: Lock & close projects
+  - generic: One file. The full product story.
+- link "Skip to project content":
+  - /url: "#workspace-content"
+- main:
+  - button "Workspace"
+  - generic: /
+  - strong: Fictional release validation
+  - button "Save project file":
+    - text: Save project file
+  - text: Perspective
+  - combobox "Perspective":
+    - option "Whole team" [selected]
+    - option "Fixture PM · Product"
+    - option "Product team"
+    - option "QA team"
+    - option "Development team"
+    - option "BA team"
+    - option "Operations team"
+    - option "Support team"
+  - text: View
+  - combobox "View":
+    - option "Team view" [selected]
+    - option "My work"
+  - text: Recovery saved · file needs update
+  - paragraph: AGREEMENT LINKED TO EVIDENCE
+  - heading "Evidence matrix" [level=1]
+  - paragraph: Inspect actual cases/results and their scope. A successful run is not blanket coverage.
+  - button "Record a manual run"
+  - button "Import test report"
+  - generic: Release
+  - combobox "Release":
+    - option "All / unknown" [selected]
+  - generic: Environment
+  - combobox "Environment":
+    - option "All / unknown" [selected]
+  - generic: Ownership
+  - combobox "Ownership":
+    - option "Team view" [selected]
+    - option "My work"
+  - generic: Audience
+  - textbox "Audience"
+  - generic: Flag
+  - textbox "Flag"
+  - generic: Portable names are self-reported; filters are not permissions.
+  - paragraph: Showing up to 50 of 1 requirements; each row shows its latest 25 recorded result entries. Open Run history for all immutable runs.
+  - table:
+    - rowgroup:
+      - row "Requirement Cases Evidence state Results and provenance Review":
+        - columnheader "Requirement"
+        - columnheader "Cases"
+        - columnheader "Evidence state"
+        - columnheader "Results and provenance"
+        - columnheader "Review"
+    - rowgroup:
+      - 'row "Ordinary cancellation access r2 Verify ordinary cancellation boundary: missing current result needs review Verify ordinary cancellation boundary: pass · scope unknown · self-reported Fictional authored run · fixture-build-001 Details Review earlier evidence"':
+        - cell "Ordinary cancellation access r2":
+          - text: Ordinary cancellation access
+          - generic: r2
+        - 'cell "Verify ordinary cancellation boundary: missing current result"'
+        - cell "needs review":
+          - generic: needs review
+        - 'cell "Verify ordinary cancellation boundary: pass · scope unknown · self-reported Fictional authored run · fixture-build-001"':
+          - paragraph:
+            - text: "Verify ordinary cancellation boundary: pass · scope unknown · self-reported"
+            - generic: Fictional authored run · fixture-build-001
+        - cell "Details Review earlier evidence":
+          - button "Details"
+          - button "Review earlier evidence"
+  - button "Test case registry"
+  - button "Run history"
+  - button "Defects"
+  - button "Templates"
+  - button "Add functional / NFR starter drafts"
+  - generic: Product Relay · Keep the context, carry it forward.
+- status: A run needs bounded actual results and their origin.

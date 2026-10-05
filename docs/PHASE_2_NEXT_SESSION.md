@@ -1,6 +1,10 @@
-# Next session: validate the implementation
+# Remaining verification after 5 October 2026
 
-The user explicitly deferred functional testing during this build. The current checkpoint is **0.5.0-phase2.1**. No new feature should be described as verified because it compiles or appears in a registry. Preserve all existing `.relay` files and the pre-build Git commit `964e85d376dc4a4ed98214377795ac78fb3959d9`.
+**Local validation is complete for the executed checks; full Phase 2 acceptance is incomplete.** The [findings report](validation/2026-10-05/REPORT.md) records 223 Node tests, 25 browser checks, 15 lexical assertions, five repaired product bugs and measured limits. [Gate results](validation/2026-10-05/GATES.csv), [91 backlog results](validation/2026-10-05/BACKLOG_RESULTS.csv) and [138 feedback results](validation/2026-10-05/FEEDBACK_RESULTS.csv) name each remaining obligation. Avoid treating the test doubles or section-render smoke as full live acceptance.
+
+Start with native retained-file proof when the Mac is unlocked, then the complete browser walkthrough/change/share/returned-file chain. Next use an isolated real Supabase/PostgREST/Deno stack and independent PostgreSQL sessions, full database/object restore, approved tenants/providers and actual six-role participants. Complete screen-reader/full-keyboard and Safari/Firefox/device tests plus mixed-history/assets/graph/merge/memory benchmarks. The source branch has not been deployed by this session.
+
+Preserve existing project files and earlier commits (`964e85d376dc4a4ed98214377795ac78fb3959d9`, initial testing HEAD `64e2b7d`). The steps below are the original comprehensive run protocol: named subsets have passed; use the dated per-item evidence to avoid unnecessarily repeating them. Broaden a rerun when a new failure/change justifies it.
 
 ## Run order
 
@@ -19,7 +23,7 @@ The full acceptance contract remains [PHASE_2_VALIDATION.md](../PHASE_2_VALIDATI
 
 ## Continuation-specific gates
 
-Preserve earlier acceptance criteria and add these checks; none was run during implementation:
+Preserve earlier acceptance criteria and these checks. Many local subsets now pass; external/full-browser variants remain as recorded in the report:
 
 - **Portable changes/history:** old-round selected edits become current-base proposals; copied approvals/receipts/results do not become new authority. Review both-changed records and legacy content, unknown/new scope, malformed archive manifests, exact hashes, offload/download failures and 10-parent reattachment bounds. Future schema and oversized data must still reject.
 - **Vault v2:** read existing v1, upgrade an active cache, reopen later saves with both password and recovery secret, rotate password while retaining the recovery path, reject wrong/tampered wrappers, and preserve the previous usable cache/file if any write fails. Losing all retained secrets remains unrecoverable.

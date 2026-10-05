@@ -1,0 +1,175 @@
+- complementary:
+  - link "Product Relay":
+    - /url: "#"
+    - text: Product
+    - strong: Relay
+  - button "New project":
+    - text: New project
+  - generic: OPEN PROJECTS
+  - combobox "OPEN PROJECTS":
+    - option "Project files"
+    - option "Orbit subscriptions" [selected]
+  - navigation "Project sections":
+    - paragraph: Connected service
+    - button "Shared workspace":
+      - generic: Shared workspace
+    - paragraph: Start here
+    - button "Overview":
+      - generic: Overview
+    - button "Guided intake":
+      - generic: Guided intake
+    - paragraph: Delivery
+    - button "Delivery records":
+      - generic: Delivery records
+    - button "Review inbox 24":
+      - generic: Review inbox
+      - generic: "24"
+    - button "Team work":
+      - generic: Team work
+    - button "Test evidence":
+      - generic: Test evidence
+    - button "Release & operations":
+      - generic: Release & operations
+    - button "Production learning":
+      - generic: Production learning
+    - paragraph: Original agreement
+    - button "Product rules":
+      - generic: Product rules
+    - button "Handbook":
+      - generic: Handbook
+    - button "Walkthrough review":
+      - generic: Walkthrough review
+    - button "Questions & decisions":
+      - generic: Questions & decisions
+    - button "Source library":
+      - generic: Source library
+    - button "Rule handoffs":
+      - generic: Rule handoffs
+    - button "Version history":
+      - generic: Version history
+    - button "Ask the product":
+      - generic: Ask the product
+    - paragraph: Sharing and company
+    - button "Shared-file review":
+      - generic: Shared-file review
+    - button "Project portfolio":
+      - generic: Project portfolio
+    - paragraph: Configuration
+    - button "Project settings":
+      - generic: Project settings
+    - button "Project team":
+      - generic: Project team
+    - button "AI workspace":
+      - generic: AI workspace
+  - button "Open project file":
+    - text: Open project file
+  - button "Lock & close projects":
+    - text: Lock & close projects
+  - generic: One file. The full product story.
+- link "Skip to project content":
+  - /url: "#workspace-content"
+- main:
+  - button "Workspace"
+  - generic: /
+  - strong: Orbit subscriptions
+  - button "Save project file":
+    - text: Save project file
+  - text: Perspective
+  - combobox "Perspective":
+    - option "Whole team" [selected]
+    - option "Maya · Product"
+    - option "Alex · QA"
+    - option "Sam · Development"
+    - option "Jordan · Support"
+    - option "Taylor · Operations"
+    - option "Riley · BA"
+    - option "Casey · Support"
+    - option "Product team"
+    - option "QA team"
+    - option "Development team"
+    - option "BA team"
+    - option "Operations team"
+    - option "Support team"
+  - text: View
+  - combobox "View":
+    - option "Team view" [selected]
+    - option "My work"
+  - text: Sample is in memory · save a file to keep it
+  - paragraph: PRODUCT OVERVIEW
+  - heading "Orbit subscriptions" [level=1]
+  - paragraph: A fictional subscription product. Learn the product, capture a walkthrough, and follow a decision through a change.
+  - button "Edit details"
+  - article:
+    - generic: Context sources
+    - strong: "6"
+    - text: Original revisions preserved
+  - article:
+    - generic: Reviewed agreement
+    - strong: "1"
+    - text: 5 legacy handbook sections
+  - article:
+    - generic: Team work
+    - strong: "8"
+    - text: Completion and evidence stay separate
+  - article:
+    - generic: Review inbox · Team view
+    - strong: "24"
+    - text: Everyone · same scope as navigation/inbox
+  - heading "Follow the full delivery story" [level=2]
+  - button "Collect and clarify context":
+    - strong: Collect and clarify context
+  - button "Define and review agreement":
+    - strong: Define and review agreement
+  - button "Assign concrete team obligations":
+    - strong: Assign concrete team obligations
+  - button "Inspect actual test evidence":
+    - strong: Inspect actual test evidence
+  - button "Review release and operational gaps":
+    - strong: Review release and operational gaps
+  - button "Feed production learning back":
+    - strong: Feed production learning back
+  - button "Preserve and exchange the master":
+    - strong: Preserve and exchange the master
+  - heading "Needs attention in this view (24)" [level=2]
+  - strong: Do partial refunds affect remaining access?
+  - paragraph: Owner answer or decision is missing
+  - button "Open review inbox"
+  - strong: Who owns migration and rollback instructions?
+  - paragraph: Owner answer or decision is missing
+  - button "Open review inbox"
+  - strong: "Fictional investigation: was this ordinary cancellation or confirmed fraud?"
+  - paragraph: Owner answer or decision is missing
+  - button "Open review inbox"
+  - strong: "Check the agreed behavior: Fraud cancellation exception"
+  - paragraph: The actor, condition, outcome, or applicability changed after this action was scoped.
+  - button "Open review inbox"
+  - strong: "Implement the agreed behavior: Fraud cancellation exception"
+  - paragraph: The actor, condition, outcome, or applicability changed after this action was scoped.
+  - button "Open review inbox"
+  - strong: Fictional R2 ordinary cancellation
+  - paragraph: Source or linked agreement changed; review applicability
+  - button "Open review inbox"
+  - strong: Fictional ordinary cancellation retains paid access
+  - paragraph: Source or linked agreement changed; review applicability
+  - button "Open review inbox"
+  - strong: "Fictional draft regression: prevent early ordinary revocation"
+  - paragraph: Draft awaits evidence/owner review
+  - button "Open review inbox"
+  - strong: "Support brief: Fictional R2 ordinary cancellation"
+  - paragraph: Source or linked agreement changed; review applicability
+  - button "Open review inbox"
+  - strong: "Operations brief: Fictional R2 ordinary cancellation"
+  - paragraph: Draft awaits evidence/owner review
+  - button "Open review inbox"
+  - strong: Fictional draft rollback follow-up
+  - paragraph: Draft awaits evidence/owner review
+  - button "Open review inbox"
+  - strong: Fictional workspace authorization API
+  - paragraph: Source or linked agreement changed; review applicability
+  - button "Open review inbox"
+  - button "See every item"
+  - strong: The complete project travels in one file
+  - paragraph: Save the master before sharing. Names and perspective filters are self-reported in portable mode.
+  - button "How sharing works"
+  - generic: Product Relay · Keep the context, carry it forward.
+- status

@@ -1,0 +1,49 @@
+✔ backup round trip verifies encrypted bytes, empty last frame and private file modes (16.488959ms)
+✔ wrong backup key and tampered ciphertext reject and remove only owned extraction (12.250125ms)
+✔ restore refuses a populated destination without changing its contents (6.322625ms)
+✔ restore rejects unsafe paths, duplicate frames, missing required entries and byte overflow (17.652833ms)
+✔ backup never replaces an existing artifact and malformed formats fail safely (5.630833ms)
+✔ provider reads retain real retrieved provenance and reject unconfigured identity before fetching (20.395459ms)
+✔ read errors distinguish rate limiting, permission loss, missing records and timeouts (1.55125ms)
+✔ app generated content cannot recursively become a source (0.60275ms)
+✔ comment write checks current external revision and authorization immediately before sending (2.15675ms)
+✔ write timeouts, server errors and malformed success metadata retain uncertainty (1.38675ms)
+✖ test dispatch is bounded to reviewed workflows, refs and exact build SHA (0.41075ms)
+✔ Drive detects revision change across content fetch and confirmed deletion (0.609375ms)
+✔ ClickUp document retains page IDs and rejects duplicate page trees (1.714541ms)
+✔ Confluence removes scripts from extracted text and Azure preserves explicit outcomes (2.044208ms)
+✔ all eight migrations install with private tables and privileged RPCs (1227.823416ms)
+✔ SQL RLS distinguishes full readers, limited readers, other projects and revoked users (25.26725ms)
+✔ commits are atomic, bound to member/capability, revision checked and idempotent (12.155ms)
+✔ offline rebase preserves the original draft and rejects a second replacement (8.018542ms)
+✔ owner continuity prevents self demotion and transfer requires active membership (5.409166ms)
+✔ media jobs allow editors while writes require reviewers and duplicate identity is bound (9.185208ms)
+✔ jobs recheck changed project revision and revoked authority before publishing (8.357708ms)
+✔ expired send lease cannot resend and retains actual late outcome with the original token (6.180667ms)
+✔ delivery consent retains relevance filters, leases reject forgery and receipts deduplicate (12.926875ms)
+✔ health aggregates more than 200 retained jobs and reports operator reconciliation separately (16.773375ms)
+✔ retention requires a current backup and preserves journals and referenced job evidence (9.0675ms)
+✔ directory grants restore pre-existing membership on group removal (6.723667ms)
+✔ OAuth state is single-use and refresh leases bind token updates to revision and lease (8.910541ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 26
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1453.923375
+
+✖ failing tests:
+
+test at tests/connectors.test.mjs:29:1
+✖ test dispatch is bounded to reviewed workflows, refs and exact build SHA (0.41075ms)
+  Error: invalid external identity
+      at fail (file:///Users/aravind/Documents/Codex/2026-10-02/what-are-some-x20/outputs/product-relay/supabase/functions/_shared/connectors.js:5:25)
+      at id (file:///Users/aravind/Documents/Codex/2026-10-02/what-are-some-x20/outputs/product-relay/supabase/functions/_shared/connectors.js:7:81)
+      at Object.dispatch (file:///Users/aravind/Documents/Codex/2026-10-02/what-are-some-x20/outputs/product-relay/supabase/functions/_shared/connectors.js:74:64)
+      at async TestContext.<anonymous> (file:///Users/aravind/Documents/Codex/2026-10-02/what-are-some-x20/outputs/product-relay/tests/connectors.test.mjs:32:16)
+      at async Test.run (node:internal/test_runner/test:1110:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:785:7) {
+    code: 'invalid_external_identity'
+  }

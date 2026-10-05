@@ -6,8 +6,8 @@ function ruleFixture() {const fixture=createHandoffFixture();return {...fixture,
 function documentMetadata(content) {return {fileName:'policy.pdf',mediaType:'application/pdf',byteLength:99,sha256:'a'.repeat(64),parser:'pdfjs',parserVersion:'test',pageCount:1,warnings:[],blocks:[{id:'page-1-block-1',start:0,end:content.length,location:{label:'Page 1',page:1}}]};}
 test('ordinary and fraud-only rules remain separate across all perspectives',()=>{
  const f=ruleFixture();recordWalkthrough(f);
- for(const audience of D.ROLES){const rules=D.listBehaviors(f.p,{audience,includeDrafts:false});assert.equal(rules.length,2);assert.equal(rules[0].outcome,f.expected.ordinaryOutcome);assert.match(rules[1].condition,/fraud/);assert.match(rules[1].applicability,/Release 2/);}
- assert.equal(D.listBehaviors(f.p,{versionId:f.refs.baseline}).length,1);
+ for(const audience of ['Everyone',...f.fraud.audiences]){const rules=D.listBehaviors(f.p,{audience,includeDrafts:false});assert.equal(rules.length,2);assert.equal(rules[0].outcome,f.expected.ordinaryOutcome);assert.match(rules[1].condition,/fraud/);assert.match(rules[1].applicability,/Release 2/);}
+ assert.equal(D.listBehaviors(f.p,{audience:'BA',includeDrafts:false}).length,1);assert.equal(D.listBehaviors(f.p,{versionId:f.refs.baseline}).length,1);
 });
 test('a draft requires an owner and source evidence or an explicit owner decision',()=>{
  const p=D.createProject('Product'),b=D.addBehavior(p,{title:'Rule',actor:'Owner',condition:'When enabled',outcome:'Allow access',applicability:'Release 1 only',owner:''});
@@ -51,7 +51,7 @@ test('active rules and pending rule proposals protect original sources from arch
 test('schema1 upgrades safely while newer schemas and mislabelled schema1 rule data are refused',()=>{
  const p=D.createProject('Legacy');D.addSource(p,'PRD','An original source.');const bundle=JSON.parse(D.exportProject(p));bundle.schemaVersion=1;for(const key of ['behaviors','behaviorChanges','decisions'])delete bundle.project[key];
  const upgraded=D.importProject(JSON.stringify(bundle));assert.equal(upgraded.sources[0].revisions[0].content,'An original source.');assert.deepEqual(upgraded.behaviors,[]);assert.equal(JSON.parse(D.exportProject(upgraded)).schemaVersion,4);
- bundle.schemaVersion=5;assert.throws(()=>D.importProject(JSON.stringify(bundle)),/Unsupported/);
+ bundle.schemaVersion=6;assert.throws(()=>D.importProject(JSON.stringify(bundle)),/Unsupported/);
  const f=ruleFixture(),wrong=JSON.parse(D.exportProject(f.p));wrong.schemaVersion=1;assert.throws(()=>D.importProject(JSON.stringify(wrong)),/Schema 1/);
 });
 test('imports reject duplicate rule IDs, invalid scope, missing decisions, and tampered history',()=>{

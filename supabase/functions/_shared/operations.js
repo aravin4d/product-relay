@@ -1,6 +1,6 @@
 export async function repository(query){const {data,error}=await query;if(error)throw new Error('Operational repository unavailable.');return data;}
 export const workerAuthorized=(request,secret)=>{const supplied=request.headers.get('authorization')??'',expected='Bearer '+secret;if(!secret||secret.length<32||supplied.length!==expected.length)return false;let d=0;for(let i=0;i<expected.length;i++)d|=supplied.charCodeAt(i)^expected.charCodeAt(i);return d===0;};
-function targetURL(value){const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.hostname==='localhost'||/^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(u.hostname))throw new Error('Configured delivery endpoint must use public HTTPS.');return u;}
+function targetURL(value){const u=new URL(value),host=u.hostname.replace(/^\[|\]$/g,'');if(u.protocol!=='https:'||u.username||u.password||host==='localhost'||host.endsWith('.localhost')||/^(0\.|127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host)||host.includes(':')&&/^(::(?:1)?$|::ffff:|f[cd]|fe[89ab])/i.test(host))throw new Error('Configured delivery endpoint must use public HTTPS.');return u;}
 export async function operationalHealth(admin,projectId){
  const [jobs,controls,backups,restores]=await Promise.all([
   repository(admin.rpc('relay_project_job_health',{p_project:projectId})),

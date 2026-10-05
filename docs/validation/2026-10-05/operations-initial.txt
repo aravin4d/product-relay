@@ -1,0 +1,39 @@
+✔ HTTP boundary enforces origin, authentication, JSON and cross-project access (1244.080333ms)
+✔ API commits exact authored content, replay deduplicates and stale commit conflicts (18.091709ms)
+✔ server mutation blocks forged reviewer identity and stamps authenticated approvals (6.817375ms)
+✔ worker authenticates before touching jobs and preserves a provider read for review (17.135958ms)
+✔ worker retries safe rate-limited reads but rejects changed input before external calls (11.584875ms)
+✔ confirmed external send remains in outbox when the project changes before checkpoint (12.752834ms)
+✔ asset upload/download verifies exact bytes and detects receipt mismatch (7.629208ms)
+✔ OAuth mocked exchange uses PKCE and encrypted tokens; state replay is rejected (12.892917ms)
+✔ operations worker authenticates and delivers generic context with receipt deduplication (44.857708ms)
+✔ notification send timeout retains uncertainty and cannot silently resend (12.457541ms)
+✔ revocation between batch claim and send cancels delivery without an external request (10.107625ms)
+✖ configured delivery destinations reject private IPv4 and IPv6 before sending (32.567167ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1526.736541
+
+✖ failing tests:
+
+test at tests/backend-journey.test.mjs:29:1
+✖ configured delivery destinations reject private IPv4 and IPv6 before sending (32.567167ms)
+  AssertionError [ERR_ASSERTION]: https://[::1]/
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/aravind/Documents/Codex/2026-10-02/what-are-some-x20/outputs/product-relay/tests/backend-journey.test.mjs:29:372)
+      at async Test.run (node:internal/test_runner/test:1110:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:785:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

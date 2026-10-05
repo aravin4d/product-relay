@@ -1,6 +1,6 @@
 # Retrieval, delivery-task and provider evaluation
 
-These runners and fixtures were built but **not executed**. Inputs/labels are authored fictional scenarios, with separate development and holdout splits and file hashes. Independent label review is required. Do not tune against holdout failures and then report those same cases as unseen evidence.
+**5 October 2026:** lexical retrieval ran **15/15 passing assertions**, initially 14/15. HOLD-03 was used for a repair, so the rerun is regression evidence, not unseen holdout accuracy. Semantic output/correction effort and real provider/delivery-task comparison remain **not run**. The 15 answer + 32 delivery fixtures total 47, below the original V12 minimum of 60. Independent label review and a fresh frozen holdout are required. See [the report](../validation/2026-10-05/REPORT.md).
 
 `npm run evaluate:retrieval` measures applicable retrieval, forbidden scope, baseline isolation, stale/unavailable originals, absent deployment and refusal to use raw exploration as approved context. It writes numerators/denominators and failures under ignored `work/evaluation/`. It does not score semantic answers or prove authorization security.
 
@@ -21,7 +21,7 @@ node scripts/score-evaluation.mjs work/evaluation/delivery-REPLACE_TIMESTAMP.jso
 
 The scorer reports reviewed counts, incomplete reviews, failures and correction effort. It refuses development data as a holdout score. Model rankings, quality targets and any superiority claim require actual reviewed results; no such result exists from this build.
 
-`tests/phase2-performance.html` is a click-started browser fixture for fictional dataset tiers, query/export/encrypted save/reopen timings and budgets. Serve the repository locally and open that path in the intended browser; it runs only when started. Its results need browser/device/commit identification and interpretation against real supported sizes. No timing was recorded here.
+`tests/phase2-performance.html` is a click-started browser fixture for fictional dataset tiers, query/export/encrypted save/reopen timings and budgets. Run `npm run dev` and open `/_performance`; it runs only when started. Five trials each at 100/1,000/3,000/4,998 requirements were measured in Chromium 154; [actual results/limits](../validation/2026-10-05/REPORT.md#capacity-observations) are recorded. 5,000 approved requirements hit the 10,000-event budget. The maximum of five samples is not a population p95; mixed graph/parent/assets, merge/UI/IndexedDB/native-disk/network latency and peak RAM were not measured.
 
 In-app **Workflow observations**, **Export study report** and **Verification handoff** retain actual role-specific same-task evidence, total participant plus PM/preparation/correction time, failures and gate references. Simulated/self-reported observations are labeled and excluded from actual-observation totals. A completed form is still evidence requiring independent review, not a certification.
 

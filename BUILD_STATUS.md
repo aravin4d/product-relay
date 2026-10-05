@@ -1,13 +1,13 @@
 # Current Product Relay build status
 
-**0.5.0-phase2.2 · implementation checkpoint, untested.**
+**0.5.0-phase2.2 · locally tested and repaired · full acceptance incomplete.**
 
-The continuation implements paths for the 14 previously partial items and repairs source-found recovery, receipt, authority, provenance, return, notification and backup gaps, plus OAuth/refresh, broader scanned-document/recording intake and task-specific evaluation fixtures. Source is on `codex/phase2-delivery-build`; the live site remains 0.4.0.
+The 5 October 2026 run passes **223 Node tests, 17 browser storage checks, 8 browser document/media checks and 15 lexical retrieval assertions**. Five reproduced product bugs were fixed, with three usability/test-harness improvements. Authored encrypted/returned-copy histories, actual application SQL/RLS on PGlite, mocked service boundaries, browser recovery and four synthetic performance tiers were exercised.
 
-The 91 contracts are acceptance/setup/evidence obligations, not a count of known unfixed bugs. All 91 engineering contracts and 138 feedback entries remain individually mapped. There are 76 code-built items requiring acceptance verification, 10 requiring external account/runtime setup, 3 validation-focused items and 2 actual participant/competitor evidence items. No new functional acceptance is marked passed.
+Read [the findings report](docs/validation/2026-10-05/REPORT.md), [findings](docs/validation/2026-10-05/FINDINGS.csv) and [V01–V18 outcomes](docs/validation/2026-10-05/GATES.csv). These results do not establish full production acceptance. Native retained-file save/open, a complete browser delivery chain, actual Supabase/PostgREST/Deno and independent PostgreSQL races, live providers/tenants, full database/object restore, accessibility/device coverage and actual team/competitor value remain incomplete or blocked.
 
-[PHASE_2_BUILD.md](PHASE_2_BUILD.md) describes concrete implementation and design boundaries. [PHASE_2_BACKLOG.csv](PHASE_2_BACKLOG.csv) and [PHASE_2_FEEDBACK_COVERAGE.csv](PHASE_2_FEEDBACK_COVERAGE.csv) retain per-item coverage and later setup/verification.
+All **91 engineering contracts** and **138 feedback entries** have dated individual observed results/evidence/remaining acceptance: [backlog](docs/validation/2026-10-05/BACKLOG_RESULTS.csv), [feedback](docs/validation/2026-10-05/FEEDBACK_RESULTS.csv). Their original implementation registers/acceptance contracts are preserved; the new 2026-10-05 columns take precedence over historical “validation deferred” dispositions.
 
-No real service, tenant, provider account, outgoing notification or workflow was configured/executed. Browser, SQL/RLS/concurrency, recovery, provider quality and team usefulness verification remain deferred by the user's request. Construction passed: syntax parsing, 50 source modules / 19 packaged backend modules statically linked, frontend assembly, 50-file public backend packaging and whitespace checks. No application/test execution was performed.
+Source is on `codex/phase2-delivery-build`. The live site remains the earlier 0.4.0 deployment; this testing session does not merge/deploy. Build/package/hash/static-link checks pass, and npm reported zero dependency advisories. Neither construction nor a clean audit certifies all security/operation gates.
 
-Use [docs/PHASE_2_NEXT_SESSION.md](docs/PHASE_2_NEXT_SESSION.md) to start verification. Preserve previous project files and backups when exercising the optional vault-v2 upgrade.
+Continue with [the remaining verification handoff](docs/PHASE_2_NEXT_SESSION.md). Preserve project originals and backups.

@@ -1,0 +1,5 @@
+
+> product-relay@0.5.0-phase2.2 evaluate:retrieval
+> node scripts/evaluate-retrieval.mjs
+
+15/15 fixture assertions passed. Report: work/evaluation/retrieval-1791193135429.json. Semantic quality was not assessed.

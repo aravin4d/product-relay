@@ -1,0 +1,262 @@
+{
+  "dataset": "relay-scope-v1",
+  "fixtureSha256": "70143e6945b210fe5a37e58f495b61d900d9e0320eb2659a092880840781cd57",
+  "at": "2026-10-05T09:38:55.429Z",
+  "interpretation": "Only fixture retrieval/assertion results; semantic answer quality, authorization and real usefulness are separate gates.",
+  "results": [
+    {
+      "id": "DEV-01",
+      "split": "development",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "ordinary1",
+          "stale": false,
+          "applicability": true
+        }
+      ],
+      "unknowns": [],
+      "semanticReview": "Preserve paid-period access; fraud is a separate condition.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "DEV-02",
+      "split": "development",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "fraud2",
+          "stale": false,
+          "applicability": true
+        },
+        {
+          "label": "ordinary2",
+          "stale": false,
+          "applicability": true
+        }
+      ],
+      "unknowns": [],
+      "semanticReview": "Suspension needs confirmed fraud and operator review; do not apply to ordinary cancellations.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "DEV-03",
+      "split": "development",
+      "critical": false,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "sharing",
+          "stale": false,
+          "applicability": true
+        }
+      ],
+      "unknowns": [],
+      "semanticReview": "Reviewed glossary aliases should reach sharing-round guidance.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "DEV-04",
+      "split": "development",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [],
+      "unknowns": [
+        "No context matched these terms. Try reviewed product aliases or raise a question."
+      ],
+      "semanticReview": "No source-backed rollback answer exists; abstain rather than invent a safe procedure.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-01",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "ordinary1",
+          "stale": false,
+          "applicability": true
+        }
+      ],
+      "unknowns": [],
+      "semanticReview": "Negated question must not import a fraud exception into an ordinary cancellation.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-02",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "ordinary2",
+          "stale": false,
+          "applicability": true
+        },
+        {
+          "label": "fraud2",
+          "stale": false,
+          "applicability": true
+        }
+      ],
+      "unknowns": [],
+      "semanticReview": "Only the selected R2 agreement applies.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-03",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [],
+      "unknowns": [
+        "No context matched these terms. Try reviewed product aliases or raise a question."
+      ],
+      "semanticReview": "An R1 baseline cannot fall forward to R2 fraud behavior.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-04",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "ordinary1",
+          "stale": false,
+          "applicability": true
+        }
+      ],
+      "unknowns": [],
+      "semanticReview": "Return explicitly pinned deployment context; disclose the human mapping and self-reported observation.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-05",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [],
+      "unknowns": [
+        "Select an actual environment/build with explicit reviewed deployment-to-agreement references. Released intent alone does not establish observed deployed behavior.",
+        "No context matched these terms. Try reviewed product aliases or raise a question."
+      ],
+      "semanticReview": "A staging deployment provides no production proof.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-06",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [],
+      "unknowns": [
+        "Select an actual environment/build with explicit reviewed deployment-to-agreement references. Released intent alone does not establish observed deployed behavior.",
+        "No context matched these terms. Try reviewed product aliases or raise a question."
+      ],
+      "semanticReview": "Release approval without deployment-to-agreement mapping remains unknown.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-07",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [],
+      "unknowns": [
+        "No context matched these terms. Try reviewed product aliases or raise a question."
+      ],
+      "semanticReview": "An SMB-only agreement cannot answer an enterprise applicability question.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-08",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "ordinary1",
+          "stale": true,
+          "applicability": true
+        }
+      ],
+      "unknowns": [
+        "Some agreements need review after their basis changed; they are excluded from AI answers."
+      ],
+      "semanticReview": "An unavailable original cannot supply a fresh AI answer even if an old local passage exists.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-09",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "ordinary1",
+          "stale": true,
+          "applicability": true
+        }
+      ],
+      "unknowns": [
+        "Some agreements need review after their basis changed; they are excluded from AI answers."
+      ],
+      "semanticReview": "Changed evidence creates review work; do not silently reinterpret an old approval.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-10",
+      "split": "holdout",
+      "critical": true,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "source passage",
+          "stale": false,
+          "applicability": null
+        }
+      ],
+      "unknowns": [
+        "Raw passages are source exploration. They do not override the reviewed agreement.",
+        "Some scope qualifiers are unknown. Clarify release/environment/customer before relying on this as applicable guidance."
+      ],
+      "semanticReview": "Untrusted source instructions remain raw source exploration and grant no approval authority.",
+      "semanticResult": "not assessed"
+    },
+    {
+      "id": "HOLD-11",
+      "split": "holdout",
+      "critical": false,
+      "passed": true,
+      "failures": [],
+      "matches": [
+        {
+          "label": "sharing",
+          "stale": false,
+          "applicability": true
+        }
+      ],
+      "unknowns": [],
+      "semanticReview": "Aliases must remain project-scoped; compare the same query in an unrelated project separately.",
+      "semanticResult": "not assessed"
+    }
+  ]
+}

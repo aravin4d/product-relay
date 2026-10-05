@@ -21,7 +21,7 @@ test('source-free approval requires an explicit owner decision',()=>{
  const p=D.createProject('Product');const s=D.addSection(p,{title:'Rule',body:'Owner-defined rule'});assert.throws(()=>D.approveSection(p,s.id),/owner decision/);D.approveSection(p,s.id,'Product owner confirmed in walkthrough.');assert.equal(s.status,'approved');
 });
 test('citations must be exact source passages',()=>{
- const {p,s}=fixture();assert.throws(()=>D.addSection(p,{title:'False',body:'Invented',sourceId:s.id,quote:'Invented quote'}),/exact passage/);
+ const {p,s}=fixture();assert.throws(()=>D.addSection(p,{title:'False',body:'Invented',sourceId:s.id,quote:'Invented quote'}),/exact.*passage/);
 });
 test('a project round trip preserves sources, proposals, and versions',()=>{
  const p=D.demoProject();assert.deepEqual(D.importProject(D.exportProject(p)),p);
@@ -31,7 +31,7 @@ test('malformed imports and missing source references are rejected',()=>{
  const {p}=fixture();const b=JSON.parse(D.exportProject(p));b.project.sections[0].evidence[0].sourceId='missing';assert.throws(()=>D.importProject(JSON.stringify(b)),/evidence/);
 });
 test('future schemas do not silently migrate',()=>{
- const b=JSON.parse(D.exportProject(D.demoProject()));b.schemaVersion=5;assert.throws(()=>D.importProject(JSON.stringify(b)),/Unsupported/);
+ const b=JSON.parse(D.exportProject(D.demoProject()));b.schemaVersion=6;assert.throws(()=>D.importProject(JSON.stringify(b)),/Unsupported/);
 });
 test('historical search uses the selected approved snapshot, excluding proposals',()=>{
  const {p,s,section}=fixture();const v=D.saveVersion(p,'Initial');D.reviseSource(p,s.id,'Access ends immediately.');const c=D.proposeChange(p,section.id,'Access ends immediately.','Change',s.id,'Access ends immediately.');assert.equal(D.searchEvidence(p,'immediately').length,0);D.acceptChange(p,c.id);assert.equal(D.searchEvidence(p,'immediately').length,1);assert.equal(D.searchEvidence(p,'immediately',v.id).length,0);assert.equal(D.searchEvidence(p,'renewal',v.id).length,1);
